@@ -1,10 +1,10 @@
 # ignore tout sauf .vb
-/EventStudy/*.*
-/EventStudy/EventStudy/bin
-/EventStudy/EventStudy/My\ Project
-/EventStudy/EventStudy/obj
-/EventStudy/EventStudy/EventStudy.vbproj
-/EventStudy/EventStudy/Ruban.resx
-/EventStudy/EventStudy/ThisAddIn.Designer.xml
-/EventStudy/EventStudy/UserControl1.resx
-/EventStudy/EventStudy/UserControl2.resx
+/EtudeEvenement/*.*
+/EtudeEvenement/EtudeEvenement/bin
+/EtudeEvenement/EtudeEvenement/My\ Project
+/EtudeEvenement/EtudeEvenement/obj
+/EtudeEvenement/EtudeEvenement/EtudeEvenement.vbproj
+/EtudeEvenement/EtudeEvenement/Ruban.resx
+/EtudeEvenement/EtudeEvenement/ThisAddIn.Designer.xml
+/EtudeEvenement/EtudeEvenement/UserControl1.resx
+/EtudeEvenement/EtudeEvenement/UserControl2.resx
