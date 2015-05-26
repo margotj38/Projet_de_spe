@@ -5,11 +5,24 @@ Public Class Ruban
     Private choixSeuil As ChoixSeuil
     Public WithEvents myTaskPane As Microsoft.Office.Tools.CustomTaskPane
 
+    Private choixSeuilFenetre As ChoixSeuilFenetre
+    Public WithEvents seuilFenetreTaskPane As Microsoft.Office.Tools.CustomTaskPane
+
     Private Sub Ruban_Load(ByVal sender As System.Object, ByVal e As RibbonUIEventArgs) Handles MyBase.Load
         choixSeuil = New ChoixSeuil()
         myTaskPane = Globals.ThisAddIn.CustomTaskPanes.Add(choixSeuil, "Choix du seuil")
-
         With myTaskPane
+            .DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionFloating
+            .Height = 500
+            .Width = 500
+            .DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionRight
+            .Width = 300
+            .Visible = False
+        End With
+
+        choixSeuilFenetre = New ChoixSeuilFenetre()
+        seuilFenetreTaskPane = Globals.ThisAddIn.CustomTaskPanes.Add(choixSeuilFenetre, "Choix des paramètres")
+        With seuilFenetreTaskPane
             .DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionFloating
             .Height = 500
             .Width = 500
@@ -28,7 +41,7 @@ Public Class Ruban
     Private Sub ModeleMoyenne_Click(ByVal sender As System.Object, _
     ByVal e As Microsoft.Office.Tools.Ribbon.RibbonControlEventArgs) _
         Handles ModeleMoyenne.Click
-
+        seuilFenetreTaskPane.Visible = True
     End Sub
 
     Private Sub ModeleRentaMarche_Click(ByVal sender As System.Object, _
