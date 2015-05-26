@@ -43,6 +43,7 @@
         ThisAddIn_MethodeTabCAR = test_student(varCAR, tabAR.GetLength(1), seuil)
     End Function
 
+    'Estimation des AR à partir du modèle de marché : K = alpha + beta*Rm
     Public Function ThisAddIn_ModeleMarche(fenetre As Integer, seuil As Double) As Boolean
         'on se positionne sur la feuille des Rt
         Dim currentSheet As Excel.Worksheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
