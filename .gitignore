@@ -1,0 +1,9 @@
+# ignore tout sauf .vb
+EtudeEvenement/*.*
+EtudeEvenement/EtudeEvenement/bin
+EtudeEvenement/EtudeEvenement/My\ Project
+EtudeEvenement/EtudeEvenement/obj
+EtudeEvenement/EtudeEvenement/*.resx
+EtudeEvenement/EtudeEvenement/EtudeEvenement.vbproj
+EtudeEvenement/EtudeEvenement/EtudeEvenement_TemporaryKey.pfx
+EtudeEvenement/EtudeEvenement/*.xml
