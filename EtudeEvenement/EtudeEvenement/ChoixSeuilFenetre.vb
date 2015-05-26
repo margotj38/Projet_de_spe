@@ -30,6 +30,7 @@
                         Case 1
                             rejet = Globals.ThisAddIn.ThisAddIn_ModeleRentaMarche(fenetre, seuil)
                         Case 2
+                            rejet = Globals.ThisAddIn.ThisAddIn_ModeleMarche(fenetre, seuil)
                         Case Else
                             MsgBox("Erreur interne : Provient de ChoixSeuilFenetre.vb", 16)
                     End Select

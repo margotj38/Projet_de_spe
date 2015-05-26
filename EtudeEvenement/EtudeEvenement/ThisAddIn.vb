@@ -8,6 +8,7 @@
 
     End Sub
 
+    'Calcul la statistique de test et effectue le test
     'Renvoie true si l'hypothèse est rejetée
     Public Function ThisAddIn_MethodeTabCAR(tabAR As Double(,), seuil As Double) As Boolean
         Dim varCAR(tabAR.GetLength(1)) As Double                     'Variable aléatoire correspondant aux CAR
@@ -34,6 +35,43 @@
         ThisAddIn_MethodeTabCAR = test_student(varCAR, tabAR.GetLength(1), seuil)
     End Function
 
+    Public Function ThisAddIn_ModeleMarche(fenetre As Integer, seuil As Double) As Boolean
+        'on se positionne sur la feuille des Rt
+        Application.Sheets("Rt").activate()
+        Dim currentSheet As Excel.Worksheet = CType(Application.ActiveSheet, Excel.Worksheet)
+        'compte le nombre de lignes et de colonnes
+        Dim nbLignes As Integer = currentSheet.UsedRange.Rows.Count
+        Dim nbColonnes As Integer = currentSheet.UsedRange.Columns.Count
+        'tableau stockant les AR calculés grâce à la régression
+        Dim tabAR(fenetre - 1, nbColonnes - 2) As Double
+        'indice de ligne de la dernière ligne de l'ensemble d'apprentissage
+        Dim dernLigne As Integer = nbLignes - fenetre
+
+        For i = 0 To nbColonnes - 2
+            Dim plageY As Excel.Range
+            Dim plageX As Excel.Range
+            plageY = Application.Range(Application.Cells(2, i + 2), Application.Cells(dernLigne, i + 2))
+            'on se positionne sur la feuille des Rm pour récupérer plageX
+            Application.Sheets("Rm").activate()
+            plageX = Application.Range(Application.Cells(2, i + 2), Application.Cells(dernLigne, i + 2))
+            'calcul des paramètres de la régression linéaire
+            Dim beta As Double = Application.WorksheetFunction.Index(Application.WorksheetFunction.LinEst(plageY, plageX), 1)
+            Dim alpha As Double = Application.WorksheetFunction.Index(Application.WorksheetFunction.LinEst(plageY, plageX), 2)
+
+            'remplissage du tableau
+            For t = 0 To fenetre - 1
+                Dim k As Double = alpha + beta * Application.Cells(dernLigne + t + 1, i + 2).Value
+                Application.Worksheets("Rt").activate()
+                tabAR(t, i) = Application.Cells(dernLigne + t + 1, i + 2).Value - k
+                Application.Worksheets("Rm").activate()
+            Next
+            'on retourne sur la feuille des Rt
+            Application.Worksheets("Rt").activate()
+        Next
+        ThisAddIn_ModeleMarche = ThisAddIn_MethodeTabCAR(tabAR, seuil)
+    End Function
+
+    'Récupère les Rt et les Rm, puis appelle les calculs de statistique
     Public Function ThisAddIn_ModeleRentaMarche(fenetre As Integer, seuil As Double) As Boolean
         Application.Sheets("Rt").activate()
         Dim currentSheet As Excel.Worksheet = CType(Application.ActiveSheet, Excel.Worksheet)
@@ -43,7 +81,6 @@
         Dim Rt(nbLignes - 2, nbColonnes - 2) As Double
         Dim Rm(nbLignes - 2, nbColonnes - 2) As Double
         Dim AR(nbLignes - 2, nbColonnes - 2) As Double 'Le tableau des rentabilités anormales
-        Dim varCAR(nbColonnes - 2) As Double 'Variable aléatoire correspondant aux CAR
 
         'La construction du vecteur Rt
         For ligne = 2 To nbLignes
@@ -72,6 +109,7 @@
 
     End Function
 
+    'Calcul les Ki, puis effectue les tests statistiques sur (Ri - Ki)
     'Renvoie true si l'hypothèse est rejetée
     Public Function ThisAddIn_CalcNormMoy(fenetre As Integer, seuil As Double) As Boolean
         Application.Sheets("Rt").activate()

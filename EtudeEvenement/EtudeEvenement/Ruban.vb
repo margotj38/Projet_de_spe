@@ -55,7 +55,8 @@ Public Class Ruban
     Private Sub ModeleMarche_Click(ByVal sender As System.Object, _
         ByVal e As Microsoft.Office.Tools.Ribbon.RibbonControlEventArgs) _
             Handles ModeleMarche.Click
-
+        choixSeuilFenetre.modele = 2
+        seuilFenetreTaskPane.Visible = True
     End Sub
 
 End Class

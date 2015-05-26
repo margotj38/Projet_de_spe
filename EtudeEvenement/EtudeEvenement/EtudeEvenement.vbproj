@@ -188,6 +188,12 @@
     <Compile Include="ChoixSeuil.vb">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="ChoixSeuilFenetre.designer.vb">
+      <DependentUpon>ChoixSeuilFenetre.vb</DependentUpon>
+    </Compile>
+    <Compile Include="ChoixSeuilFenetre.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Ruban.Designer.vb">
       <DependentUpon>Ruban.vb</DependentUpon>
     </Compile>
@@ -199,6 +205,9 @@
     </Compile>
     <EmbeddedResource Include="ChoixSeuil.resx">
       <DependentUpon>ChoixSeuil.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ChoixSeuilFenetre.resx">
+      <DependentUpon>ChoixSeuilFenetre.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Ruban.resx">
       <DependentUpon>Ruban.vb</DependentUpon>
