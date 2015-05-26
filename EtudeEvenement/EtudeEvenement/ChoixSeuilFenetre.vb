@@ -3,6 +3,8 @@
     Private textSeuil As String
     Private textFenetre As String
 
+    Public modele As Integer = -1 '-1 => probleme; 0 => ModeleMoyenne; 1 => ModeleRentaMarche; 2 => ModeleMarche
+
     Private Sub ChoixBox_TextChanged(sender As Object, e As EventArgs) Handles ChoixBox.TextChanged
         textSeuil = ChoixBox.Text
     End Sub
@@ -21,7 +23,16 @@
                 If fenetre <= 0 Or fenetre > Globals.ThisAddIn.Application.ActiveSheet.UsedRange.Rows.Count Then
                     MsgBox("Erreur : La fenêtre de temps de l'événement doit être positive et inférieure au nombre de données dont on dispose", 16)
                 Else
-                    Dim rejet As Boolean = Globals.ThisAddIn.ThisAddIn_CalcNormMoy(fenetre, seuil)
+                    Dim rejet As Boolean
+                    Select Case modele
+                        Case 0
+                            rejet = Globals.ThisAddIn.ThisAddIn_CalcNormMoy(fenetre, seuil)
+                        Case 1
+                            rejet = Globals.ThisAddIn.ThisAddIn_ModeleRentaMarche(fenetre, seuil)
+                        Case 2
+                        Case Else
+                            MsgBox("Erreur interne : Provient de ChoixSeuilFenetre.vb", 16)
+                    End Select
                     Globals.Ribbons.Ruban.seuilFenetreTaskPane.Visible = False
                     If rejet Then
                         MsgBox("Rejet de l'hypothèse")

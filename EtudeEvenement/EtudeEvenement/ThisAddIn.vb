@@ -34,16 +34,56 @@
         ThisAddIn_MethodeTabCAR = test_student(varCAR, tabAR.GetLength(1), seuil)
     End Function
 
+    Public Function ThisAddIn_ModeleRentaMarche(fenetre As Integer, seuil As Double) As Boolean
+        Application.Sheets("Rt").activate()
+        Dim currentSheet As Excel.Worksheet = CType(Application.ActiveSheet, Excel.Worksheet)
+        Dim nbLignes As Integer = currentSheet.UsedRange.Rows.Count 'Nombre de lignes
+        Dim nbColonnes As Integer = currentSheet.UsedRange.Columns.Count 'Nombre de colonnes
+
+        Dim Rt(nbLignes - 2, nbColonnes - 2) As Double
+        Dim Rm(nbLignes - 2, nbColonnes - 2) As Double
+        Dim AR(nbLignes - 2, nbColonnes - 2) As Double 'Le tableau des rentabilités anormales
+        Dim varCAR(nbColonnes - 2) As Double 'Variable aléatoire correspondant aux CAR
+
+        'La construction du vecteur Rt
+        For ligne = 2 To nbLignes
+            For colonne = 2 To nbColonnes
+                Rt(ligne - 2, colonne - 2) = currentSheet.Application.Cells(ligne, colonne).Value
+            Next colonne
+        Next ligne
+
+        'La construction du vecteur Rm
+        Application.Sheets("Rm").activate()
+        currentSheet = CType(Application.ActiveSheet, Excel.Worksheet)
+        For ligne = 2 To nbLignes
+            For colonne = 2 To nbColonnes
+                Rm(ligne - 2, colonne - 2) = currentSheet.Application.Cells(ligne, colonne).Value
+            Next colonne
+        Next ligne
+
+        'La construction du tableau des Rentabilités Anormales
+        For ligne = 0 To nbLignes - 2
+            For colonne = 0 To nbColonnes - 2
+                AR(ligne, colonne) = Rt(ligne, colonne) - Rm(ligne, colonne)
+            Next colonne
+        Next ligne
+
+        ThisAddIn_ModeleRentaMarche = ThisAddIn_MethodeTabCAR(AR, seuil)
+
+    End Function
+
     'Renvoie true si l'hypothèse est rejetée
     Public Function ThisAddIn_CalcNormMoy(fenetre As Integer, seuil As Double) As Boolean
-        Dim activeSheet As Excel.Worksheet = CType(Application.ActiveSheet, Excel.Worksheet)
-        Dim nbLignes As Integer = activeSheet.UsedRange.Rows.Count                'Nombre de lignes
-        Dim nbColonnes As Integer = activeSheet.UsedRange.Columns.Count           'Nombre de colonnes
+        Application.Sheets("Rt").activate()
+        Dim currentSheet As Excel.Worksheet = CType(Application.ActiveSheet, Excel.Worksheet)
+        MsgBox(currentSheet.Name)
+        Dim nbLignes As Integer = currentSheet.UsedRange.Rows.Count                'Nombre de lignes
+        Dim nbColonnes As Integer = currentSheet.UsedRange.Columns.Count           'Nombre de colonnes
         Dim tabMoy(nbColonnes - 2) As Double                                      'Tableau des moyennes de chaque titre
 
         'Calcul des moyennes
         For colonne = 2 To nbColonnes
-            Dim plage As Excel.Range = Application.Range(Application.Cells(2, colonne), Application.Cells(nbLignes - fenetre, colonne))
+            Dim plage As Excel.Range = Application.Range(currentSheet.Application.Cells(2, colonne), currentSheet.Application.Cells(nbLignes - fenetre, colonne))
             tabMoy(colonne - 2) = Application.WorksheetFunction.Average(plage)
         Next colonne
 
@@ -52,7 +92,7 @@
         Dim debFenetre As Integer = nbLignes - fenetre + 1
         For colonne = 2 To nbColonnes
             For indDate = debFenetre To nbLignes
-                tabAR(indDate - debFenetre, colonne - 2) = activeSheet.Cells(indDate, colonne).Value - tabMoy(colonne - 2)
+                tabAR(indDate - debFenetre, colonne - 2) = currentSheet.Cells(indDate, colonne).Value - tabMoy(colonne - 2)
             Next indDate
         Next colonne
         ThisAddIn_CalcNormMoy = ThisAddIn_MethodeTabCAR(tabAR, seuil)

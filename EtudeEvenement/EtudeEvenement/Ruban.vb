@@ -41,13 +41,15 @@ Public Class Ruban
     Private Sub ModeleMoyenne_Click(ByVal sender As System.Object, _
     ByVal e As Microsoft.Office.Tools.Ribbon.RibbonControlEventArgs) _
         Handles ModeleMoyenne.Click
+        choixSeuilFenetre.modele = 0
         seuilFenetreTaskPane.Visible = True
     End Sub
 
     Private Sub ModeleRentaMarche_Click(ByVal sender As System.Object, _
         ByVal e As Microsoft.Office.Tools.Ribbon.RibbonControlEventArgs) _
             Handles ModeleRentaMarche.Click
-
+        choixSeuilFenetre.modele = 1
+        seuilFenetreTaskPane.Visible = True
     End Sub
 
     Private Sub ModeleMarche_Click(ByVal sender As System.Object, _
