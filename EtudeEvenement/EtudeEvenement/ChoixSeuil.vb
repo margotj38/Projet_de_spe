@@ -9,7 +9,7 @@
     Private Sub Ok_Click(sender As Object, e As EventArgs) Handles Ok.Click
         Try
             Dim seuil As Double = CDbl(textSeuil)
-            If seuil > 1 Or seuil < 0 Then
+            If seuil >= 1 Or seuil <= 0 Then
                 MsgBox("Erreur : Le seuil doit être compris entre 0 et 1")
             Else
                 Dim rejet As Boolean = Globals.ThisAddIn.ThisAddIn_MethodeCAR(seuil)

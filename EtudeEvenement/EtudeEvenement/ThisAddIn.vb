@@ -9,11 +9,61 @@
     End Sub
 
     'Renvoie true si l'hypothèse est rejetée
-    Public Function ThisAddIn_MethodeCAR(seuil) As Boolean
+    Public Function ThisAddIn_MethodeTabCAR(tabAR As Double(,), seuil As Double) As Boolean
+        Dim varCAR(tabAR.GetLength(1)) As Double                     'Variable aléatoire correspondant aux CAR
+
+        'Calcul de la statistique pour chaque entreprise
+        For colonne = 0 To tabAR.GetUpperBound(1)
+            'Calcul de CAR
+            Dim CAR As Double = 0
+            For i = 0 To tabAR.GetUpperBound(0)
+                CAR = CAR + tabAR(i, colonne)
+            Next i
+            Dim moyenne As Double = CAR / tabAR.GetLength(0)
+            'Calcul de la variance des AR
+            Dim variance As Double = 0
+            For i = 0 To tabAR.GetUpperBound(0)
+                Dim tmp As Double = tabAR(i, colonne) - moyenne
+                variance = variance + tmp * tmp
+            Next i
+            variance = variance / tabAR.GetLength(0)
+            varCAR(colonne) = CAR / Math.Sqrt((tabAR.GetLength(0) - 1) * variance)
+        Next colonne
+
+        'Test statistique
+        ThisAddIn_MethodeTabCAR = test_student(varCAR, tabAR.GetLength(1), seuil)
+    End Function
+
+    'Renvoie true si l'hypothèse est rejetée
+    Public Function ThisAddIn_CalcNormMoy(fenetre As Integer, seuil As Double) As Boolean
         Dim activeSheet As Excel.Worksheet = CType(Application.ActiveSheet, Excel.Worksheet)
         Dim nbLignes As Integer = activeSheet.UsedRange.Rows.Count                'Nombre de lignes
         Dim nbColonnes As Integer = activeSheet.UsedRange.Columns.Count           'Nombre de colonnes
-        Dim varCAR(nbColonnes - 1) As Double                                      'Variable aléatoire correspondant aux CAR
+        Dim tabMoy(nbColonnes - 2) As Double                                      'Tableau des moyennes de chaque titre
+
+        'Calcul des moyennes
+        For colonne = 2 To nbColonnes
+            Dim plage As Excel.Range = Application.Range(Application.Cells(2, colonne), Application.Cells(nbLignes - fenetre, colonne))
+            tabMoy(colonne - 2) = Application.WorksheetFunction.Average(plage)
+        Next colonne
+
+        'Calcul des AR sur la fenêtre
+        Dim tabAR(fenetre - 1, nbColonnes - 2) As Double                          'Tableau des AR sur la fenêtre de l'événement
+        Dim debFenetre As Integer = nbLignes - fenetre + 1
+        For colonne = 2 To nbColonnes
+            For indDate = debFenetre To nbLignes
+                tabAR(indDate - debFenetre, colonne - 2) = activeSheet.Cells(indDate, colonne).Value - tabMoy(colonne - 2)
+            Next indDate
+        Next colonne
+        ThisAddIn_CalcNormMoy = ThisAddIn_MethodeTabCAR(tabAR, seuil)
+    End Function
+
+    'Renvoie true si l'hypothèse est rejetée
+    Public Function ThisAddIn_MethodeCAR(seuil As Double) As Boolean
+        Dim activeSheet As Excel.Worksheet = CType(Application.ActiveSheet, Excel.Worksheet)
+        Dim nbLignes As Integer = activeSheet.UsedRange.Rows.Count                'Nombre de lignes
+        Dim nbColonnes As Integer = activeSheet.UsedRange.Columns.Count           'Nombre de colonnes
+        Dim varCAR(nbColonnes - 2) As Double                                      'Variable aléatoire correspondant aux CAR
 
         'Calcul de la statistique pour chaque entreprise
         For colonne = 2 To nbColonnes
@@ -40,18 +90,18 @@
     End Function
 
     Private Function calcul_moyenne(tab() As Double) As Double
-        For i = 0 To UBound(tab)
+        For i = 0 To tab.GetUpperBound(0)
             calcul_moyenne = calcul_moyenne + tab(i)
         Next i
-        calcul_moyenne = calcul_moyenne / (UBound(tab) - 1)
+        calcul_moyenne = calcul_moyenne / (tab.GetLength(0))
     End Function
 
     Private Function calcul_variance(tab() As Double, moyenne As Double) As Double
-        For i = 0 To UBound(tab)
+        For i = 0 To tab.GetUpperBound(0)
             Dim tmp As Double = tab(i) - moyenne
             calcul_variance = calcul_variance + tmp * tmp
         Next i
-        calcul_variance = calcul_variance / (UBound(tab) - 1)
+        calcul_variance = calcul_variance / (tab.GetLength(0))
     End Function
 
 End Class
