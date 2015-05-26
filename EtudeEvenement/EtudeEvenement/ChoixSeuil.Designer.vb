@@ -22,26 +22,10 @@ Partial Class ChoixSeuil
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Me.ChoixText = New System.Windows.Forms.Label()
-        Me.ChoixBox = New System.Windows.Forms.TextBox()
         Me.Ok = New System.Windows.Forms.Button()
+        Me.ChoixBox = New System.Windows.Forms.TextBox()
+        Me.ChoixText = New System.Windows.Forms.Label()
         Me.SuspendLayout()
-        '
-        'ChoixText
-        '
-        Me.ChoixText.AutoSize = True
-        Me.ChoixText.Location = New System.Drawing.Point(3, 25)
-        Me.ChoixText.Name = "ChoixText"
-        Me.ChoixText.Size = New System.Drawing.Size(185, 13)
-        Me.ChoixText.TabIndex = 0
-        Me.ChoixText.Text = "Seuil à utiliser pour le test statistique : "
-        '
-        'ChoixBox
-        '
-        Me.ChoixBox.Location = New System.Drawing.Point(88, 58)
-        Me.ChoixBox.Name = "ChoixBox"
-        Me.ChoixBox.Size = New System.Drawing.Size(100, 20)
-        Me.ChoixBox.TabIndex = 1
         '
         'Ok
         '
@@ -51,6 +35,22 @@ Partial Class ChoixSeuil
         Me.Ok.TabIndex = 2
         Me.Ok.Text = "Ok"
         Me.Ok.UseVisualStyleBackColor = True
+        '
+        'ChoixBox
+        '
+        Me.ChoixBox.Location = New System.Drawing.Point(88, 58)
+        Me.ChoixBox.Name = "ChoixBox"
+        Me.ChoixBox.Size = New System.Drawing.Size(100, 20)
+        Me.ChoixBox.TabIndex = 1
+        '
+        'ChoixText
+        '
+        Me.ChoixText.AutoSize = True
+        Me.ChoixText.Location = New System.Drawing.Point(3, 25)
+        Me.ChoixText.Name = "ChoixText"
+        Me.ChoixText.Size = New System.Drawing.Size(185, 13)
+        Me.ChoixText.TabIndex = 0
+        Me.ChoixText.Text = "Seuil à utiliser pour le test statistique : "
         '
         'ChoixSeuil
         '
@@ -65,8 +65,8 @@ Partial Class ChoixSeuil
         Me.PerformLayout()
 
     End Sub
-    Friend WithEvents ChoixText As System.Windows.Forms.Label
-    Friend WithEvents ChoixBox As System.Windows.Forms.TextBox
     Friend WithEvents Ok As System.Windows.Forms.Button
+    Friend WithEvents ChoixBox As System.Windows.Forms.TextBox
+    Friend WithEvents ChoixText As System.Windows.Forms.Label
 
 End Class
