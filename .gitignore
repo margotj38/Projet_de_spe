@@ -1,5 +1,6 @@
 # ignore tout sauf .vb
-EtudeEvenement/*.*
+EtudeEvenement/*.sln
+EtudeEvenement/*.suo
 EtudeEvenement/EtudeEvenement/bin
 EtudeEvenement/EtudeEvenement/My\ Project
 EtudeEvenement/EtudeEvenement/obj
