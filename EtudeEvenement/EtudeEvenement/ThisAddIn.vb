@@ -80,7 +80,7 @@
         Return False
     End Function
 
-    'Récupère les Rt et les Rm, puis appelle les calculs de statistique
+    'Calcule les AR pour chaque titre puis appelle les calculs de statistique
     Public Function ThisAddIn_ModeleRentaMarche(fenetre As Integer, seuil As Double) As Boolean
         Dim currentSheet As Excel.Worksheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
         'compte le nombre de lignes et de colonnes
