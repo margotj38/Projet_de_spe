@@ -223,8 +223,9 @@ Public Class ThisAddIn
 
             Dim p As New DataPoint
             p.XValue = i
-            p.YValues = {pValeur}
-            Globals.Ribbons.Ruban.graphChart.Series("Series1").Points.Add(p)
+            p.YValues = {pValeur.ToString("0.00000")}
+
+            Globals.Ribbons.Ruban.graphPVal.GraphiqueChart.Series("Series1").Points.Add(p)
         Next i
     End Sub
 

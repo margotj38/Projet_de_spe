@@ -10,9 +10,6 @@ Public Class Ruban
     Public WithEvents seuilFenetreTaskPane As Microsoft.Office.Tools.CustomTaskPane
 
     Public graphPVal As GraphiquePValeur
-    Public graphChart As New Chart
-    Public graphChartArea As New ChartArea()
-    Public valeurs As New Series()
 
     Private Sub Ruban_Load(ByVal sender As System.Object, ByVal e As RibbonUIEventArgs) Handles MyBase.Load
 
@@ -31,19 +28,26 @@ Public Class Ruban
         graphPVal = New GraphiquePValeur()
         graphPVal.Visible = False
 
-        graphChart.ChartAreas.Add(graphChartArea)
-        graphChart.Location = New System.Drawing.Point(15, 45)
-        graphChart.Size = New System.Drawing.Size(350, 250)
-        valeurs.ChartArea = "ChartArea1"
-        graphChart.Series.Add(valeurs)
-        graphPVal.Controls.Add(graphChart)
-        graphChart.Series("Series1").ChartType = SeriesChartType.Line
+        'graphChart.ChartAreas.Add(graphChartArea)
+        'graphChart.Location = New System.Drawing.Point(15, 45)
+        'graphChart.Size = New System.Drawing.Size(350, 250)
+        'valeurs.ChartArea = "ChartArea1"
+        'graphChart.Series.Add(valeurs)
+        'graphPVal.Controls.Add(graphChart)
+        'graphChart.Series("Series1").ChartType = SeriesChartType.Line
 
+        graphPVal.GraphiqueChart.Series.Add("Series1")
+
+        graphPVal.GraphiqueChart.Series("Series1").ChartType = SeriesChartType.Line
+        graphPVal.GraphiqueChart.Series("Series1").IsValueShownAsLabel = True
+        graphPVal.GraphiqueChart.ChartAreas(0).AxisX.MajorGrid.Enabled = False
+        graphPVal.GraphiqueChart.ChartAreas(0).AxisY.MajorGrid.Enabled = False
     End Sub
 
     Private Sub ModeleMoyenne_Click(ByVal sender As System.Object, _
     ByVal e As Microsoft.Office.Tools.Ribbon.RibbonControlEventArgs) _
         Handles ModeleMoyenne.Click
+        'graphPVal.GraphiqueChart.Series.Remove()
         choixSeuilFenetre.modele = 0
         seuilFenetreTaskPane.Visible = True
     End Sub

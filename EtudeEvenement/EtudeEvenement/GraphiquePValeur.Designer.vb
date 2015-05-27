@@ -22,30 +22,38 @@ Partial Class GraphiquePValeur
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Me.Label1 = New System.Windows.Forms.Label()
+        Dim ChartArea1 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Title1 As System.Windows.Forms.DataVisualization.Charting.Title = New System.Windows.Forms.DataVisualization.Charting.Title()
+        Me.GraphiqueChart = New System.Windows.Forms.DataVisualization.Charting.Chart()
+        CType(Me.GraphiqueChart, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
-        'Label1
+        'GraphiqueChart
         '
-        Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(46, 25)
-        Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(286, 13)
-        Me.Label1.TabIndex = 0
-        Me.Label1.Text = "Tracé de la P-Valeur en fonction de la fenêtre d'événement"
+        ChartArea1.Name = "ChartArea1"
+        Me.GraphiqueChart.ChartAreas.Add(ChartArea1)
+        Me.GraphiqueChart.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.GraphiqueChart.Location = New System.Drawing.Point(0, 0)
+        Me.GraphiqueChart.Name = "GraphiqueChart"
+        Me.GraphiqueChart.Size = New System.Drawing.Size(391, 300)
+        Me.GraphiqueChart.TabIndex = 1
+        Me.GraphiqueChart.Text = "P-Valeur"
+        Title1.Name = "Title1"
+        Title1.Text = "P-Valeurs en fonction de la fenêtre d'événement"
+        Me.GraphiqueChart.Titles.Add(Title1)
         '
         'GraphiquePValeur
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(384, 311)
-        Me.Controls.Add(Me.Label1)
+        Me.ClientSize = New System.Drawing.Size(391, 300)
+        Me.Controls.Add(Me.GraphiqueChart)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow
         Me.Name = "GraphiquePValeur"
         Me.Text = "Graphique P-Valeur"
+        CType(Me.GraphiqueChart, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
-        Me.PerformLayout()
 
     End Sub
-    Friend WithEvents Label1 As System.Windows.Forms.Label
+    Friend WithEvents GraphiqueChart As System.Windows.Forms.DataVisualization.Charting.Chart
 End Class
