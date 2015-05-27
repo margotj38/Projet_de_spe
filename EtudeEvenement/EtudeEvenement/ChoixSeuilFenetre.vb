@@ -58,36 +58,26 @@ Public Class ChoixSeuilFenetre
         End Try
     End Sub
 
-    'Graphique P-Valeur en fonction du seuil
+    Private Sub PValeurFenetre_Click(sender As Object, e As EventArgs) Handles PValeurFenetre.Click
+        Try
+            Dim fenetreDebut As Integer = CInt(textFenetreDebut)
+            Dim fenetreFin As Integer = CInt(textFenetreFin)
+            Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("Rt"), Excel.Worksheet)
+            Dim tailleEchant As Integer = currentSheet.UsedRange.Columns.Count - 1
+            Dim premiereDate As Integer = currentSheet.Cells(2, 1).Value
+            Dim derniereDate As Integer = premiereDate + currentSheet.UsedRange.Rows.Count - 2
+            Dim maxFenetre As Integer = Math.Min(Math.Abs(premiereDate), Math.Abs(derniereDate))
 
-    'Créer un Chart
-    'Dim Chart2 As New Chart
-    'Il ne contient rien
-
-    ' Créer ChartArea (zone graphique)
-    'Dim ChartArea1 As New ChartArea()
-
-    Private Sub PValeurSeuil_Click(sender As Object, e As EventArgs) Handles PValeurSeuil.Click
-        ' Ajouter le  Chart Area à la Collection ChartAreas du  Chart
-        'Chart2.ChartAreas.Add(ChartArea1)
-
-        ' Créer deux  data series (qui contiendront les DataPoint)
-        'Dim series1 As New Series()
-
-        Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("Rt"), Excel.Worksheet)
-        Dim tailleEchant As Integer = currentSheet.UsedRange.Columns.Count - 1
-        Dim premiereDate As Integer = currentSheet.Cells(2, 1).Value
-        Dim derniereDate As Integer = premiereDate + currentSheet.UsedRange.Rows.Count - 2
-        Dim maxFenetre As Integer = Math.Min(Math.Abs(premiereDate), Math.Abs(derniereDate))
-        Globals.ThisAddIn.tracerPValeur(modele, tailleEchant, maxFenetre)
-
-
-
-        
-
-
-
-        Globals.Ribbons.Ruban.graphPVal.Visible = True
-
+            If fenetreDebut > fenetreFin Or fenetreDebut <= premiereDate Or fenetreFin > premiereDate + currentSheet.UsedRange.Rows.Count - 1 Then
+                MsgBox("Erreur : La fenêtre de temps de l'événement doit être cohérente avec les données", 16)
+            Else
+                'Calcul des pvaleurs et affichage de la courbe
+                Globals.ThisAddIn.tracerPValeur(tailleEchant, maxFenetre)
+                Globals.Ribbons.Ruban.seuilFenetreTaskPane.Visible = False
+                Globals.Ribbons.Ruban.graphPVal.Visible = True
+            End If
+        Catch erreur As InvalidCastException
+            MsgBox("Erreur : Vous devez entrer des données correctes (utiliser la virgule pour les nombres décimaux)", 16)
+        End Try
     End Sub
 End Class

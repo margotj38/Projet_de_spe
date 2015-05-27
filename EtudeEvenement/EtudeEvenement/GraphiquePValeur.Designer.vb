@@ -22,16 +22,30 @@ Partial Class GraphiquePValeur
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        Me.Label1 = New System.Windows.Forms.Label()
         Me.SuspendLayout()
+        '
+        'Label1
+        '
+        Me.Label1.AutoSize = True
+        Me.Label1.Location = New System.Drawing.Point(46, 25)
+        Me.Label1.Name = "Label1"
+        Me.Label1.Size = New System.Drawing.Size(286, 13)
+        Me.Label1.TabIndex = 0
+        Me.Label1.Text = "Tracé de la P-Valeur en fonction de la fenêtre d'événement"
         '
         'GraphiquePValeur
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(726, 324)
+        Me.ClientSize = New System.Drawing.Size(384, 311)
+        Me.Controls.Add(Me.Label1)
+        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow
         Me.Name = "GraphiquePValeur"
-        Me.Text = "GraphiquePValeur"
+        Me.Text = "Graphique P-Valeur"
         Me.ResumeLayout(False)
+        Me.PerformLayout()
 
     End Sub
+    Friend WithEvents Label1 As System.Windows.Forms.Label
 End Class

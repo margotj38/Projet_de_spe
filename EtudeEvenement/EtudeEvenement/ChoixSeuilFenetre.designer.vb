@@ -26,7 +26,7 @@ Partial Class ChoixSeuilFenetre
         Me.FenetreBox = New System.Windows.Forms.TextBox()
         Me.FenetreFinBox = New System.Windows.Forms.TextBox()
         Me.PValeur = New System.Windows.Forms.Button()
-        Me.PValeurSeuil = New System.Windows.Forms.Button()
+        Me.PValeurFenetre = New System.Windows.Forms.Button()
         Me.SuspendLayout()
         '
         'FenetreText
@@ -61,20 +61,20 @@ Partial Class ChoixSeuilFenetre
         Me.PValeur.Text = "Calculer la P-Valeur"
         Me.PValeur.UseVisualStyleBackColor = True
         '
-        'PValeurSeuil
+        'PValeurFenetre
         '
-        Me.PValeurSeuil.Location = New System.Drawing.Point(79, 184)
-        Me.PValeurSeuil.Name = "PValeurSeuil"
-        Me.PValeurSeuil.Size = New System.Drawing.Size(111, 41)
-        Me.PValeurSeuil.TabIndex = 11
-        Me.PValeurSeuil.Text = "Tracer la P-Valeur en fonction du seuil"
-        Me.PValeurSeuil.UseVisualStyleBackColor = True
+        Me.PValeurFenetre.Location = New System.Drawing.Point(68, 162)
+        Me.PValeurFenetre.Name = "PValeurFenetre"
+        Me.PValeurFenetre.Size = New System.Drawing.Size(133, 49)
+        Me.PValeurFenetre.TabIndex = 11
+        Me.PValeurFenetre.Text = "Tracer la P-Valeur en fonction de la fenêtre d'événement"
+        Me.PValeurFenetre.UseVisualStyleBackColor = True
         '
         'ChoixSeuilFenetre
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.Controls.Add(Me.PValeurSeuil)
+        Me.Controls.Add(Me.PValeurFenetre)
         Me.Controls.Add(Me.PValeur)
         Me.Controls.Add(Me.FenetreFinBox)
         Me.Controls.Add(Me.FenetreBox)
@@ -89,6 +89,6 @@ Partial Class ChoixSeuilFenetre
     Friend WithEvents FenetreBox As System.Windows.Forms.TextBox
     Friend WithEvents FenetreFinBox As System.Windows.Forms.TextBox
     Friend WithEvents PValeur As System.Windows.Forms.Button
-    Friend WithEvents PValeurSeuil As System.Windows.Forms.Button
+    Friend WithEvents PValeurFenetre As System.Windows.Forms.Button
 
 End Class

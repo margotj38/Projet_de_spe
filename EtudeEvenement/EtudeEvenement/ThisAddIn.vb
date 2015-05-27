@@ -212,9 +212,15 @@ Public Class ThisAddIn
         Return alpha
     End Function
 
-    Public Sub tracerPValeur(modele As Integer, tailleEchant As Integer, maxFenetre As Integer)
+    Public Sub tracerPValeur(tailleEchant As Integer, maxFenetre As Integer)
         For i = 0 To maxFenetre
-            Dim pValeur As Double = calculPValeur(tailleEchant, 0)
+            Dim tabAR As Double(,)
+            tabAR = Globals.ThisAddIn.calculAR(-i, i)
+            Dim tabCAR As Double()
+            tabCAR = Globals.ThisAddIn.calculCAR(tabAR, -i, i)
+            Dim testHyp As Double = Globals.ThisAddIn.calculStatistique(tabCAR)
+            Dim pValeur As Double = Globals.ThisAddIn.calculPValeur(tailleEchant, testHyp) * 100
+
             Dim p As New DataPoint
             p.XValue = i
             p.YValues = {pValeur}
