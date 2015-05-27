@@ -12,8 +12,8 @@
             If seuil >= 1 Or seuil <= 0 Then
                 MsgBox("Erreur : Le seuil doit être compris entre 0 et 1")
             Else
-                Dim pValeur As Double = Globals.ThisAddIn.ThisAddIn_PValeur(3)
-                MsgBox("P-Valeur : " & pValeur)
+                'Dim pValeur As Double = Globals.ThisAddIn.ThisAddIn_PValeur(3)
+                'MsgBox("P-Valeur : " & pValeur)
                 Dim rejet As Boolean = Globals.ThisAddIn.ThisAddIn_MethodeCAR(seuil)
                 Globals.Ribbons.Ruban.myTaskPane.Visible = False
                 If rejet Then

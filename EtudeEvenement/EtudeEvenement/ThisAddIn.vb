@@ -10,7 +10,7 @@
 
     'Calcul la statistique de test et effectue le test
     'Renvoie true si l'hypothèse est rejetée
-    Public Function ThisAddIn_MethodeTabCAR(tabAR As Double(,), seuil As Double, fenetreDebut As Integer, fenetreFin As Integer) As Boolean
+    Public Function ThisAddIn_MethodeTabCAR(tabAR As Double(,), fenetreDebut As Integer, fenetreFin As Integer) As Double
         Dim varCAR(tabAR.GetUpperBound(1)) As Double                     'Variable aléatoire correspondant aux CAR
         Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("Rt"), Excel.Worksheet)
         Dim indDebFenetre As Integer = 2 + fenetreDebut - currentSheet.Cells(2, 1).Value
@@ -40,11 +40,11 @@
         Next colonne
 
         'Test statistique
-        ThisAddIn_MethodeTabCAR = test_student(varCAR, tabAR.GetLength(1), seuil)
+        ThisAddIn_MethodeTabCAR = calculStatistique(varCAR, tabAR.GetLength(1))
     End Function
 
     'Estimation des AR à partir du modèle de marché : K = alpha + beta*Rm
-    Public Function ThisAddIn_ModeleMarche(fenetreDebut As Integer, fenetreFin As Integer, seuil As Double) As Boolean
+    Public Function ThisAddIn_ModeleMarche(fenetreDebut As Integer, fenetreFin As Integer) As Double
         'on se positionne sur la feuille des Rt
         Dim currentSheet As Excel.Worksheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
         'compte le nombre de lignes et de colonnes
@@ -76,11 +76,11 @@
             'on retourne sur la feuille des Rt
             currentSheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
         Next
-        ThisAddIn_ModeleMarche = ThisAddIn_MethodeTabCAR(tabAR, seuil, fenetreDebut, fenetreFin)
+        ThisAddIn_ModeleMarche = ThisAddIn_MethodeTabCAR(tabAR, fenetreDebut, fenetreFin)
     End Function
 
     'Calcule les AR pour chaque titre puis appelle les calculs de statistique
-    Public Function ThisAddIn_ModeleRentaMarche(fenetreDebut As Integer, fenetreFin As Integer, seuil As Double) As Boolean
+    Public Function ThisAddIn_ModeleRentaMarche(fenetreDebut As Integer, fenetreFin As Integer) As Double
         Dim currentSheet As Excel.Worksheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
         'compte le nombre de lignes et de colonnes
         Dim nbLignes As Integer = currentSheet.UsedRange.Rows.Count
@@ -98,12 +98,12 @@
             Next
         Next
 
-        ThisAddIn_ModeleRentaMarche = ThisAddIn_MethodeTabCAR(tabAR, seuil, fenetreDebut, fenetreFin)
+        ThisAddIn_ModeleRentaMarche = ThisAddIn_MethodeTabCAR(tabAR, fenetreDebut, fenetreFin)
     End Function
 
     'Calcul les Ki, puis effectue les tests statistiques sur (Ri - Ki)
     'Renvoie true si l'hypothèse est rejetée
-    Public Function ThisAddIn_CalcNormMoy(fenetreDebut As Integer, fenetreFin As Integer, seuil As Double) As Boolean
+    Public Function ThisAddIn_CalcNormMoy(fenetreDebut As Integer, fenetreFin As Integer) As Double
         Dim currentSheet As Excel.Worksheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
         Dim nbLignes As Integer = currentSheet.UsedRange.Rows.Count                'Nombre de lignes
         Dim nbColonnes As Integer = currentSheet.UsedRange.Columns.Count           'Nombre de colonnes
@@ -130,11 +130,11 @@
                 tabAR(indDate - 2, colonne - 2) = currentSheet.Cells(indDate, colonne).Value - tabMoy(colonne - 2)
             Next indDate
         Next colonne
-        ThisAddIn_CalcNormMoy = ThisAddIn_MethodeTabCAR(tabAR, seuil, fenetreDebut, fenetreFin)
+        ThisAddIn_CalcNormMoy = ThisAddIn_MethodeTabCAR(tabAR, fenetreDebut, fenetreFin)
     End Function
 
     'Renvoie true si l'hypothèse est rejetée
-    Public Function ThisAddIn_MethodeCAR(seuil As Double) As Boolean
+    Public Function ThisAddIn_MethodeCAR(seuil As Double) As Double
         Dim activeSheet As Excel.Worksheet = CType(Application.ActiveSheet, Excel.Worksheet)
         Dim nbLignes As Integer = activeSheet.UsedRange.Rows.Count                'Nombre de lignes
         Dim nbColonnes As Integer = activeSheet.UsedRange.Columns.Count           'Nombre de colonnes
@@ -149,28 +149,28 @@
         Next colonne
 
         'Test statistique
-        ThisAddIn_MethodeCAR = test_student(varCAR, nbColonnes - 1, seuil)
+        ThisAddIn_MethodeCAR = calculStatistique(varCAR, nbColonnes - 1)
     End Function
 
-    Public Function ThisAddIn_PValeur(modele As Integer, Optional fenetreDebut As Integer = 0, Optional fenetreFin As Integer = 0) As Double
+    Public Function ThisAddIn_PValeur(modele As Integer, tailleEchant As Integer, Optional fenetreDebut As Integer = 0, Optional fenetreFin As Integer = 0) As Double
         Dim borneInf As Double = 0
         Dim borneSup As Double = 1
         Dim alpha As Double = (borneInf + borneSup) / 2
+        Dim testHyp As Double
+        Select Case modele
+            Case 0
+                testHyp = ThisAddIn_CalcNormMoy(fenetreDebut, fenetreFin)
+            Case 1
+                testHyp = ThisAddIn_ModeleRentaMarche(fenetreDebut, fenetreFin)
+            Case 2
+                testHyp = ThisAddIn_ModeleMarche(fenetreDebut, fenetreFin)
+            Case 3
+                testHyp = ThisAddIn_MethodeCAR(alpha)
+            Case Else
+                MsgBox("Erreur interne : Provient de ThisAddIn_ThinAddIn_PValeur", 16)
+        End Select
         While borneSup - borneInf > 0.0001
-            Dim rejet As Boolean
-            Select Case modele
-                Case 0
-                    rejet = ThisAddIn_CalcNormMoy(fenetreDebut, fenetreFin, alpha)
-                Case 1
-                    rejet = ThisAddIn_ModeleRentaMarche(fenetreDebut, fenetreFin, alpha)
-                Case 2
-                    rejet = ThisAddIn_ModeleMarche(fenetreDebut, fenetreFin, alpha)
-                Case 3
-                    rejet = ThisAddIn_MethodeCAR(alpha)
-                Case Else
-                    MsgBox("Erreur interne : Provient de ThisAddIn_ThinAddIn_PValeur", 16)
-            End Select
-            If rejet Then
+            If testHyp > Application.WorksheetFunction.TInv(alpha, tailleEchant - 1) Then
                 borneSup = alpha
             Else
                 borneInf = alpha
@@ -181,15 +181,10 @@
     End Function
 
     'Renvoie true si l'hypothèse H0 est rejetée
-    Private Function test_student(tabCAR() As Double, tailleTabCAR As Integer, seuil As Double) As Boolean
-        test_student = False
-        Dim testHypothese As Double
+    Private Function calculStatistique(tabCAR() As Double, tailleTabCAR As Integer) As Double
         Dim moyenneTab As Double = calcul_moyenne(tabCAR)
         Dim varianceTab As Double = calcul_variance(tabCAR, moyenneTab)
-        testHypothese = Math.Abs(Math.Sqrt(tailleTabCAR) * moyenneTab / varianceTab)
-        If testHypothese > Application.WorksheetFunction.TInv(seuil, tailleTabCAR - 1) Then
-            test_student = True
-        End If
+        calculStatistique = Math.Abs(Math.Sqrt(tailleTabCAR) * moyenneTab / varianceTab)
     End Function
 
     Private Function calcul_moyenne(tab() As Double) As Double

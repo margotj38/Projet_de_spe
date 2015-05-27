@@ -19,13 +19,14 @@
             Dim fenetreFin As Integer = CInt(textFenetreFin)
             Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("Rt"), Excel.Worksheet)
             Dim premiereDate As Integer = currentSheet.Cells(2, 1).Value
+            Dim tailleEchant As Integer = currentSheet.UsedRange.Columns.Count - 1
             If fenetreDebut > fenetreFin Or fenetreDebut <= premiereDate Or fenetreFin > premiereDate + currentSheet.UsedRange.Rows.Count - 1 Then
                 MsgBox("Erreur : La fenêtre de temps de l'événement doit être cohérente avec les données", 16)
             Else
                 If modele < 0 Or modele > 3 Then
                     MsgBox("Erreur interne : Provient de ChoixSeuilFenetre.vb", 16)
                 End If
-                Dim pValeur As Double = Globals.ThisAddIn.ThisAddIn_PValeur(modele, fenetreDebut, fenetreFin) * 100
+                Dim pValeur As Double = Globals.ThisAddIn.ThisAddIn_PValeur(modele, tailleEchant, fenetreDebut, fenetreFin) * 100
                 MsgBox("P-Valeur : " & pValeur.ToString("0.0000") & "%")
                 Globals.Ribbons.Ruban.seuilFenetreTaskPane.Visible = False
             End If
