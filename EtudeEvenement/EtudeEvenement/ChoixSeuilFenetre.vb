@@ -6,7 +6,15 @@ Public Class ChoixSeuilFenetre
     Private textFenetreDebut As String
     Private textFenetreFin As String
 
-    Public modele As Integer = -1 '-1 => probleme; 0 => ModeleMoyenne; 1 => ModeleRentaMarche; 2 => ModeleMarche
+    Private model As Integer = -1 '-1 => probleme; 0 => ModeleMoyenne; 1 => ModeleRentaMarche; 2 => ModeleMarche
+    Property modele() As Integer
+        Get
+            Return model
+        End Get
+        Set(value As Integer)
+            model = value
+        End Set
+    End Property
 
     Private Sub FenetreBox_TextChanged(sender As Object, e As EventArgs) Handles FenetreBox.TextChanged
         textFenetreDebut = FenetreBox.Text
@@ -61,11 +69,11 @@ Public Class ChoixSeuilFenetre
         Dim maxFenetre As Integer = Math.Min(Math.Abs(premiereDate), Math.Abs(derniereDate))
         Globals.ThisAddIn.ThisAddIn_tracerPValeur(modele, tailleEchant, maxFenetre)
 
-        
+
 
         
 
-        
+
 
         Globals.Ribbons.Ruban.graphPVal.Visible = True
 
