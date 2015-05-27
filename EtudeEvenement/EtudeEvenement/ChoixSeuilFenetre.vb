@@ -1,4 +1,7 @@
-﻿Public Class ChoixSeuilFenetre
+﻿
+Imports System.Windows.Forms.DataVisualization.Charting
+
+Public Class ChoixSeuilFenetre
 
     Private textFenetreDebut As String
     Private textFenetreFin As String
@@ -33,5 +36,42 @@
         Catch erreur As InvalidCastException
             MsgBox("Erreur : Vous devez entrer des données correctes (utiliser la virgule pour les nombres décimaux)", 16)
         End Try
+    End Sub
+
+    'Graphique P-Valeur en fonction du seuil
+
+    'Créer un Chart
+    'Dim Chart2 As New Chart
+    'Il ne contient rien
+
+    ' Créer ChartArea (zone graphique)
+    'Dim ChartArea1 As New ChartArea()
+
+    Private Sub PValeurSeuil_Click(sender As Object, e As EventArgs) Handles PValeurSeuil.Click
+        ' Ajouter le  Chart Area à la Collection ChartAreas du  Chart
+        'Chart2.ChartAreas.Add(ChartArea1)
+
+        ' Créer deux  data series (qui contiendront les DataPoint)
+        'Dim series1 As New Series()
+
+        Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("Rt"), Excel.Worksheet)
+        Dim tailleEchant As Integer = currentSheet.UsedRange.Columns.Count - 1
+        Dim premiereDate As Integer = currentSheet.Cells(2, 1).Value
+        Dim derniereDate As Integer = premiereDate + currentSheet.UsedRange.Rows.Count - 2
+        Dim maxFenetre As Integer = Math.Min(Math.Abs(premiereDate), Math.Abs(derniereDate))
+        Globals.ThisAddIn.ThisAddIn_tracerPValeur(modele, tailleEchant, maxFenetre)
+
+        
+
+        ' Positionner le controle Chart
+        'Chart2.Location = New System.Drawing.Point(15, 45)
+
+        ' Dimensionner le Chart
+        'Chart2.Size = New System.Drawing.Size(400, 400)
+
+        
+
+        Globals.Ribbons.Ruban.graphPVal.Visible = True
+
     End Sub
 End Class

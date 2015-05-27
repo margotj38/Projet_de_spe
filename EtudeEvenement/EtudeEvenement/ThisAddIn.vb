@@ -1,4 +1,6 @@
-﻿Public Class ThisAddIn
+﻿Imports System.Windows.Forms.DataVisualization.Charting
+
+Public Class ThisAddIn
 
     Private Sub ThisAddIn_Startup() Handles Me.Startup
 
@@ -179,6 +181,16 @@
         End While
         Return alpha
     End Function
+
+    Public Sub ThisAddIn_tracerPValeur(modele As Integer, tailleEchant As Integer, maxFenetre As Integer)
+        For i = 0 To maxFenetre
+            Dim pValeur As Double = ThisAddIn_PValeur(modele, tailleEchant, -i, i)
+            Dim p As New DataPoint
+            p.XValue = i
+            p.YValues = {pValeur}
+            Globals.Ribbons.Ruban.Chart2.Series("Series1").Points.Add(p)
+        Next i
+    End Sub
 
     'Renvoie true si l'hypothèse H0 est rejetée
     Private Function calculStatistique(tabCAR() As Double, tailleTabCAR As Integer) As Double

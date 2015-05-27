@@ -1,12 +1,18 @@
 ﻿Imports Microsoft.Office.Tools.Ribbon
+Imports System.Windows.Forms.DataVisualization.Charting
 
 Public Class Ruban
 
-    Private choixSeuil As ChoixSeuil
+    Public choixSeuil As ChoixSeuil
     Public WithEvents myTaskPane As Microsoft.Office.Tools.CustomTaskPane
 
-    Private choixSeuilFenetre As ChoixSeuilFenetre
+    Public choixSeuilFenetre As ChoixSeuilFenetre
     Public WithEvents seuilFenetreTaskPane As Microsoft.Office.Tools.CustomTaskPane
+
+    Public graphPVal As GraphiquePValeur
+    Public Chart2 As New Chart
+    Public ChartArea1 As New ChartArea()
+    Public series1 As New Series()
 
     Private Sub Ruban_Load(ByVal sender As System.Object, ByVal e As RibbonUIEventArgs) Handles MyBase.Load
         choixSeuil = New ChoixSeuil()
@@ -30,6 +36,14 @@ Public Class Ruban
             .Width = 300
             .Visible = False
         End With
+
+        graphPVal = New GraphiquePValeur()
+        graphPVal.Visible = False
+        Chart2.ChartAreas.Add(ChartArea1)
+        Globals.Ribbons.Ruban.series1.ChartArea = "ChartArea1"
+        Globals.Ribbons.Ruban.Chart2.Series.Add(Globals.Ribbons.Ruban.series1)
+        ' Ajouter le chart à la form
+        graphPVal.Controls.Add(Globals.Ribbons.Ruban.Chart2)
     End Sub
 
     Private Sub AR_Click(ByVal sender As System.Object, _
