@@ -40,6 +40,14 @@ Public Class Ruban
         graphPVal = New GraphiquePValeur()
         graphPVal.Visible = False
         Chart2.ChartAreas.Add(ChartArea1)
+        ' Positionner le controle Chart
+        Chart2.Location = New System.Drawing.Point(15, 45)
+
+        ' Dimensionner le Chart
+        Chart2.Size = New System.Drawing.Size(350, 250)
+
+
+
         Globals.Ribbons.Ruban.series1.ChartArea = "ChartArea1"
         Globals.Ribbons.Ruban.Chart2.Series.Add(Globals.Ribbons.Ruban.series1)
         ' Ajouter le chart à la form
