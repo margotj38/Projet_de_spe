@@ -63,11 +63,7 @@ Public Class ChoixSeuilFenetre
 
         
 
-        ' Positionner le controle Chart
-        'Chart2.Location = New System.Drawing.Point(15, 45)
-
-        ' Dimensionner le Chart
-        'Chart2.Size = New System.Drawing.Size(400, 400)
+        
 
         
 
