@@ -10,9 +10,9 @@ Public Class Ruban
     Public WithEvents seuilFenetreTaskPane As Microsoft.Office.Tools.CustomTaskPane
 
     Public graphPVal As GraphiquePValeur
-    Public Chart2 As New Chart
-    Public ChartArea1 As New ChartArea()
-    Public series1 As New Series()
+    Public graphChart As New Chart
+    Public graphChartArea As New ChartArea()
+    Public valeurs As New Series()
 
     Private Sub Ruban_Load(ByVal sender As System.Object, ByVal e As RibbonUIEventArgs) Handles MyBase.Load
         choixSeuil = New ChoixSeuil()
@@ -39,19 +39,20 @@ Public Class Ruban
 
         graphPVal = New GraphiquePValeur()
         graphPVal.Visible = False
-        Chart2.ChartAreas.Add(ChartArea1)
+        graphChart.ChartAreas.Add(graphChartArea)
         ' Positionner le controle Chart
-        Chart2.Location = New System.Drawing.Point(15, 45)
+        graphChart.Location = New System.Drawing.Point(15, 45)
 
         ' Dimensionner le Chart
-        Chart2.Size = New System.Drawing.Size(350, 250)
+        graphChart.Size = New System.Drawing.Size(350, 250)
 
-
-
-        Globals.Ribbons.Ruban.series1.ChartArea = "ChartArea1"
-        Globals.Ribbons.Ruban.Chart2.Series.Add(Globals.Ribbons.Ruban.series1)
+        Globals.Ribbons.Ruban.valeurs.ChartArea = "ChartArea1"
+        Globals.Ribbons.Ruban.graphChart.Series.Add(valeurs)
         ' Ajouter le chart à la form
-        graphPVal.Controls.Add(Globals.Ribbons.Ruban.Chart2)
+        graphPVal.Controls.Add(graphChart)
+
+        graphChart.Series("Series1").ChartType = SeriesChartType.Line
+
     End Sub
 
     Private Sub AR_Click(ByVal sender As System.Object, _
