@@ -6,12 +6,21 @@ Public Class ChoixSeuilFenetre
     Private textFenetreDebut As String
     Private textFenetreFin As String
 
-    Private model As Integer = -1 '-1 => probleme; 0 => ModeleMoyenne; 1 => ModeleRentaMarche; 2 => ModeleMarche
-    Property modele() As Integer
+    Private model As Integer ' 0 => ModeleMoyenne; 1 => ModeleRentaMarche; 2 => ModeleMarche
+
+    Public Sub New(ByVal model As Integer)
+        InitializeComponent()
+        Me.model = model
+    End Sub
+
+    Public Property modele() As Integer
         Get
             Return model
         End Get
         Set(value As Integer)
+            If value < 0 Or value > 2 Then
+                MsgBox("Erreur interne : numéro de modèle incorrect", 16)
+            End If
             model = value
         End Set
     End Property
@@ -34,10 +43,13 @@ Public Class ChoixSeuilFenetre
             If fenetreDebut > fenetreFin Or fenetreDebut <= premiereDate Or fenetreFin > premiereDate + currentSheet.UsedRange.Rows.Count - 1 Then
                 MsgBox("Erreur : La fenêtre de temps de l'événement doit être cohérente avec les données", 16)
             Else
-                If modele < 0 Or modele > 3 Then
-                    MsgBox("Erreur interne : Provient de ChoixSeuilFenetre.vb", 16)
-                End If
-                Dim pValeur As Double = Globals.ThisAddIn.ThisAddIn_PValeur(modele, tailleEchant, fenetreDebut, fenetreFin) * 100
+                'Calcul de la pvaleur
+                Dim tabAR As Double(,)
+                tabAR = Globals.ThisAddIn.calculAR(fenetreDebut, fenetreFin)
+                Dim tabCAR As Double()
+                tabCAR = Globals.ThisAddIn.calculCAR(tabAR, fenetreDebut, fenetreFin)
+                Dim testHyp As Double = Globals.ThisAddIn.calculStatistique(tabCAR)
+                Dim pValeur As Double = Globals.ThisAddIn.calculPValeur(tailleEchant, testHyp) * 100
                 MsgBox("P-Valeur : " & pValeur.ToString("0.0000") & "%")
                 Globals.Ribbons.Ruban.seuilFenetreTaskPane.Visible = False
             End If
@@ -67,7 +79,7 @@ Public Class ChoixSeuilFenetre
         Dim premiereDate As Integer = currentSheet.Cells(2, 1).Value
         Dim derniereDate As Integer = premiereDate + currentSheet.UsedRange.Rows.Count - 2
         Dim maxFenetre As Integer = Math.Min(Math.Abs(premiereDate), Math.Abs(derniereDate))
-        Globals.ThisAddIn.ThisAddIn_tracerPValeur(modele, tailleEchant, maxFenetre)
+        Globals.ThisAddIn.tracerPValeur(modele, tailleEchant, maxFenetre)
 
 
 
