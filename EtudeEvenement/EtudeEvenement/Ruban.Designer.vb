@@ -44,7 +44,7 @@
         Me.EtudeEvenement = Me.Factory.CreateRibbonTab
         Me.ModelesClassiques = Me.Factory.CreateRibbonGroup
         Me.ModeleMoyenne = Me.Factory.CreateRibbonButton
-        Me.ModeleRentaMarche = Me.Factory.CreateRibbonButton
+        Me.ModeleMarcheSimple = Me.Factory.CreateRibbonButton
         Me.ModeleMarche = Me.Factory.CreateRibbonButton
         Me.TestsTemp = Me.Factory.CreateRibbonGroup
         Me.AR = Me.Factory.CreateRibbonButton
@@ -62,7 +62,7 @@
         'ModelesClassiques
         '
         Me.ModelesClassiques.Items.Add(Me.ModeleMoyenne)
-        Me.ModelesClassiques.Items.Add(Me.ModeleRentaMarche)
+        Me.ModelesClassiques.Items.Add(Me.ModeleMarcheSimple)
         Me.ModelesClassiques.Items.Add(Me.ModeleMarche)
         Me.ModelesClassiques.Label = "Modèles classiques"
         Me.ModelesClassiques.Name = "ModelesClassiques"
@@ -72,14 +72,14 @@
         Me.ModeleMoyenne.Label = "Modèle moyenne des rentabilités"
         Me.ModeleMoyenne.Name = "ModeleMoyenne"
         '
-        'ModeleRentaMarche
+        'ModeleMarcheSimple
         '
-        Me.ModeleRentaMarche.Label = "Modèle rentabilité de marché"
-        Me.ModeleRentaMarche.Name = "ModeleRentaMarche"
+        Me.ModeleMarcheSimple.Label = "Modèle de marché simplifié"
+        Me.ModeleMarcheSimple.Name = "ModeleMarcheSimple"
         '
         'ModeleMarche
         '
-        Me.ModeleMarche.Label = "Modèle de marché"
+        Me.ModeleMarche.Label = "Modèle de marché classique"
         Me.ModeleMarche.Name = "ModeleMarche"
         '
         'TestsTemp
@@ -110,7 +110,7 @@
     Friend WithEvents EtudeEvenement As Microsoft.Office.Tools.Ribbon.RibbonTab
     Friend WithEvents ModelesClassiques As Microsoft.Office.Tools.Ribbon.RibbonGroup
     Friend WithEvents ModeleMarche As Microsoft.Office.Tools.Ribbon.RibbonButton
-    Friend WithEvents ModeleRentaMarche As Microsoft.Office.Tools.Ribbon.RibbonButton
+    Friend WithEvents ModeleMarcheSimple As Microsoft.Office.Tools.Ribbon.RibbonButton
     Friend WithEvents ModeleMoyenne As Microsoft.Office.Tools.Ribbon.RibbonButton
     Friend WithEvents TestsTemp As Microsoft.Office.Tools.Ribbon.RibbonGroup
     Friend WithEvents AR As Microsoft.Office.Tools.Ribbon.RibbonButton
