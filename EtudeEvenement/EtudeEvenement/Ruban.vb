@@ -42,14 +42,16 @@ Public Class Ruban
         Handles ModeleMoyenne.Click
         initialisationGraphPVal()
         choixSeuilFenetre.modele = 0
+        choixSeuilFenetre.nomModel.Text = "Modèle moyenne des rentabilités"
         seuilFenetreTaskPane.Visible = True
     End Sub
 
-    Private Sub ModeleRentaMarche_Click(ByVal sender As System.Object, _
+    Private Sub ModeleMarcheSimple_Click(ByVal sender As System.Object, _
         ByVal e As Microsoft.Office.Tools.Ribbon.RibbonControlEventArgs) _
-            Handles ModeleRentaMarche.Click
+            Handles ModeleMarcheSimple.Click
         initialisationGraphPVal()
         choixSeuilFenetre.modele = 1
+        choixSeuilFenetre.nomModel.Text = "Modèle de marché simplifié"
         seuilFenetreTaskPane.Visible = True
     End Sub
 
@@ -58,6 +60,7 @@ Public Class Ruban
             Handles ModeleMarche.Click
         initialisationGraphPVal()
         choixSeuilFenetre.modele = 2
+        choixSeuilFenetre.nomModel.Text = "Modèle de marché classique"
         seuilFenetreTaskPane.Visible = True
     End Sub
 
