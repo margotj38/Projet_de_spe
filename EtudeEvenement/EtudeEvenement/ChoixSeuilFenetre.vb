@@ -8,11 +8,13 @@ Public Class ChoixSeuilFenetre
 
     Private model As Integer ' 0 => ModeleMoyenne; 1 => ModeleRentaMarche; 2 => ModeleMarche
 
+    'constructeur
     Public Sub New(ByVal model As Integer)
         InitializeComponent()
         Me.model = model
     End Sub
 
+    'accesseur sur model
     Public Property modele() As Integer
         Get
             Return model
