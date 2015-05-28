@@ -8,11 +8,13 @@ Public Class ChoixSeuilFenetre
 
     Private model As Integer ' 0 => ModeleMoyenne; 1 => ModeleRentaMarche; 2 => ModeleMarche
 
+    'constructeur
     Public Sub New(ByVal model As Integer)
         InitializeComponent()
         Me.model = model
     End Sub
 
+    'accesseur sur model
     Public Property modele() As Integer
         Get
             Return model
@@ -45,7 +47,7 @@ Public Class ChoixSeuilFenetre
             Else
                 'Calcul de la pvaleur
                 Dim tabAR As Double(,)
-                tabAR = Globals.ThisAddIn.calculAR(fenetreDebut, fenetreFin)
+                tabAR = Globals.ThisAddIn.calculAR(fenetreDebut)
                 Dim tabCAR As Double()
                 tabCAR = Globals.ThisAddIn.calculCAR(tabAR, fenetreDebut, fenetreFin)
                 Dim testHyp As Double = Globals.ThisAddIn.calculStatistique(tabCAR)

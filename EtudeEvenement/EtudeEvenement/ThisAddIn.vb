@@ -4,15 +4,15 @@ Imports System.Diagnostics
 Public Class ThisAddIn
 
     'Calcule les AR avec le modèle considéré
-    Public Function calculAR(fenetreDebut As Integer, fenetreFin As Integer) As Double(,)
+    Public Function calculAR(fenetreDebut As Integer) As Double(,)
         'appelle une fonction pour chaque modèle
         Select Case Globals.Ribbons.Ruban.choixSeuilFenetre.modele
             Case 0
-                calculAR = modeleMoyenne(fenetreDebut, fenetreFin)
+                calculAR = modeleMoyenne(fenetreDebut)
             Case 1
-                calculAR = modeleMarcheSimple(fenetreDebut, fenetreFin)
+                calculAR = modeleMarcheSimple()
             Case 2
-                calculAR = modeleMarche(fenetreDebut, fenetreFin)
+                calculAR = modeleMarche(fenetreDebut)
             Case Else
                 MsgBox("Erreur interne : numero de modèle incorrect dans ChoixSeuilFenetre", 16)
                 calculAR = Nothing
@@ -29,7 +29,7 @@ Public Class ThisAddIn
 
         'Calcul de la statistique pour chaque entreprise
         For colonne = 0 To tabAR.GetUpperBound(1)
-            'Calcul de CAR sur la fenetre d'événement
+            'Calcul de CAR sur la fenetre d'événement paramétrée
             Dim CAR As Double = 0
             For i = indDebFenetre - 2 To indFinFenetre - 2
                 CAR = CAR + tabAR(i, colonne)
@@ -89,7 +89,7 @@ Public Class ThisAddIn
     'End Function
 
     'Estimation des AR à partir du modèle de marché : K = alpha + beta*Rm
-    Public Function modeleMarche(fenetreDebut As Integer, fenetreFin As Integer) As Double(,)
+    Public Function modeleMarche(fenetreDebut As Integer) As Double(,)
         'on se positionne sur la feuille des Rt
         Dim currentSheet As Excel.Worksheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
         'compte le nombre de lignes et de colonnes
@@ -124,8 +124,8 @@ Public Class ThisAddIn
         modeleMarche = tabAR
     End Function
 
-    'Calcule les AR pour chaque titre puis appelle les calculs de statistique
-    Public Function modeleMarcheSimple(fenetreDebut As Integer, fenetreFin As Integer) As Double(,)
+    'Estimation des AR à partir du modèle de marché simplifié : K = moyenne des rentabilités
+    Public Function modeleMarcheSimple() As Double(,)
         Dim currentSheet As Excel.Worksheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
         'compte le nombre de lignes et de colonnes
         Dim nbLignes As Integer = currentSheet.UsedRange.Rows.Count
@@ -145,26 +145,21 @@ Public Class ThisAddIn
         modeleMarcheSimple = tabAR
     End Function
 
-    'Calcul les Ki, puis effectue les tests statistiques sur (Ri - Ki)
-    'Renvoie true si l'hypothèse est rejetée
-    Public Function modeleMoyenne(fenetreDebut As Integer, fenetreFin As Integer) As Double(,)
+    'Estimation des AR à partir du modèle de la moyenne : K = R
+    Public Function modeleMoyenne(fenetreDebut As Integer) As Double(,)
         Dim currentSheet As Excel.Worksheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
-        Dim nbLignes As Integer = currentSheet.UsedRange.Rows.Count                'Nombre de lignes
-        Dim nbColonnes As Integer = currentSheet.UsedRange.Columns.Count           'Nombre de colonnes
-        Dim tabMoy(nbColonnes - 2) As Double                                       'Tableau des moyennes de chaque titre
+        'compte le nombre de lignes et de colonnes
+        Dim nbLignes As Integer = currentSheet.UsedRange.Rows.Count
+        Dim nbColonnes As Integer = currentSheet.UsedRange.Columns.Count
+        'Tableau des moyennes de chaque titre
+        Dim tabMoy(nbColonnes - 2) As Double
+        'indice de début de la fenêtre
         Dim indDebFenetre As Integer = 2 + fenetreDebut - currentSheet.Cells(2, 1).Value
-        Dim indFinFenetre As Integer = 2 + fenetreFin - currentSheet.Cells(2, 1).Value
-        Dim tailleFenetre As Integer = fenetreFin - fenetreDebut + 1
 
         'Calcul des moyennes
         For colonne = 2 To nbColonnes
             Dim plage As Excel.Range = Application.Range(currentSheet.Cells(2, colonne), currentSheet.Cells(indDebFenetre - 1, colonne))
             tabMoy(colonne - 2) = Application.WorksheetFunction.Average(plage)
-            'On fait également le calcul sur la période après l'événement
-            'If indFinFenetre < nbLignes Then
-            '    plage = Application.Range(currentSheet.Cells(indFinFenetre + 1, colonne), currentSheet.Cells(nbLignes, colonne))
-            '    tabMoy(colonne - 2) = tabMoy(colonne - 2) + Application.WorksheetFunction.Average(plage)
-            'End If
         Next colonne
 
         'Calcul des AR sur la fenêtre
