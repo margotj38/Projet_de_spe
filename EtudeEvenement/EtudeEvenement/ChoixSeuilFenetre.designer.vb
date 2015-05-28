@@ -28,6 +28,7 @@ Partial Class ChoixSeuilFenetre
         Me.PValeur = New System.Windows.Forms.Button()
         Me.PValeurFenetre = New System.Windows.Forms.Button()
         Me.nomModel = New System.Windows.Forms.Label()
+        Me.BoutonPatell = New System.Windows.Forms.Button()
         Me.SuspendLayout()
         '
         'FenetreText
@@ -80,10 +81,20 @@ Partial Class ChoixSeuilFenetre
         Me.nomModel.Size = New System.Drawing.Size(0, 16)
         Me.nomModel.TabIndex = 12
         '
+        'BoutonPatell
+        '
+        Me.BoutonPatell.Location = New System.Drawing.Point(100, 292)
+        Me.BoutonPatell.Name = "BoutonPatell"
+        Me.BoutonPatell.Size = New System.Drawing.Size(75, 23)
+        Me.BoutonPatell.TabIndex = 13
+        Me.BoutonPatell.Text = "Test Patell"
+        Me.BoutonPatell.UseVisualStyleBackColor = True
+        '
         'ChoixSeuilFenetre
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.Controls.Add(Me.BoutonPatell)
         Me.Controls.Add(Me.nomModel)
         Me.Controls.Add(Me.PValeurFenetre)
         Me.Controls.Add(Me.PValeur)
@@ -102,5 +113,6 @@ Partial Class ChoixSeuilFenetre
     Friend WithEvents PValeur As System.Windows.Forms.Button
     Friend WithEvents PValeurFenetre As System.Windows.Forms.Button
     Friend WithEvents nomModel As System.Windows.Forms.Label
+    Friend WithEvents BoutonPatell As System.Windows.Forms.Button
 
 End Class

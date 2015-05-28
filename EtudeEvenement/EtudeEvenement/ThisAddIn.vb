@@ -172,7 +172,7 @@ Public Class ThisAddIn
         modeleMoyenne = tabAR
     End Function
 
-    Public Function patellTest(tabAR(,) As Double, nbPeriodeEst As Integer, fenetreDebut As Integer, fenetreFin As Integer) As Double
+    Public Function patellTest(tabAR(,) As Double, fenetreDebut As Integer, fenetreFin As Integer) As Double
         'La formule utilisée est donnée page 80 de "Eventus-Guide"
         'on se positionne sur la feuille des Rt
         Dim currentSheet As Excel.Worksheet = CType(Application.Worksheets("Rm"), Excel.Worksheet)
@@ -180,6 +180,7 @@ Public Class ThisAddIn
         Dim nbLignes As Integer = currentSheet.UsedRange.Rows.Count
         'indice de ligne de la dernière ligne de l'ensemble d'apprentissage
         Dim dernLigne As Integer = 1 + fenetreDebut - currentSheet.Cells(2, 1).Value
+        Dim M As Integer = dernLigne - 1
 
         Dim sAtjCarre(tabAR.GetUpperBound(0), tabAR.GetUpperBound(1)) As Double
 
@@ -200,7 +201,7 @@ Public Class ThisAddIn
         For i = 0 To sAtjCarre.GetUpperBound(0)
             For j = 0 To sAtjCarre.GetUpperBound(1)
                 Dim tmp = currentSheet.Cells(i + 2, j + 2).Value - rmEst(j)
-                sAtjCarre(i, j) = sAjCarre(j) * (1 + 1 / nbPeriodeEst + tmp * tmp / sommeDenom(j))
+                sAtjCarre(i, j) = sAjCarre(j) * (1 + 1 / M + tmp * tmp / sommeDenom(j))
             Next j
         Next i
 
@@ -212,12 +213,12 @@ Public Class ThisAddIn
             Next j
         Next i
 
+        'Les SAR semblent ok
+
         'Calcul de Z-t1,t2
         Dim testHyp As Double
-        testHyp = patellCalcZ(SAR, fenetreDebut, fenetreFin, nbPeriodeEst)
-
-        Dim pValeur As Double = calculPValeur(tabAR.GetLength(1), testHyp)
-        Return pValeur
+        testHyp = patellCalcZ(SAR, fenetreDebut, fenetreFin, M)
+        Return testHyp
     End Function
 
     Private Function patellCalcSAj(tabAR(,) As Double, dernLigne As Integer) As Double()
@@ -263,8 +264,8 @@ Public Class ThisAddIn
 
     Private Function patellCalcZ(SAR As Double(,), t1 As Integer, t2 As Integer, M As Integer) As Double
         Dim currentSheet As Excel.Worksheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
-        Dim indDebFenetre As Integer = t1 - currentSheet.Cells(2, 1).Value
-        Dim indFinFenetre As Integer = t2 - currentSheet.Cells(2, 1).Value
+        Dim indDebFenetre As Integer = t1 - currentSheet.Cells(2, 1).Value - 1
+        Dim indFinFenetre As Integer = t2 - currentSheet.Cells(2, 1).Value - 1
 
         Dim q As Double = (t2 - t1 + 1) * (M - 2) / (M - 4)
 

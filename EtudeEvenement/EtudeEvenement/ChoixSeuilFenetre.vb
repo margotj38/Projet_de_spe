@@ -1,4 +1,4 @@
-﻿
+﻿Imports System.Diagnostics
 Imports System.Windows.Forms.DataVisualization.Charting
 
 Public Class ChoixSeuilFenetre
@@ -36,34 +36,33 @@ Public Class ChoixSeuilFenetre
     End Sub
 
     Private Sub PValeur_Click(sender As Object, e As EventArgs) Handles PValeur.Click
-        'Try
-        Dim fenetreDebut As Integer = CInt(textFenetreDebut)
-        Dim fenetreFin As Integer = CInt(textFenetreFin)
-        Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("Rt"), Excel.Worksheet)
-        Dim premiereDate As Integer = currentSheet.Cells(2, 1).Value
-        Dim tailleEchant As Integer = currentSheet.UsedRange.Columns.Count - 1
-        If fenetreDebut > fenetreFin Or fenetreDebut <= premiereDate Or fenetreFin > premiereDate + currentSheet.UsedRange.Rows.Count - 1 Then
-            MsgBox("Erreur : La fenêtre de temps de l'événement doit être cohérente avec les données", 16)
-        Else
-            'Calcul de la pvaleur
-            Dim tabAR As Double(,)
-            tabAR = Globals.ThisAddIn.calculAR(fenetreDebut, fenetreFin)
-            ''
-            'Pour test Patell
-            Dim testHyp As Double = Globals.ThisAddIn.patellTest(tabAR, fenetreFin - fenetreDebut + 1, fenetreDebut, fenetreFin)
-            Dim pValeur As Double = Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(testHyp, True)
-            'Dim tabCAR As Double()
-            'tabCAR = Globals.ThisAddIn.calculCAR(tabAR, fenetreDebut, fenetreFin)
-            'Dim testHyp As Double = Globals.ThisAddIn.calculStatistique(tabCAR)
-            '
-            'Dim pValeur As Double = Globals.ThisAddIn.calculPValeur(tailleEchant, testHyp) * 100
-            ''
-            MsgBox("P-Valeur : " & PValeur.ToString("0.0000") & "%")
-            Globals.Ribbons.Ruban.seuilFenetreTaskPane.Visible = False
-        End If
-        'Catch erreur As InvalidCastException
-        'MsgBox("Erreur : Vous devez entrer des données correctes (utiliser la virgule pour les nombres décimaux)", 16)
-        'End Try
+        Try
+            Dim fenetreDebut As Integer = CInt(textFenetreDebut)
+            Dim fenetreFin As Integer = CInt(textFenetreFin)
+            Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("Rt"), Excel.Worksheet)
+            Dim premiereDate As Integer = currentSheet.Cells(2, 1).Value
+            Dim tailleEchant As Integer = currentSheet.UsedRange.Columns.Count - 1
+            If fenetreDebut > fenetreFin Or fenetreDebut <= premiereDate Or fenetreFin > premiereDate + currentSheet.UsedRange.Rows.Count - 1 Then
+                MsgBox("Erreur : La fenêtre de temps de l'événement doit être cohérente avec les données", 16)
+            Else
+                'Calcul de la pvaleur
+                Dim tabAR As Double(,)
+                tabAR = Globals.ThisAddIn.calculAR(fenetreDebut)
+                For i = 0 To tabAR.GetUpperBound(0)
+                    Debug.WriteLine(tabAR(i, 0))
+                Next
+                Dim tabCAR As Double()
+                tabCAR = Globals.ThisAddIn.calculCAR(tabAR, fenetreDebut, fenetreFin)
+                Dim testHyp As Double = Globals.ThisAddIn.calculStatistique(tabCAR)
+
+                Dim pValeur As Double = Globals.ThisAddIn.calculPValeur(tailleEchant, testHyp) * 100
+
+                MsgBox("P-Valeur : " & pValeur.ToString("0.0000") & "%")
+                Globals.Ribbons.Ruban.seuilFenetreTaskPane.Visible = False
+            End If
+        Catch erreur As InvalidCastException
+            MsgBox("Erreur : Vous devez entrer des données correctes (utiliser la virgule pour les nombres décimaux)", 16)
+        End Try
     End Sub
 
     Private Sub PValeurFenetre_Click(sender As Object, e As EventArgs) Handles PValeurFenetre.Click
@@ -87,5 +86,30 @@ Public Class ChoixSeuilFenetre
         Catch erreur As InvalidCastException
             MsgBox("Erreur : Vous devez entrer des données correctes (utiliser la virgule pour les nombres décimaux)", 16)
         End Try
+    End Sub
+
+    Private Sub BoutonPatell_Click(sender As Object, e As EventArgs) Handles BoutonPatell.Click
+        'Try
+        Dim fenetreDebut As Integer = CInt(textFenetreDebut)
+        Dim fenetreFin As Integer = CInt(textFenetreFin)
+        Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("Rt"), Excel.Worksheet)
+        Dim premiereDate As Integer = currentSheet.Cells(2, 1).Value
+        Dim tailleEchant As Integer = currentSheet.UsedRange.Columns.Count - 1
+        If fenetreDebut > fenetreFin Or fenetreDebut <= premiereDate Or fenetreFin > premiereDate + currentSheet.UsedRange.Rows.Count - 1 Then
+            MsgBox("Erreur : La fenêtre de temps de l'événement doit être cohérente avec les données", 16)
+        Else
+            'Calcul de la pvaleur
+            Dim tabAR As Double(,)
+            tabAR = Globals.ThisAddIn.calculAR(fenetreDebut)
+
+            Dim testHyp As Double = Globals.ThisAddIn.patellTest(tabAR, fenetreDebut, fenetreFin)
+            Dim pValeur As Double = Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(testHyp, True) * 100
+
+            MsgBox("P-Valeur : " & pValeur.ToString("0.0000") & "%")
+            Globals.Ribbons.Ruban.seuilFenetreTaskPane.Visible = False
+        End If
+        'Catch erreur As InvalidCastException
+        'MsgBox("Erreur : Vous devez entrer des données correctes (utiliser la virgule pour les nombres décimaux)", 16)
+        'End Try
     End Sub
 End Class
