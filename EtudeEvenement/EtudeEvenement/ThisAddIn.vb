@@ -1,4 +1,5 @@
 ﻿Imports System.Windows.Forms.DataVisualization.Charting
+Imports System.Diagnostics
 
 Public Class ThisAddIn
 
@@ -46,6 +47,7 @@ Public Class ThisAddIn
             Next i
             variance = variance / (indDebFenetre - 3)
             normCar(colonne) = CAR / Math.Sqrt(tailleFenetre * variance)
+            'Debug.WriteLine(normCar(colonne))
         Next colonne
         'retourne le tableau des CAR normalisés
         calculCAR = normCar

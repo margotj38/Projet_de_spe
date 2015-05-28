@@ -23,18 +23,11 @@ Public Class Ruban
             .Width = 300
             .Visible = False
         End With
+    End Sub
 
-        'Initialisation de la fenêtre contenant le graphique
+    Private Sub initialisationGraphPVal()
         graphPVal = New GraphiquePValeur()
         graphPVal.Visible = False
-
-        'graphChart.ChartAreas.Add(graphChartArea)
-        'graphChart.Location = New System.Drawing.Point(15, 45)
-        'graphChart.Size = New System.Drawing.Size(350, 250)
-        'valeurs.ChartArea = "ChartArea1"
-        'graphChart.Series.Add(valeurs)
-        'graphPVal.Controls.Add(graphChart)
-        'graphChart.Series("Series1").ChartType = SeriesChartType.Line
 
         graphPVal.GraphiqueChart.Series.Add("Series1")
 
@@ -47,7 +40,7 @@ Public Class Ruban
     Private Sub ModeleMoyenne_Click(ByVal sender As System.Object, _
     ByVal e As Microsoft.Office.Tools.Ribbon.RibbonControlEventArgs) _
         Handles ModeleMoyenne.Click
-        'graphPVal.GraphiqueChart.Series.Remove()
+        initialisationGraphPVal()
         choixSeuilFenetre.modele = 0
         seuilFenetreTaskPane.Visible = True
     End Sub
@@ -55,6 +48,7 @@ Public Class Ruban
     Private Sub ModeleRentaMarche_Click(ByVal sender As System.Object, _
         ByVal e As Microsoft.Office.Tools.Ribbon.RibbonControlEventArgs) _
             Handles ModeleRentaMarche.Click
+        initialisationGraphPVal()
         choixSeuilFenetre.modele = 1
         seuilFenetreTaskPane.Visible = True
     End Sub
@@ -62,6 +56,7 @@ Public Class Ruban
     Private Sub ModeleMarche_Click(ByVal sender As System.Object, _
         ByVal e As Microsoft.Office.Tools.Ribbon.RibbonControlEventArgs) _
             Handles ModeleMarche.Click
+        initialisationGraphPVal()
         choixSeuilFenetre.modele = 2
         seuilFenetreTaskPane.Visible = True
     End Sub
