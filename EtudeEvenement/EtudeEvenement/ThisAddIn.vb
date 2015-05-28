@@ -177,6 +177,114 @@ Public Class ThisAddIn
         modeleMoyenne = tabAR
     End Function
 
+    Public Function patellTest(tabAR(,) As Double, nbPeriodeEst As Integer, fenetreDebut As Integer, fenetreFin As Integer) As Double
+        'La formule utilisée est donnée page 80 de "Eventus-Guide"
+        'on se positionne sur la feuille des Rt
+        Dim currentSheet As Excel.Worksheet = CType(Application.Worksheets("Rm"), Excel.Worksheet)
+        'Nombre de lignes
+        Dim nbLignes As Integer = currentSheet.UsedRange.Rows.Count
+        'indice de ligne de la dernière ligne de l'ensemble d'apprentissage
+        Dim dernLigne As Integer = 1 + fenetreDebut - currentSheet.Cells(2, 1).Value
+
+        Dim sAtjCarre(tabAR.GetUpperBound(0), tabAR.GetUpperBound(1)) As Double
+
+        'Calcul des (s_Aj)²
+        Dim sAjCarre(tabAR.GetUpperBound(1)) As Double
+        sAjCarre = patellCalcSAj(tabAR, dernLigne)
+
+        'Attention, modification de la formule : on l'étend à plusieurs Rm => toujours ok ?
+        'Calcul des Rm_Est
+        Dim rmEst(tabAR.GetUpperBound(1)) As Double
+        rmEst = patellCalcRmEst(tabAR.GetLength(1), dernLigne)
+
+        'Calcul somme au dénominateur
+        Dim sommeDenom(tabAR.GetUpperBound(1)) As Double
+        sommeDenom = patellCalcSommeDenom(rmEst, dernLigne)
+
+        'Calcul de la formule complète
+        For i = 0 To sAtjCarre.GetUpperBound(0)
+            For j = 0 To sAtjCarre.GetUpperBound(1)
+                Dim tmp = currentSheet.Cells(i + 2, j + 2).Value - rmEst(j)
+                sAtjCarre(i, j) = sAjCarre(j) * (1 + 1 / nbPeriodeEst + tmp * tmp / sommeDenom(j))
+            Next j
+        Next i
+
+        'Tableau des SAR
+        Dim SAR(tabAR.GetUpperBound(0), tabAR.GetUpperBound(1)) As Double
+        For i = 0 To tabAR.GetUpperBound(0)
+            For j = 0 To tabAR.GetUpperBound(1)
+                SAR(i, j) = tabAR(i, j) / Math.Sqrt(sAtjCarre(i, j))
+            Next j
+        Next i
+
+        'Calcul de Z-t1,t2
+        Dim testHyp As Double
+        testHyp = patellCalcZ(SAR, fenetreDebut, fenetreFin, nbPeriodeEst)
+
+        Dim pValeur As Double = calculPValeur(tabAR.GetLength(1), testHyp)
+        Return pValeur
+    End Function
+
+    Private Function patellCalcSAj(tabAR(,) As Double, dernLigne As Integer) As Double()
+        Dim sAjCarre(tabAR.GetUpperBound(1)) As Double
+        For colonne = 0 To tabAR.GetUpperBound(1)
+            sAjCarre(colonne) = 0
+            For k = 0 To dernLigne - 2
+                sAjCarre(colonne) = sAjCarre(colonne) + tabAR(k, colonne) * tabAR(k, colonne)
+            Next k
+            sAjCarre(colonne) = sAjCarre(colonne) / (dernLigne - 1 - 2)
+        Next colonne
+        Return sAjCarre
+    End Function
+
+    Private Function patellCalcRmEst(nbTitres As Integer, dernLigne As Integer) As Double()
+        'on se positionne sur la feuille des Rm
+        Dim currentSheet As Excel.Worksheet = CType(Application.Worksheets("Rm"), Excel.Worksheet)
+        Dim rmEst(nbTitres - 1) As Double
+        For colonne = 0 To nbTitres - 1
+            rmEst(colonne) = 0
+            For i = 2 To dernLigne
+                rmEst(colonne) = rmEst(colonne) + currentSheet.Cells(i, colonne + 2).Value
+            Next i
+            rmEst(colonne) = rmEst(colonne) / (dernLigne - 1)
+        Next colonne
+        Return rmEst
+    End Function
+
+    Private Function patellCalcSommeDenom(rmEst As Double(), dernLigne As Integer) As Double()
+        'on se positionne sur la feuille des Rm
+        Dim currentSheet As Excel.Worksheet = CType(Application.Worksheets("Rm"), Excel.Worksheet)
+        Dim sommeDenom(rmEst.GetUpperBound(0)) As Double
+
+        For colonne = 0 To rmEst.GetUpperBound(0)
+            sommeDenom(colonne) = 0
+            For i = 2 To dernLigne
+                Dim tmp As Double = currentSheet.Cells(i, colonne + 2).Value - rmEst(colonne)
+                sommeDenom(colonne) = sommeDenom(colonne) + tmp * tmp
+            Next i
+        Next colonne
+        Return sommeDenom
+    End Function
+
+    Private Function patellCalcZ(SAR As Double(,), t1 As Integer, t2 As Integer, M As Integer) As Double
+        Dim currentSheet As Excel.Worksheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
+        Dim indDebFenetre As Integer = t1 - currentSheet.Cells(2, 1).Value
+        Dim indFinFenetre As Integer = t2 - currentSheet.Cells(2, 1).Value
+
+        Dim q As Double = (t2 - t1 + 1) * (M - 2) / (M - 4)
+
+        Dim z As Double = 0
+        For colonne = 0 To SAR.GetUpperBound(1)
+            Dim zj As Double = 0
+            For t = indDebFenetre To indFinFenetre
+                zj = zj + SAR(t, colonne)
+            Next t
+            z = z + zj / Math.Sqrt(q)
+        Next colonne
+        z = z / Math.Sqrt(SAR.GetLength(1))
+        Return z
+    End Function
+
     Public Function calculPValeur(tailleEchant As Integer, testHyp As Double) As Double
         Return Application.WorksheetFunction.T_Dist_2T(testHyp, tailleEchant - 1)
     End Function
