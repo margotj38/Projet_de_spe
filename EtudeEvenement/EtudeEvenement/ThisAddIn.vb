@@ -234,7 +234,7 @@ Public Class ThisAddIn
         Dim tailleTabCAR As Integer = tabCAR.GetLength(0)
         Dim moyenneTab As Double = calcul_moyenne(tabCAR)
         Dim varianceTab As Double = calcul_variance(tabCAR, moyenneTab)
-        calculStatistique = Math.Abs(Math.Sqrt(tailleTabCAR) * moyenneTab / varianceTab)
+        calculStatistique = Math.Abs(Math.Sqrt(tailleTabCAR) * moyenneTab / Math.Sqrt(varianceTab))
     End Function
 
     Private Function calcul_moyenne(tab() As Double) As Double
