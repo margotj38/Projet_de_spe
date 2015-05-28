@@ -179,7 +179,7 @@ Public Class ThisAddIn
     Public Sub tracerPValeur(tailleEchant As Integer, maxFenetre As Integer)
         For i = 0 To maxFenetre
             Dim tabAR As Double(,)
-            tabAR = Globals.ThisAddIn.calculAR(-i, i)
+            tabAR = Globals.ThisAddIn.calculAR(-i)
             Dim tabCAR As Double()
             tabCAR = Globals.ThisAddIn.calculCAR(tabAR, -i, i)
             Dim testHyp As Double = Globals.ThisAddIn.calculStatistique(tabCAR)
