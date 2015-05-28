@@ -122,7 +122,6 @@ Public Class ThisAddIn
             currentSheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
         Next
         modeleMarche = tabAR
-        'ThisAddIn_ModeleMarche = ThisAddIn_MethodeTabCAR(tabAR, fenetreDebut, fenetreFin)
     End Function
 
     'Calcule les AR pour chaque titre puis appelle les calculs de statistique
@@ -144,7 +143,6 @@ Public Class ThisAddIn
             Next
         Next
         modeleMarcheSimple = tabAR
-        'ThisAddIn_ModeleRentaMarche = ThisAddIn_MethodeTabCAR(tabAR, fenetreDebut, fenetreFin)
     End Function
 
     'Calcul les Ki, puis effectue les tests statistiques sur (Ri - Ki)
@@ -177,41 +175,10 @@ Public Class ThisAddIn
             Next indDate
         Next colonne
         modeleMoyenne = tabAR
-        'ThisAddIn_CalcNormMoy = ThisAddIn_MethodeTabCAR(tabAR, fenetreDebut, fenetreFin)
     End Function
 
-    ''Renvoie true si l'hypothèse est rejetée
-    'Public Function ThisAddIn_MethodeCAR(seuil As Double) As Double
-    '    Dim activeSheet As Excel.Worksheet = CType(Application.ActiveSheet, Excel.Worksheet)
-    '    Dim nbLignes As Integer = activeSheet.UsedRange.Rows.Count                'Nombre de lignes
-    '    Dim nbColonnes As Integer = activeSheet.UsedRange.Columns.Count           'Nombre de colonnes
-    '    Dim varCAR(nbColonnes - 2) As Double                                      'Variable aléatoire correspondant aux CAR
-
-    '    'Calcul de la statistique pour chaque entreprise
-    '    For colonne = 2 To nbColonnes
-    '        Dim plage As Excel.Range = Application.Range(Application.Cells(2, colonne), Application.Cells(nbLignes, colonne))
-    '        Dim CAR As Double = Application.WorksheetFunction.Sum(plage)
-    '        Dim variance As Double = Application.WorksheetFunction.Var(plage)
-    '        varCAR(colonne - 2) = CAR / Math.Sqrt(variance * (nbLignes - 1))
-    '    Next colonne
-
-    '    'Test statistique
-    '    ThisAddIn_MethodeCAR = calculStatistique(varCAR, nbColonnes - 1)
-    'End Function
-
     Public Function calculPValeur(tailleEchant As Integer, testHyp As Double) As Double
-        Dim borneInf As Double = 0
-        Dim borneSup As Double = 1
-        Dim alpha As Double = (borneInf + borneSup) / 2
-        While borneSup - borneInf > 0.0001
-            If testHyp > Application.WorksheetFunction.TInv(alpha, tailleEchant - 1) Then
-                borneSup = alpha
-            Else
-                borneInf = alpha
-            End If
-            alpha = (borneInf + borneSup) / 2
-        End While
-        Return alpha
+        Return Application.WorksheetFunction.T_Dist_2T(testHyp, tailleEchant - 1)
     End Function
 
     Public Sub tracerPValeur(tailleEchant As Integer, maxFenetre As Integer)
