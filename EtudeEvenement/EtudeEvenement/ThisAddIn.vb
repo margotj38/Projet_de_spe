@@ -201,7 +201,7 @@ Public Class ThisAddIn
         For i = 0 To sAtjCarre.GetUpperBound(0)
             For j = 0 To sAtjCarre.GetUpperBound(1)
                 Dim tmp = currentSheet.Cells(i + 2, j + 2).Value - rmEst(j)
-                sAtjCarre(i, j) = sAjCarre(j) * (1 + 1 / M + tmp * tmp / sommeDenom(j))
+                sAtjCarre(i, j) = sAjCarre(j) * (1 + (1 / M) + (tmp * tmp / sommeDenom(j)))
             Next j
         Next i
 
@@ -214,6 +214,14 @@ Public Class ThisAddIn
         Next i
 
         'Les SAR semblent ok
+        Dim tsar(tabAR.GetUpperBound(0)) As Double
+        For t = 0 To tabAR.GetUpperBound(0)
+            tsar(t) = 0
+            For i = 0 To tabAR.GetUpperBound(1)
+                tsar(t) = tsar(t) + SAR(t, i)
+            Next
+        Next
+
 
         'Calcul de Z-t1,t2
         Dim testHyp As Double

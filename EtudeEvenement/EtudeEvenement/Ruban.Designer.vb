@@ -69,6 +69,7 @@
         '
         'ModeleMoyenne
         '
+        Me.ModeleMoyenne.Image = Global.EtudeEvenement.My.Resources.Resources.graphPValModeleMoy
         Me.ModeleMoyenne.Label = "Modèle moyenne des rentabilités"
         Me.ModeleMoyenne.Name = "ModeleMoyenne"
         '
@@ -111,9 +112,9 @@
     Friend WithEvents ModelesClassiques As Microsoft.Office.Tools.Ribbon.RibbonGroup
     Friend WithEvents ModeleMarche As Microsoft.Office.Tools.Ribbon.RibbonButton
     Friend WithEvents ModeleMarcheSimple As Microsoft.Office.Tools.Ribbon.RibbonButton
-    Friend WithEvents ModeleMoyenne As Microsoft.Office.Tools.Ribbon.RibbonButton
     Friend WithEvents TestsTemp As Microsoft.Office.Tools.Ribbon.RibbonGroup
     Friend WithEvents AR As Microsoft.Office.Tools.Ribbon.RibbonButton
+    Friend WithEvents ModeleMoyenne As Microsoft.Office.Tools.Ribbon.RibbonButton
 End Class
 
 Partial Class ThisRibbonCollection
