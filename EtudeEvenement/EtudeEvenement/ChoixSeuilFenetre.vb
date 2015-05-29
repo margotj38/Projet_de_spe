@@ -60,12 +60,13 @@ Public Class ChoixSeuilFenetre
             If fenetreDebut > fenetreFin Or fenetreDebut <= premiereDate Or fenetreFin > premiereDate + currentSheet.UsedRange.Rows.Count - 1 Then
                 MsgBox("Erreur : La fenêtre de temps de l'événement doit être cohérente avec les données", 16)
             Else
-                'Calcul de la pvaleur
+                'Calcul des AR
                 Dim tabAR As Double(,)
                 tabAR = Globals.ThisAddIn.calculAR(fenetreDebut)
                 For i = 0 To tabAR.GetUpperBound(0)
                     Debug.WriteLine(tabAR(i, 0))
                 Next
+                'Calcul de la pValeur
                 Dim pValeur As Double
                 Select Case test
                     Case 0
