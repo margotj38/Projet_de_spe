@@ -6,12 +6,14 @@ Public Class ChoixSeuilFenetre
     Private textFenetreDebut As String
     Private textFenetreFin As String
 
-    Private model As Integer ' 0 => ModeleMoyenne; 1 => ModeleRentaMarche; 2 => ModeleMarche
+    Private model As Integer ' 0 => ModeleMoyenne; 1 => ModeleMarcheSimple; 2 => ModeleMarche
+    Private numTest As Integer ' 0 => TestSimple; 1 => TestPatell; 2 => TestSigne
 
     'constructeur
-    Public Sub New(ByVal model As Integer)
+    Public Sub New(ByVal model As Integer, ByVal test As Integer)
         InitializeComponent()
         Me.model = model
+        Me.numTest = test
     End Sub
 
     'accesseur sur model
@@ -27,8 +29,21 @@ Public Class ChoixSeuilFenetre
         End Set
     End Property
 
-    Private Sub FenetreBox_TextChanged(sender As Object, e As EventArgs) Handles FenetreBox.TextChanged
-        textFenetreDebut = FenetreBox.Text
+    'accesseur sur numTest
+    Public Property test() As Integer
+        Get
+            Return numTest
+        End Get
+        Set(value As Integer)
+            If value < 0 Or value > 2 Then
+                MsgBox("Erreur interne : numéro de test incorrect", 16)
+            End If
+            numTest = value
+        End Set
+    End Property
+
+    Private Sub FenetreDebBox_TextChanged(sender As Object, e As EventArgs) Handles FenetreDebBox.TextChanged
+        textFenetreDebut = FenetreDebBox.Text
     End Sub
 
     Private Sub FenetreFinBox_TextChanged(sender As Object, e As EventArgs) Handles FenetreFinBox.TextChanged
@@ -113,4 +128,5 @@ Public Class ChoixSeuilFenetre
             MsgBox("Erreur : Vous devez entrer des données correctes (utiliser la virgule pour les nombres décimaux)", 16)
         End Try
     End Sub
+
 End Class
