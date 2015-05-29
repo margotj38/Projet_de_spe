@@ -69,7 +69,6 @@
         '
         'ModeleMoyenne
         '
-        Me.ModeleMoyenne.Image = Global.EtudeEvenement.My.Resources.Resources.graphPValModeleMoy
         Me.ModeleMoyenne.Label = "Modèle moyenne des rentabilités"
         Me.ModeleMoyenne.Name = "ModeleMoyenne"
         '
