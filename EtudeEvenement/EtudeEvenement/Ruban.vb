@@ -64,4 +64,75 @@ Public Class Ruban
         seuilFenetreTaskPane.Visible = True
     End Sub
 
+    Private Sub testSimpleR_Click(sender As Object, e As RibbonControlEventArgs) Handles testSimpleR.Click
+        initialisationGraphPVal()
+        choixSeuilFenetre.modele = 0
+        choixSeuilFenetre.test = 0
+        choixSeuilFenetre.nomModel.Text = "Modèle moyenne des rentabilités"
+        seuilFenetreTaskPane.Visible = True
+    End Sub
+
+    Private Sub TestPatellR_Click(sender As Object, e As RibbonControlEventArgs) Handles TestPatellR.Click
+        initialisationGraphPVal()
+        choixSeuilFenetre.modele = 0
+        choixSeuilFenetre.test = 1
+        choixSeuilFenetre.nomModel.Text = "Modèle moyenne des rentabilités"
+        seuilFenetreTaskPane.Visible = True
+    End Sub
+
+    Private Sub testSigneR_Click(sender As Object, e As RibbonControlEventArgs) Handles testSigneR.Click
+        initialisationGraphPVal()
+        choixSeuilFenetre.modele = 0
+        choixSeuilFenetre.test = 2
+        choixSeuilFenetre.nomModel.Text = "Modèle moyenne des rentabilités"
+        seuilFenetreTaskPane.Visible = True
+    End Sub
+
+    Private Sub testSimpleMS_Click(sender As Object, e As RibbonControlEventArgs) Handles testSimpleMS.Click
+        initialisationGraphPVal()
+        choixSeuilFenetre.modele = 1
+        choixSeuilFenetre.test = 0
+        choixSeuilFenetre.nomModel.Text = "Modèle de marché simplifié"
+        seuilFenetreTaskPane.Visible = True
+    End Sub
+
+    Private Sub testPatellMS_Click(sender As Object, e As RibbonControlEventArgs) Handles testPatellMS.Click
+        initialisationGraphPVal()
+        choixSeuilFenetre.modele = 1
+        choixSeuilFenetre.test = 1
+        choixSeuilFenetre.nomModel.Text = "Modèle de marché simplifié"
+        seuilFenetreTaskPane.Visible = True
+    End Sub
+
+    Private Sub testSigneMS_Click(sender As Object, e As RibbonControlEventArgs) Handles testSigneMS.Click
+        initialisationGraphPVal()
+        choixSeuilFenetre.modele = 1
+        choixSeuilFenetre.test = 2
+        choixSeuilFenetre.nomModel.Text = "Modèle de marché simplifié"
+        seuilFenetreTaskPane.Visible = True
+    End Sub
+
+    Private Sub testSimpleM_Click(sender As Object, e As RibbonControlEventArgs) Handles testSimpleM.Click
+        initialisationGraphPVal()
+        choixSeuilFenetre.modele = 2
+        choixSeuilFenetre.test = 0
+        choixSeuilFenetre.nomModel.Text = "Modèle de marché classique"
+        seuilFenetreTaskPane.Visible = True
+    End Sub
+
+    Private Sub testPatellM_Click(sender As Object, e As RibbonControlEventArgs) Handles testPatellM.Click
+        initialisationGraphPVal()
+        choixSeuilFenetre.modele = 2
+        choixSeuilFenetre.test = 1
+        choixSeuilFenetre.nomModel.Text = "Modèle de marché classique"
+        seuilFenetreTaskPane.Visible = True
+    End Sub
+
+    Private Sub testSigneM_Click(sender As Object, e As RibbonControlEventArgs) Handles testSigneM.Click
+        initialisationGraphPVal()
+        choixSeuilFenetre.modele = 2
+        choixSeuilFenetre.test = 2
+        choixSeuilFenetre.nomModel.Text = "Modèle de marché classique"
+        seuilFenetreTaskPane.Visible = True
+    End Sub
 End Class
