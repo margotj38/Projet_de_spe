@@ -310,6 +310,33 @@ Public Class ThisAddIn
         Next i
     End Sub
 
+    'A revoir !!
+    Function statTestSigne(tabAR(,) As Double, fenetreDebut As Integer, fenetreFin As Double) As Double
+        Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("Rt"), Excel.Worksheet)
+        Dim indDebFenetre As Integer = 2 + fenetreDebut - currentSheet.Cells(2, 1).Value
+        Dim indFinFenetre As Integer = 2 + fenetreFin - currentSheet.Cells(2, 1).Value
+        'La taille de l'échantillon
+        Dim taille As Integer = (fenetreFin - fenetreDebut + 1) * (currentSheet.UsedRange.Columns.Count)
+        Dim cptPosAR As Double
+        cptPosAR = 0
+
+        For colonne = 0 To tabAR.GetUpperBound(1)
+            For i = indDebFenetre - 2 To indFinFenetre - 2
+                If (tabAR(i, colonne) > 0) Then
+                    cptPosAR = cptPosAR + 1
+                End If
+            Next i
+        Next colonne
+
+        Dim prop As Double
+        prop = cptPosAR / taille  'La proportion des valeurs positives
+        'MsgBox(prop)
+        cptPosAR = (prop - (taille / 2)) / (Math.Sqrt(taille / 4)) 'La statistique du test
+        'MsgBox(cptPosAR)
+        statTestSigne = cptPosAR
+    End Function
+
+
     'Renvoie true si l'hypothèse H0 est rejetée
     Public Function calculStatistique(tabCAR() As Double) As Double
         Dim tailleTabCAR As Integer = tabCAR.GetLength(0)

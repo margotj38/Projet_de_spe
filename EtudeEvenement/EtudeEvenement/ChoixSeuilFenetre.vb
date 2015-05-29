@@ -102,6 +102,7 @@ Public Class ChoixSeuilFenetre
                 Dim tabAR As Double(,)
                 tabAR = Globals.ThisAddIn.calculAR(fenetreDebut)
 
+                'Dim testHyp As Double = Globals.ThisAddIn.statTestSigne(tabAR, fenetreDebut, fenetreFin)
                 Dim testHyp As Double = Globals.ThisAddIn.patellTest(tabAR, fenetreDebut, fenetreFin)
                 Dim pValeur As Double = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHyp), True)) * 100
 
