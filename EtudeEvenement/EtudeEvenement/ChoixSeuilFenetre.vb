@@ -66,12 +66,23 @@ Public Class ChoixSeuilFenetre
                 For i = 0 To tabAR.GetUpperBound(0)
                     Debug.WriteLine(tabAR(i, 0))
                 Next
-                Dim tabCAR As Double()
-                tabCAR = Globals.ThisAddIn.calculCAR(tabAR, fenetreDebut, fenetreFin)
-                Dim testHyp As Double = Globals.ThisAddIn.calculStatistique(tabCAR)
-
-                Dim pValeur As Double = Globals.ThisAddIn.calculPValeur(tailleEchant, testHyp) * 100
-
+                Dim pValeur As Double
+                Select Case test
+                    Case 0
+                        'test simple'
+                        Dim tabCAR As Double()
+                        tabCAR = Globals.ThisAddIn.calculCAR(tabAR, fenetreDebut, fenetreFin)
+                        Dim testHyp As Double = Globals.ThisAddIn.calculStatistique(tabCAR)
+                        pValeur = Globals.ThisAddIn.calculPValeur(tailleEchant, testHyp) * 100
+                    Case 1
+                        'test de Patell'
+                        Dim testHyp As Double = Globals.ThisAddIn.patellTest(tabAR, fenetreDebut, fenetreFin)
+                        pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHyp), True)) * 100
+                    Case 2
+                        'test de signe : à compléter'
+                        pValeur = 0
+                End Select
+                
                 MsgBox("P-Valeur : " & pValeur.ToString("0.0000") & "%")
                 Globals.Ribbons.Ruban.seuilFenetreTaskPane.Visible = False
             End If
@@ -103,29 +114,29 @@ Public Class ChoixSeuilFenetre
         End Try
     End Sub
 
-    Private Sub BoutonPatell_Click(sender As Object, e As EventArgs) Handles BoutonPatell.Click
-        Try
-            Dim fenetreDebut As Integer = CInt(textFenetreDebut)
-            Dim fenetreFin As Integer = CInt(textFenetreFin)
-            Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("Rt"), Excel.Worksheet)
-            Dim premiereDate As Integer = currentSheet.Cells(2, 1).Value
-            Dim tailleEchant As Integer = currentSheet.UsedRange.Columns.Count - 1
-            If fenetreDebut > fenetreFin Or fenetreDebut <= premiereDate Or fenetreFin > premiereDate + currentSheet.UsedRange.Rows.Count - 1 Then
-                MsgBox("Erreur : La fenêtre de temps de l'événement doit être cohérente avec les données", 16)
-            Else
-                'Calcul de la pvaleur
-                Dim tabAR As Double(,)
-                tabAR = Globals.ThisAddIn.calculAR(fenetreDebut)
+    'Private Sub BoutonPatell_Click(sender As Object, e As EventArgs) Handles BoutonPatell.Click
+    '    Try
+    '        Dim fenetreDebut As Integer = CInt(textFenetreDebut)
+    '        Dim fenetreFin As Integer = CInt(textFenetreFin)
+    '        Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("Rt"), Excel.Worksheet)
+    '        Dim premiereDate As Integer = currentSheet.Cells(2, 1).Value
+    '        Dim tailleEchant As Integer = currentSheet.UsedRange.Columns.Count - 1
+    '        If fenetreDebut > fenetreFin Or fenetreDebut <= premiereDate Or fenetreFin > premiereDate + currentSheet.UsedRange.Rows.Count - 1 Then
+    '            MsgBox("Erreur : La fenêtre de temps de l'événement doit être cohérente avec les données", 16)
+    '        Else
+    '            'Calcul de la pvaleur
+    '            Dim tabAR As Double(,)
+    '            tabAR = Globals.ThisAddIn.calculAR(fenetreDebut)
 
-                Dim testHyp As Double = Globals.ThisAddIn.patellTest(tabAR, fenetreDebut, fenetreFin)
-                Dim pValeur As Double = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHyp), True)) * 100
+    '            Dim testHyp As Double = Globals.ThisAddIn.patellTest(tabAR, fenetreDebut, fenetreFin)
+    '            Dim pValeur As Double = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHyp), True)) * 100
 
-                MsgBox("P-Valeur : " & pValeur.ToString("0.0000") & "%")
-                Globals.Ribbons.Ruban.seuilFenetreTaskPane.Visible = False
-            End If
-        Catch erreur As InvalidCastException
-            MsgBox("Erreur : Vous devez entrer des données correctes (utiliser la virgule pour les nombres décimaux)", 16)
-        End Try
-    End Sub
+    '            MsgBox("P-Valeur : " & pValeur.ToString("0.0000") & "%")
+    '            Globals.Ribbons.Ruban.seuilFenetreTaskPane.Visible = False
+    '        End If
+    '    Catch erreur As InvalidCastException
+    '        MsgBox("Erreur : Vous devez entrer des données correctes (utiliser la virgule pour les nombres décimaux)", 16)
+    '    End Try
+    'End Sub
 
 End Class
