@@ -14,7 +14,7 @@ Public Class Ruban
     Private Sub Ruban_Load(ByVal sender As System.Object, ByVal e As RibbonUIEventArgs) Handles MyBase.Load
 
         'Initialisation du taskPane
-        choixSeuilFenetre = New ChoixSeuilFenetre(0)
+        choixSeuilFenetre = New ChoixSeuilFenetre(0, 0)
         seuilFenetreTaskPane = Globals.ThisAddIn.CustomTaskPanes.Add(choixSeuilFenetre, "Choix des paramètres")
         With seuilFenetreTaskPane
             .DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionFloating
@@ -68,7 +68,7 @@ Public Class Ruban
         initialisationGraphPVal()
         choixSeuilFenetre.modele = 0
         choixSeuilFenetre.test = 0
-        choixSeuilFenetre.nomModel.Text = "Modèle moyenne des rentabilités"
+        choixSeuilFenetre.nomModel.Text = "Test simple - Modèle moyenne des rentabilités"
         seuilFenetreTaskPane.Visible = True
     End Sub
 
@@ -76,7 +76,7 @@ Public Class Ruban
         initialisationGraphPVal()
         choixSeuilFenetre.modele = 0
         choixSeuilFenetre.test = 1
-        choixSeuilFenetre.nomModel.Text = "Modèle moyenne des rentabilités"
+        choixSeuilFenetre.nomModel.Text = "Test de Patell - Modèle moyenne des rentabilités"
         seuilFenetreTaskPane.Visible = True
     End Sub
 
@@ -84,7 +84,7 @@ Public Class Ruban
         initialisationGraphPVal()
         choixSeuilFenetre.modele = 0
         choixSeuilFenetre.test = 2
-        choixSeuilFenetre.nomModel.Text = "Modèle moyenne des rentabilités"
+        choixSeuilFenetre.nomModel.Text = "Test de signe - Modèle moyenne des rentabilités"
         seuilFenetreTaskPane.Visible = True
     End Sub
 
@@ -92,7 +92,7 @@ Public Class Ruban
         initialisationGraphPVal()
         choixSeuilFenetre.modele = 1
         choixSeuilFenetre.test = 0
-        choixSeuilFenetre.nomModel.Text = "Modèle de marché simplifié"
+        choixSeuilFenetre.nomModel.Text = "Test simple - Modèle de marché simplifié"
         seuilFenetreTaskPane.Visible = True
     End Sub
 
@@ -100,7 +100,7 @@ Public Class Ruban
         initialisationGraphPVal()
         choixSeuilFenetre.modele = 1
         choixSeuilFenetre.test = 1
-        choixSeuilFenetre.nomModel.Text = "Modèle de marché simplifié"
+        choixSeuilFenetre.nomModel.Text = "Test de Patell - Modèle de marché simplifié"
         seuilFenetreTaskPane.Visible = True
     End Sub
 
@@ -108,7 +108,7 @@ Public Class Ruban
         initialisationGraphPVal()
         choixSeuilFenetre.modele = 1
         choixSeuilFenetre.test = 2
-        choixSeuilFenetre.nomModel.Text = "Modèle de marché simplifié"
+        choixSeuilFenetre.nomModel.Text = "Test de signe - Modèle de marché simplifié"
         seuilFenetreTaskPane.Visible = True
     End Sub
 
@@ -116,7 +116,7 @@ Public Class Ruban
         initialisationGraphPVal()
         choixSeuilFenetre.modele = 2
         choixSeuilFenetre.test = 0
-        choixSeuilFenetre.nomModel.Text = "Modèle de marché classique"
+        choixSeuilFenetre.nomModel.Text = "Test simple - Modèle de marché classique"
         seuilFenetreTaskPane.Visible = True
     End Sub
 
@@ -124,7 +124,7 @@ Public Class Ruban
         initialisationGraphPVal()
         choixSeuilFenetre.modele = 2
         choixSeuilFenetre.test = 1
-        choixSeuilFenetre.nomModel.Text = "Modèle de marché classique"
+        choixSeuilFenetre.nomModel.Text = "Test de Patell - Modèle de marché classique"
         seuilFenetreTaskPane.Visible = True
     End Sub
 
@@ -132,7 +132,7 @@ Public Class Ruban
         initialisationGraphPVal()
         choixSeuilFenetre.modele = 2
         choixSeuilFenetre.test = 2
-        choixSeuilFenetre.nomModel.Text = "Modèle de marché classique"
+        choixSeuilFenetre.nomModel.Text = "Test de signe - Modèle de marché classique"
         seuilFenetreTaskPane.Visible = True
     End Sub
 End Class

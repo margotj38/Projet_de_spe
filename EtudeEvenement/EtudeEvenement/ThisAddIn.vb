@@ -297,10 +297,26 @@ Public Class ThisAddIn
         For i = 0 To maxFenetre
             Dim tabAR As Double(,)
             tabAR = Globals.ThisAddIn.calculAR(-i)
-            Dim tabCAR As Double()
-            tabCAR = Globals.ThisAddIn.calculCAR(tabAR, -i, i)
-            Dim testHyp As Double = Globals.ThisAddIn.calculStatistique(tabCAR)
-            Dim pValeur As Double = Globals.ThisAddIn.calculPValeur(tailleEchant, testHyp) * 100
+            Dim pValeur As Double
+
+            Select Case Globals.Ribbons.Ruban.choixSeuilFenetre.test
+                Case 0
+                    'test simple'
+                    Dim tabCAR As Double()
+                    tabCAR = Globals.ThisAddIn.calculCAR(tabAR, -i, i)
+                    Dim testHyp As Double = Globals.ThisAddIn.calculStatistique(tabCAR)
+                    pValeur = Globals.ThisAddIn.calculPValeur(tailleEchant, testHyp) * 100
+                Case 1
+                    'test de Patell'
+                    Dim testHyp As Double = Globals.ThisAddIn.patellTest(tabAR, -i, i)
+                    pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHyp), True)) * 100
+                Case 2
+                    'test de signe : à compléter'
+                    pValeur = 0
+            End Select
+
+            'Dim testHyp As Double = Globals.ThisAddIn.calculStatistique(tabCAR)
+            'Dim pValeur As Double = Globals.ThisAddIn.calculPValeur(tailleEchant, testHyp) * 100
 
             Dim p As New DataPoint
             p.XValue = i
