@@ -150,8 +150,6 @@ Public Class ThisAddIn
         'La formule utilisée est donnée page 80 de "Eventus-Guide"
         'On se positionne sur la feuille des Rt
         Dim currentSheet As Excel.Worksheet = CType(Application.Worksheets("Rm"), Excel.Worksheet)
-        'Nombre de lignes
-        Dim nbLignes As Integer = currentSheet.UsedRange.Rows.Count
 
         'Indices de la fenêtre d'estimation
         Dim indFenetreEstDeb As Integer = fenetreEstDebut - currentSheet.Cells(2, 1).Value
@@ -266,7 +264,7 @@ Public Class ThisAddIn
         Dim evolEvDeb As Integer = fenetreEvDebut
         Dim evolEvFin As Integer = fenetreEvFin
 
-        'Tant que le fenêtre contient au moins un élément
+        'Tant que la fenêtre contient au moins un élément
         While evolEvFin >= evolEvDeb
             Dim tabAR As Double(,)
             tabAR = calculAR(evolEstDeb, evolEstFin)
