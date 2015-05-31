@@ -69,7 +69,7 @@ Partial Class GraphiquePValeur
         Me.GraphiqueChart.TabIndex = 3
         Me.GraphiqueChart.Text = "P-Valeur"
         Title1.Name = "Title1"
-        Title1.Text = "P-Valeurs en fonction de la fenêtre d'événement"
+        Title1.Text = "P-Valeurs en fonction de la taille de la fenêtre d'événement"
         Me.GraphiqueChart.Titles.Add(Title1)
         '
         'SaveGraph

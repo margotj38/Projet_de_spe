@@ -31,6 +31,7 @@ Partial Class ChoixSeuilFenetre
         Me.FenetreEstFinBox = New System.Windows.Forms.TextBox()
         Me.FenetreEstDebBox = New System.Windows.Forms.TextBox()
         Me.Label1 = New System.Windows.Forms.Label()
+        Me.Ajustement = New System.Windows.Forms.CheckBox()
         Me.SuspendLayout()
         '
         'FenetreText
@@ -44,21 +45,21 @@ Partial Class ChoixSeuilFenetre
         '
         'FenetreDebBox
         '
-        Me.FenetreDebBox.Location = New System.Drawing.Point(18, 177)
+        Me.FenetreDebBox.Location = New System.Drawing.Point(18, 167)
         Me.FenetreDebBox.Name = "FenetreDebBox"
         Me.FenetreDebBox.Size = New System.Drawing.Size(100, 20)
         Me.FenetreDebBox.TabIndex = 7
         '
         'FenetreFinBox
         '
-        Me.FenetreFinBox.Location = New System.Drawing.Point(169, 177)
+        Me.FenetreFinBox.Location = New System.Drawing.Point(169, 167)
         Me.FenetreFinBox.Name = "FenetreFinBox"
         Me.FenetreFinBox.Size = New System.Drawing.Size(100, 20)
         Me.FenetreFinBox.TabIndex = 8
         '
         'PValeur
         '
-        Me.PValeur.Location = New System.Drawing.Point(82, 229)
+        Me.PValeur.Location = New System.Drawing.Point(86, 203)
         Me.PValeur.Name = "PValeur"
         Me.PValeur.Size = New System.Drawing.Size(111, 23)
         Me.PValeur.TabIndex = 10
@@ -67,7 +68,7 @@ Partial Class ChoixSeuilFenetre
         '
         'PValeurFenetre
         '
-        Me.PValeurFenetre.Location = New System.Drawing.Point(72, 286)
+        Me.PValeurFenetre.Location = New System.Drawing.Point(76, 315)
         Me.PValeurFenetre.Name = "PValeurFenetre"
         Me.PValeurFenetre.Size = New System.Drawing.Size(133, 49)
         Me.PValeurFenetre.TabIndex = 11
@@ -85,14 +86,14 @@ Partial Class ChoixSeuilFenetre
         '
         'FenetreEstFinBox
         '
-        Me.FenetreEstFinBox.Location = New System.Drawing.Point(169, 106)
+        Me.FenetreEstFinBox.Location = New System.Drawing.Point(169, 96)
         Me.FenetreEstFinBox.Name = "FenetreEstFinBox"
         Me.FenetreEstFinBox.Size = New System.Drawing.Size(100, 20)
         Me.FenetreEstFinBox.TabIndex = 16
         '
         'FenetreEstDebBox
         '
-        Me.FenetreEstDebBox.Location = New System.Drawing.Point(18, 106)
+        Me.FenetreEstDebBox.Location = New System.Drawing.Point(18, 96)
         Me.FenetreEstDebBox.Name = "FenetreEstDebBox"
         Me.FenetreEstDebBox.Size = New System.Drawing.Size(100, 20)
         Me.FenetreEstDebBox.TabIndex = 15
@@ -102,14 +103,25 @@ Partial Class ChoixSeuilFenetre
         Me.Label1.AutoSize = True
         Me.Label1.Location = New System.Drawing.Point(17, 67)
         Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(101, 13)
+        Me.Label1.Size = New System.Drawing.Size(104, 13)
         Me.Label1.TabIndex = 14
-        Me.Label1.Text = "Fenêtre d'estimation"
+        Me.Label1.Text = "Fenêtre d'estimation "
+        '
+        'Ajustement
+        '
+        Me.Ajustement.AutoSize = True
+        Me.Ajustement.Location = New System.Drawing.Point(45, 292)
+        Me.Ajustement.Name = "Ajustement"
+        Me.Ajustement.Size = New System.Drawing.Size(201, 17)
+        Me.Ajustement.TabIndex = 17
+        Me.Ajustement.Text = "Ajustement de la fenêtre d'estimation "
+        Me.Ajustement.UseVisualStyleBackColor = True
         '
         'ChoixSeuilFenetre
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.Controls.Add(Me.Ajustement)
         Me.Controls.Add(Me.FenetreEstFinBox)
         Me.Controls.Add(Me.FenetreEstDebBox)
         Me.Controls.Add(Me.Label1)
@@ -134,5 +146,6 @@ Partial Class ChoixSeuilFenetre
     Friend WithEvents FenetreEstFinBox As System.Windows.Forms.TextBox
     Friend WithEvents FenetreEstDebBox As System.Windows.Forms.TextBox
     Friend WithEvents Label1 As System.Windows.Forms.Label
+    Friend WithEvents Ajustement As System.Windows.Forms.CheckBox
 
 End Class

@@ -4,15 +4,15 @@ Imports System.Diagnostics
 Public Class ThisAddIn
 
     'Calcule les AR avec le modèle considéré
-    Public Function calculAR(fenetreDebut As Integer) As Double(,)
+    Public Function calculAR(fenetreEstDebut As Integer, fenetreEstFin As Integer) As Double(,)
         'appelle une fonction pour chaque modèle
         Select Case Globals.Ribbons.Ruban.choixSeuilFenetre.modele
             Case 0
-                calculAR = modeleMoyenne(fenetreDebut)
+                calculAR = modeleMoyenne(fenetreEstDebut, fenetreEstFin)
             Case 1
                 calculAR = modeleMarcheSimple()
             Case 2
-                calculAR = modeleMarche(fenetreDebut)
+                calculAR = modeleMarche(fenetreEstDebut, fenetreEstFin)
             Case Else
                 MsgBox("Erreur interne : numero de modèle incorrect dans ChoixSeuilFenetre", 16)
                 calculAR = Nothing
@@ -20,105 +20,76 @@ Public Class ThisAddIn
     End Function
 
     'Calcule les CAR "normalisés" pour le test statistique
-    Public Function calculCAR(tabAR As Double(,), fenetreDebut As Integer, fenetreFin As Integer) As Double()
+    Public Function calculCAR(tabAR As Double(,), fenetreEstDebut As Integer, fenetreEstFin As Integer, fenetreEvDebut As Integer, fenetreEvFin As Integer) As Double()
         Dim normCar(tabAR.GetUpperBound(1)) As Double   'Variable aléatoire correspondant aux CAR "normalisés"
         Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("Rt"), Excel.Worksheet)
-        Dim indDebFenetre As Integer = 2 + fenetreDebut - currentSheet.Cells(2, 1).Value
-        Dim indFinFenetre As Integer = 2 + fenetreFin - currentSheet.Cells(2, 1).Value
-        Dim tailleFenetre As Integer = fenetreFin - fenetreDebut + 1
+        Dim indFenetreEstDeb As Integer = fenetreEstDebut - currentSheet.Cells(2, 1).Value
+        Dim indFenetreEstFin As Integer = fenetreEstFin - currentSheet.Cells(2, 1).Value
+        Dim indFenetreEvDeb As Integer = fenetreEvDebut - currentSheet.Cells(2, 1).Value
+        Dim indFenetreEvFin As Integer = fenetreEvFin - currentSheet.Cells(2, 1).Value
+        Dim tailleFenetreEst As Integer = fenetreEstFin - fenetreEstDebut + 1
+        Dim tailleFenetreEv As Integer = fenetreEvFin - fenetreEvDebut + 1
 
         'Calcul de la statistique pour chaque entreprise
         For colonne = 0 To tabAR.GetUpperBound(1)
             'Calcul de CAR sur la fenetre d'événement paramétrée
             Dim CAR As Double = 0
-            For i = indDebFenetre - 2 To indFinFenetre - 2
+            For i = indFenetreEvDeb To indFenetreEvFin
                 CAR = CAR + tabAR(i, colonne)
             Next i
             Dim moyenne As Double = 0
-            For i = 0 To indDebFenetre - 1 - 2
+            For i = indFenetreEstDeb To indFenetreEstFin
                 moyenne = moyenne + tabAR(i, colonne)
             Next i
-            moyenne = moyenne / (indDebFenetre - 2)
+            moyenne = moyenne / tailleFenetreEst
             'Calcul de la variance des AR sur la période d'estimation
             Dim variance As Double = 0
-            For i = 0 To indDebFenetre - 1 - 2
+            For i = indFenetreEstDeb To indFenetreEstFin
                 Dim tmp As Double = tabAR(i, colonne) - moyenne
                 variance = variance + tmp * tmp
             Next i
-            variance = variance / (indDebFenetre - 3)
-            normCar(colonne) = CAR / Math.Sqrt(tailleFenetre * variance)
+            variance = variance / (tailleFenetreEst - 1)
+            normCar(colonne) = CAR / Math.Sqrt(tailleFenetreEv * variance)
             'Debug.WriteLine(normCar(colonne))
         Next colonne
         'retourne le tableau des CAR normalisés
         calculCAR = normCar
     End Function
 
-    ''Calcul la statistique de test et effectue le test
-    ''Renvoie true si l'hypothèse est rejetée
-    'Public Function ThisAddIn_MethodeTabCAR(tabAR As Double(,), fenetreDebut As Integer, fenetreFin As Integer) As Double
-    '    Dim varCAR(tabAR.GetUpperBound(1)) As Double                     'Variable aléatoire correspondant aux CAR
-    '    Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("Rt"), Excel.Worksheet)
-    '    Dim indDebFenetre As Integer = 2 + fenetreDebut - currentSheet.Cells(2, 1).Value
-    '    Dim indFinFenetre As Integer = 2 + fenetreFin - currentSheet.Cells(2, 1).Value
-    '    Dim tailleFenetre As Integer = fenetreFin - fenetreDebut + 1
-
-    '    'Calcul de la statistique pour chaque entreprise
-    '    For colonne = 0 To tabAR.GetUpperBound(1)
-    '        'Calcul de CAR sur la fenetre d'événement
-    '        Dim CAR As Double = 0
-    '        For i = indDebFenetre - 2 To indFinFenetre - 2
-    '            CAR = CAR + tabAR(i, colonne)
-    '        Next i
-    '        Dim moyenne As Double = 0
-    '        For i = 0 To indDebFenetre - 1 - 2
-    '            moyenne = moyenne + tabAR(i, colonne)
-    '        Next i
-    '        moyenne = moyenne / (indDebFenetre - 2)
-    '        'Calcul de la variance des AR sur la période d'estimation
-    '        Dim variance As Double = 0
-    '        For i = 0 To indDebFenetre - 1 - 2
-    '            Dim tmp As Double = tabAR(i, colonne) - moyenne
-    '            variance = variance + tmp * tmp
-    '        Next i
-    '        variance = variance / (indDebFenetre - 3)
-    '        varCAR(colonne) = CAR / Math.Sqrt(tailleFenetre * variance)
-    '    Next colonne
-
-    '    'Test statistique
-    '    ThisAddIn_MethodeTabCAR = calculStatistique(varCAR, tabAR.GetLength(1))
-    'End Function
-
     'Estimation des AR à partir du modèle de marché : K = alpha + beta*Rm
-    Public Function modeleMarche(fenetreDebut As Integer) As Double(,)
-        'on se positionne sur la feuille des Rt
+    Public Function modeleMarche(fenetreEstDebut As Integer, fenetreEstFin As Integer) As Double(,)
+        'On se positionne sur la feuille des Rt
         Dim currentSheet As Excel.Worksheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
-        'compte le nombre de lignes et de colonnes
+        'On compte le nombre de lignes et de colonnes
         Dim nbLignes As Integer = currentSheet.UsedRange.Rows.Count
         Dim nbColonnes As Integer = currentSheet.UsedRange.Columns.Count
-        'tableau stockant les AR calculés grâce à la régression
+
+        'Indices de la fenetre d'estimation
+        Dim indFenetreEstDeb As Integer = 2 + fenetreEstDebut - currentSheet.Cells(2, 1).Value
+        Dim indFenetreEstFin As Integer = 2 + fenetreEstFin - currentSheet.Cells(2, 1).Value
+
+        'Tableau stockant les AR calculés grâce à la régression
         Dim tabAR(nbLignes - 2, nbColonnes - 2) As Double
-        'indice de ligne de la dernière ligne de l'ensemble d'apprentissage
-        Dim dernLigne As Integer = 1 + fenetreDebut - currentSheet.Cells(2, 1).Value
 
         For i = 0 To nbColonnes - 2
             Dim plageY As Excel.Range
             Dim plageX As Excel.Range
-            plageY = Application.Range(currentSheet.Cells(2, i + 2), currentSheet.Cells(dernLigne, i + 2))
-            'on se positionne sur la feuille des Rm pour récupérer plageX
+            plageY = Application.Range(currentSheet.Cells(indFenetreEstDeb, i + 2), currentSheet.Cells(indFenetreEstFin, i + 2))
+            'On se positionne sur la feuille des Rm pour récupérer plageX
             currentSheet = CType(Application.Worksheets("Rm"), Excel.Worksheet)
-            plageX = Application.Range(currentSheet.Cells(2, i + 2), currentSheet.Cells(dernLigne, i + 2))
-            'calcul des paramètres de la régression linéaire
+            plageX = Application.Range(currentSheet.Cells(indFenetreEstDeb, i + 2), currentSheet.Cells(indFenetreEstFin, i + 2))
+            'Calcul des paramètres de la régression linéaire
             Dim beta As Double = Application.WorksheetFunction.Index(Application.WorksheetFunction.LinEst(plageY, plageX), 1)
             Dim alpha As Double = Application.WorksheetFunction.Index(Application.WorksheetFunction.LinEst(plageY, plageX), 2)
 
-            'remplissage du tableau
+            'Remplissage du tableau
             For t = 0 To nbLignes - 2
                 Dim k As Double = alpha + beta * currentSheet.Cells(t + 2, i + 2).Value
                 currentSheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
                 tabAR(t, i) = currentSheet.Cells(t + 2, i + 2).Value - k
                 currentSheet = CType(Application.Worksheets("Rm"), Excel.Worksheet)
             Next
-            'on retourne sur la feuille des Rt
+            'On retourne sur la feuille des Rt
             currentSheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
         Next
         modeleMarche = tabAR
@@ -146,19 +117,22 @@ Public Class ThisAddIn
     End Function
 
     'Estimation des AR à partir du modèle de la moyenne : K = R
-    Public Function modeleMoyenne(fenetreDebut As Integer) As Double(,)
+    Public Function modeleMoyenne(fenetreEstDebut As Integer, fenetreEstFin As Integer) As Double(,)
         Dim currentSheet As Excel.Worksheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
-        'compte le nombre de lignes et de colonnes
+        'On compte le nombre de lignes et de colonnes
         Dim nbLignes As Integer = currentSheet.UsedRange.Rows.Count
         Dim nbColonnes As Integer = currentSheet.UsedRange.Columns.Count
+
+        'Indices de la fenetre d'estimation
+        Dim indFenetreEstDeb As Integer = 2 + fenetreEstDebut - currentSheet.Cells(2, 1).Value
+        Dim indFenetreEstFin As Integer = 2 + fenetreEstFin - currentSheet.Cells(2, 1).Value
+
         'Tableau des moyennes de chaque titre
         Dim tabMoy(nbColonnes - 2) As Double
-        'indice de début de la fenêtre
-        Dim indDebFenetre As Integer = 2 + fenetreDebut - currentSheet.Cells(2, 1).Value
 
         'Calcul des moyennes
         For colonne = 2 To nbColonnes
-            Dim plage As Excel.Range = Application.Range(currentSheet.Cells(2, colonne), currentSheet.Cells(indDebFenetre - 1, colonne))
+            Dim plage As Excel.Range = Application.Range(currentSheet.Cells(indFenetreEstDeb, colonne), currentSheet.Cells(indFenetreEstFin, colonne))
             tabMoy(colonne - 2) = Application.WorksheetFunction.Average(plage)
         Next colonne
 
@@ -172,30 +146,32 @@ Public Class ThisAddIn
         modeleMoyenne = tabAR
     End Function
 
-    Public Function patellTest(tabAR(,) As Double, fenetreDebut As Integer, fenetreFin As Integer) As Double
+    Public Function patellTest(tabAR(,) As Double, fenetreEstDebut As Integer, fenetreEstFin As Integer, fenetreEvDebut As Integer, fenetreEvFin As Integer) As Double
         'La formule utilisée est donnée page 80 de "Eventus-Guide"
-        'on se positionne sur la feuille des Rt
+        'On se positionne sur la feuille des Rt
         Dim currentSheet As Excel.Worksheet = CType(Application.Worksheets("Rm"), Excel.Worksheet)
-        'Nombre de lignes
-        Dim nbLignes As Integer = currentSheet.UsedRange.Rows.Count
-        'indice de ligne de la dernière ligne de l'ensemble d'apprentissage
-        Dim dernLigne As Integer = 1 + fenetreDebut - currentSheet.Cells(2, 1).Value
-        Dim M As Integer = dernLigne - 1
+
+        'Indices de la fenêtre d'estimation
+        Dim indFenetreEstDeb As Integer = fenetreEstDebut - currentSheet.Cells(2, 1).Value
+        Dim indFenetreEstFin As Integer = fenetreEstFin - currentSheet.Cells(2, 1).Value
+        Dim indFenetreEvDeb As Integer = fenetreEvDebut - currentSheet.Cells(2, 1).Value
+        Dim indFenetreEvFin As Integer = fenetreEvFin - currentSheet.Cells(2, 1).Value
+        Dim M As Integer = indFenetreEstFin - indFenetreEstDeb + 1
 
         Dim sAtjCarre(tabAR.GetUpperBound(0), tabAR.GetUpperBound(1)) As Double
 
         'Calcul des (s_Aj)²
         Dim sAjCarre(tabAR.GetUpperBound(1)) As Double
-        sAjCarre = patellCalcSAj(tabAR, dernLigne)
+        sAjCarre = patellCalcSAj(tabAR, indFenetreEstDeb, indFenetreEstFin)
 
         'Attention, modification de la formule : on l'étend à plusieurs Rm => toujours ok ?
         'Calcul des Rm_Est
         Dim rmEst(tabAR.GetUpperBound(1)) As Double
-        rmEst = patellCalcRmEst(tabAR.GetLength(1), dernLigne)
+        rmEst = patellCalcRmEst(tabAR.GetLength(1), indFenetreEstDeb, indFenetreEstFin)
 
         'Calcul somme au dénominateur
         Dim sommeDenom(tabAR.GetUpperBound(1)) As Double
-        sommeDenom = patellCalcSommeDenom(rmEst, dernLigne)
+        sommeDenom = patellCalcSommeDenom(rmEst, indFenetreEstDeb, indFenetreEstFin)
 
         'Calcul de la formule complète
         For i = 0 To sAtjCarre.GetUpperBound(0)
@@ -213,74 +189,62 @@ Public Class ThisAddIn
             Next j
         Next i
 
-        'Les SAR semblent ok
-        Dim tsar(tabAR.GetUpperBound(0)) As Double
-        For t = 0 To tabAR.GetUpperBound(0)
-            tsar(t) = 0
-            For i = 0 To tabAR.GetUpperBound(1)
-                tsar(t) = tsar(t) + SAR(t, i)
-            Next
-        Next
-
-
         'Calcul de Z-t1,t2
         Dim testHyp As Double
-        testHyp = patellCalcZ(SAR, fenetreDebut, fenetreFin, M)
+        testHyp = patellCalcZ(SAR, indFenetreEvDeb, indFenetreEvFin, M)
         Return testHyp
     End Function
 
-    Private Function patellCalcSAj(tabAR(,) As Double, dernLigne As Integer) As Double()
+    Private Function patellCalcSAj(tabAR(,) As Double, indFenetreEstDeb As Integer, indFenetreEstFin As Integer) As Double()
         Dim sAjCarre(tabAR.GetUpperBound(1)) As Double
         For colonne = 0 To tabAR.GetUpperBound(1)
             sAjCarre(colonne) = 0
-            For k = 0 To dernLigne - 2
+            For k = indFenetreEstDeb To indFenetreEstFin
                 sAjCarre(colonne) = sAjCarre(colonne) + tabAR(k, colonne) * tabAR(k, colonne)
             Next k
-            sAjCarre(colonne) = sAjCarre(colonne) / (dernLigne - 1 - 2)
+            sAjCarre(colonne) = sAjCarre(colonne) / (indFenetreEstFin - indFenetreEstDeb + 1)
         Next colonne
         Return sAjCarre
     End Function
 
-    Private Function patellCalcRmEst(nbTitres As Integer, dernLigne As Integer) As Double()
-        'on se positionne sur la feuille des Rm
+    Private Function patellCalcRmEst(nbTitres As Integer, indFenetreEstDeb As Integer, indFenetreEstFin As Integer) As Double()
+        'On se positionne sur la feuille des Rm
         Dim currentSheet As Excel.Worksheet = CType(Application.Worksheets("Rm"), Excel.Worksheet)
         Dim rmEst(nbTitres - 1) As Double
         For colonne = 0 To nbTitres - 1
             rmEst(colonne) = 0
-            For i = 2 To dernLigne
-                rmEst(colonne) = rmEst(colonne) + currentSheet.Cells(i, colonne + 2).Value
+            For i = indFenetreEstDeb To indFenetreEstFin
+                rmEst(colonne) = rmEst(colonne) + currentSheet.Cells(i + 2, colonne + 2).Value
             Next i
-            rmEst(colonne) = rmEst(colonne) / (dernLigne - 1)
+            rmEst(colonne) = rmEst(colonne) / (indFenetreEstFin - indFenetreEstDeb + 1)
         Next colonne
         Return rmEst
     End Function
 
-    Private Function patellCalcSommeDenom(rmEst As Double(), dernLigne As Integer) As Double()
+    Private Function patellCalcSommeDenom(rmEst As Double(), indFenetreEstDeb As Integer, indFenetreEstFin As Integer) As Double()
         'on se positionne sur la feuille des Rm
         Dim currentSheet As Excel.Worksheet = CType(Application.Worksheets("Rm"), Excel.Worksheet)
         Dim sommeDenom(rmEst.GetUpperBound(0)) As Double
 
         For colonne = 0 To rmEst.GetUpperBound(0)
             sommeDenom(colonne) = 0
-            For i = 2 To dernLigne
-                Dim tmp As Double = currentSheet.Cells(i, colonne + 2).Value - rmEst(colonne)
+            For i = indFenetreEstDeb To indFenetreEstFin
+                Dim tmp As Double = currentSheet.Cells(i + 2, colonne + 2).Value - rmEst(colonne)
                 sommeDenom(colonne) = sommeDenom(colonne) + tmp * tmp
             Next i
         Next colonne
         Return sommeDenom
     End Function
 
-    Private Function patellCalcZ(SAR As Double(,), t1 As Integer, t2 As Integer, M As Integer) As Double
+    Private Function patellCalcZ(SAR As Double(,), indFenetreEvDeb As Integer, indFenetreEvFin As Integer, M As Integer) As Double
         Dim currentSheet As Excel.Worksheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
-        Dim indDebFenetre As Integer = t1 - currentSheet.Cells(2, 1).Value - 1
-        Dim indFinFenetre As Integer = t2 - currentSheet.Cells(2, 1).Value - 1
 
-        Dim q As Double = (t2 - t1 + 1) * (M - 2) / (M - 4)
+        Dim q As Double = (indFenetreEvFin - indFenetreEvDeb + 1) * (M - 2) / (M - 4)
 
         Dim z As Double = 0
         For colonne = 0 To SAR.GetUpperBound(1)
             Dim zj As Double = 0
-            For t = indDebFenetre To indFinFenetre
+            For t = indFenetreEvDeb To indFenetreEvFin
                 zj = zj + SAR(t, colonne)
             Next t
             z = z + zj / Math.Sqrt(q)
@@ -293,37 +257,49 @@ Public Class ThisAddIn
         Return Application.WorksheetFunction.T_Dist_2T(testHyp, tailleEchant - 1)
     End Function
 
-    Public Sub tracerPValeur(tailleEchant As Integer, maxFenetre As Integer)
-        For i = 0 To maxFenetre
+    Public Sub tracerPValeur(tailleEchant As Integer, ajustementEst As Boolean, fenetreEstDebut As Integer, _
+                             fenetreEstFin As Integer, fenetreEvDebut As Integer, fenetreEvFin As Integer)
+        Dim evolEstDeb As Integer = fenetreEstDebut
+        Dim evolEstFin As Integer = fenetreEstFin
+        Dim evolEvDeb As Integer = fenetreEvDebut
+        Dim evolEvFin As Integer = fenetreEvFin
+
+        'Tant que la fenêtre contient au moins un élément
+        While evolEvFin >= evolEvDeb
             Dim tabAR As Double(,)
-            tabAR = Globals.ThisAddIn.calculAR(-i)
+            tabAR = calculAR(evolEstDeb, evolEstFin)
+
             Dim pValeur As Double
 
             Select Case Globals.Ribbons.Ruban.choixSeuilFenetre.test
                 Case 0
-                    'test simple'
+                    'test simple
                     Dim tabCAR As Double()
-                    tabCAR = Globals.ThisAddIn.calculCAR(tabAR, -i, i)
+                    tabCAR = Globals.ThisAddIn.calculCAR(tabAR, evolEstDeb, evolEstFin, evolEvDeb, evolEvFin)
                     Dim testHyp As Double = Globals.ThisAddIn.calculStatistique(tabCAR)
                     pValeur = Globals.ThisAddIn.calculPValeur(tailleEchant, testHyp) * 100
                 Case 1
-                    'test de Patell'
-                    Dim testHyp As Double = Globals.ThisAddIn.patellTest(tabAR, -i, i)
+                    'test de Patell
+                    Dim testHyp As Double = Globals.ThisAddIn.patellTest(tabAR, evolEstDeb, evolEstFin, evolEvDeb, evolEvFin)
                     pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHyp), True)) * 100
                 Case 2
-                    'test de signe : à compléter'
+                    'test de signe
                     pValeur = 0
             End Select
 
-            'Dim testHyp As Double = Globals.ThisAddIn.calculStatistique(tabCAR)
-            'Dim pValeur As Double = Globals.ThisAddIn.calculPValeur(tailleEchant, testHyp) * 100
-
             Dim p As New DataPoint
-            p.XValue = i
+            p.XValue = evolEvFin - evolEvDeb + 1 'nombre de dates dans la période d'événement
             p.YValues = {pValeur.ToString("0.00000")}
 
             Globals.Ribbons.Ruban.graphPVal.GraphiqueChart.Series("Series1").Points.Add(p)
-        Next i
+
+            'On fait évoluer les bornes
+            evolEvDeb = evolEvDeb + 1
+            evolEvFin = evolEvFin - 1
+            If ajustementEst Then
+                evolEstFin = evolEstFin + 1
+            End If
+        End While
     End Sub
 
     'A revoir !!
@@ -336,6 +312,7 @@ Public Class ThisAddIn
         Dim cptPosAR As Double
         cptPosAR = 0
 
+        'On prend les AR sur la fenêtre d'événement
         For colonne = 0 To tabAR.GetUpperBound(1)
             For i = indDebFenetre - 2 To indFinFenetre - 2
                 If (tabAR(i, colonne) > 0) Then

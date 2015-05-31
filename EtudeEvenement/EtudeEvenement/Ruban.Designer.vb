@@ -50,15 +50,15 @@
         Me.ModeleMarcheSimple = Me.Factory.CreateRibbonButton
         Me.ModeleMarche = Me.Factory.CreateRibbonButton
         Me.AR = Me.Factory.CreateRibbonButton
-        Me.Menu1 = Me.Factory.CreateRibbonMenu
+        Me.ModeleMoy = Me.Factory.CreateRibbonMenu
         Me.testSimpleR = Me.Factory.CreateRibbonButton
         Me.TestPatellR = Me.Factory.CreateRibbonButton
         Me.testSigneR = Me.Factory.CreateRibbonButton
-        Me.Menu2 = Me.Factory.CreateRibbonMenu
+        Me.ModeleMS = Me.Factory.CreateRibbonMenu
         Me.testSimpleMS = Me.Factory.CreateRibbonButton
         Me.testPatellMS = Me.Factory.CreateRibbonButton
         Me.testSigneMS = Me.Factory.CreateRibbonButton
-        Me.Menu3 = Me.Factory.CreateRibbonMenu
+        Me.ModeleM = Me.Factory.CreateRibbonMenu
         Me.testSimpleM = Me.Factory.CreateRibbonButton
         Me.testPatellM = Me.Factory.CreateRibbonButton
         Me.testSigneM = Me.Factory.CreateRibbonButton
@@ -91,9 +91,9 @@
         '
         'Group1
         '
-        Me.Group1.Items.Add(Me.Menu1)
-        Me.Group1.Items.Add(Me.Menu2)
-        Me.Group1.Items.Add(Me.Menu3)
+        Me.Group1.Items.Add(Me.ModeleMoy)
+        Me.Group1.Items.Add(Me.ModeleMS)
+        Me.Group1.Items.Add(Me.ModeleM)
         Me.Group1.Label = "Modèles"
         Me.Group1.Name = "Group1"
         '
@@ -117,16 +117,16 @@
         Me.AR.Label = "Etude depuis AR"
         Me.AR.Name = "AR"
         '
-        'Menu1
+        'ModeleMoy
         '
-        Me.Menu1.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
-        Me.Menu1.Image = CType(resources.GetObject("Menu1.Image"), System.Drawing.Image)
-        Me.Menu1.Items.Add(Me.testSimpleR)
-        Me.Menu1.Items.Add(Me.TestPatellR)
-        Me.Menu1.Items.Add(Me.testSigneR)
-        Me.Menu1.Label = "Modèle moyenne des rentabilités"
-        Me.Menu1.Name = "Menu1"
-        Me.Menu1.ShowImage = True
+        Me.ModeleMoy.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
+        Me.ModeleMoy.Image = CType(resources.GetObject("ModeleMoy.Image"), System.Drawing.Image)
+        Me.ModeleMoy.Items.Add(Me.testSimpleR)
+        Me.ModeleMoy.Items.Add(Me.TestPatellR)
+        Me.ModeleMoy.Items.Add(Me.testSigneR)
+        Me.ModeleMoy.Label = "Modèle moyenne des rentabilités"
+        Me.ModeleMoy.Name = "ModeleMoy"
+        Me.ModeleMoy.ShowImage = True
         '
         'testSimpleR
         '
@@ -146,16 +146,16 @@
         Me.testSigneR.Name = "testSigneR"
         Me.testSigneR.ShowImage = True
         '
-        'Menu2
+        'ModeleMS
         '
-        Me.Menu2.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
-        Me.Menu2.Image = CType(resources.GetObject("Menu2.Image"), System.Drawing.Image)
-        Me.Menu2.Items.Add(Me.testSimpleMS)
-        Me.Menu2.Items.Add(Me.testPatellMS)
-        Me.Menu2.Items.Add(Me.testSigneMS)
-        Me.Menu2.Label = "Modèle de marché simplifié"
-        Me.Menu2.Name = "Menu2"
-        Me.Menu2.ShowImage = True
+        Me.ModeleMS.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
+        Me.ModeleMS.Image = CType(resources.GetObject("ModeleMS.Image"), System.Drawing.Image)
+        Me.ModeleMS.Items.Add(Me.testSimpleMS)
+        Me.ModeleMS.Items.Add(Me.testPatellMS)
+        Me.ModeleMS.Items.Add(Me.testSigneMS)
+        Me.ModeleMS.Label = "Modèle de marché simplifié"
+        Me.ModeleMS.Name = "ModeleMS"
+        Me.ModeleMS.ShowImage = True
         '
         'testSimpleMS
         '
@@ -175,16 +175,16 @@
         Me.testSigneMS.Name = "testSigneMS"
         Me.testSigneMS.ShowImage = True
         '
-        'Menu3
+        'ModeleM
         '
-        Me.Menu3.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
-        Me.Menu3.Image = CType(resources.GetObject("Menu3.Image"), System.Drawing.Image)
-        Me.Menu3.Items.Add(Me.testSimpleM)
-        Me.Menu3.Items.Add(Me.testPatellM)
-        Me.Menu3.Items.Add(Me.testSigneM)
-        Me.Menu3.Label = "Modèle de marché classique"
-        Me.Menu3.Name = "Menu3"
-        Me.Menu3.ShowImage = True
+        Me.ModeleM.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
+        Me.ModeleM.Image = CType(resources.GetObject("ModeleM.Image"), System.Drawing.Image)
+        Me.ModeleM.Items.Add(Me.testSimpleM)
+        Me.ModeleM.Items.Add(Me.testPatellM)
+        Me.ModeleM.Items.Add(Me.testSigneM)
+        Me.ModeleM.Label = "Modèle de marché classique"
+        Me.ModeleM.Name = "ModeleM"
+        Me.ModeleM.ShowImage = True
         '
         'testSimpleM
         '
@@ -228,9 +228,9 @@
     Friend WithEvents AR As Microsoft.Office.Tools.Ribbon.RibbonButton
     Friend WithEvents ModeleMoyenne As Microsoft.Office.Tools.Ribbon.RibbonButton
     Friend WithEvents Group1 As Microsoft.Office.Tools.Ribbon.RibbonGroup
-    Friend WithEvents Menu1 As Microsoft.Office.Tools.Ribbon.RibbonMenu
-    Friend WithEvents Menu2 As Microsoft.Office.Tools.Ribbon.RibbonMenu
-    Friend WithEvents Menu3 As Microsoft.Office.Tools.Ribbon.RibbonMenu
+    Friend WithEvents ModeleMoy As Microsoft.Office.Tools.Ribbon.RibbonMenu
+    Friend WithEvents ModeleMS As Microsoft.Office.Tools.Ribbon.RibbonMenu
+    Friend WithEvents ModeleM As Microsoft.Office.Tools.Ribbon.RibbonMenu
     Friend WithEvents testSimpleR As Microsoft.Office.Tools.Ribbon.RibbonButton
     Friend WithEvents TestPatellR As Microsoft.Office.Tools.Ribbon.RibbonButton
     Friend WithEvents testSigneR As Microsoft.Office.Tools.Ribbon.RibbonButton
