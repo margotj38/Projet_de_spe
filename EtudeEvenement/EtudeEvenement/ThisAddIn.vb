@@ -346,4 +346,60 @@ Public Class ThisAddIn
         calcul_variance = calcul_variance / (tab.GetLength(0) - 1)
     End Function
 
+    Public Sub calculRentabilite()
+        'Création de la feuille contenant les rentabilités
+        Application.Sheets.Add()
+        Application.ActiveSheet.Name = "Rt"
+        'On sélectionne la feuille contenant les cours
+        Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("Prix"), Excel.Worksheet)
+        Dim nbLignes As Integer = currentSheet.UsedRange.Rows.Count
+        Dim nbColonnes As Integer = currentSheet.UsedRange.Columns.Count
+
+        'On commence par recopier les dates
+        Dim tmp(nbLignes - 3) As Date
+        For ligne = 3 To nbLignes
+            tmp(ligne - 3) = currentSheet.Cells(ligne, 1).Value
+        Next ligne
+        'On se place sur la feuille des rentabilités
+        currentSheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
+        For ligne = 2 To nbLignes - 1
+            currentSheet.Cells(ligne, 1).Value = tmp(ligne - 2)
+        Next ligne
+
+        'On écrit la première ligne de la feuille des renatbilités
+        'Premiere case
+        currentSheet = CType(Application.Worksheets("Prix"), Excel.Worksheet)
+        Dim nom As String = currentSheet.Cells(1, 1).Value
+        currentSheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
+        currentSheet.Cells(1, 1).Value = nom
+        'Deuxième case
+        currentSheet = CType(Application.Worksheets("Prix"), Excel.Worksheet)
+        Dim marche As String = currentSheet.Cells(1, 2).Value
+        currentSheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
+        currentSheet.Cells(1, 2).Value = marche
+        'Cases suivantes
+        For colonne = 3 To nbColonnes
+            currentSheet.Cells(1, colonne).Value = "R" & colonne - 2
+        Next colonne
+
+        currentSheet = CType(Application.Worksheets("Prix"), Excel.Worksheet)
+
+        'On s'occupe des titres des entreprises et de la rentabilité de marché
+        'On calcule les rentabilités
+        Dim tabRenta(nbLignes - 3, nbColonnes - 2)
+        For titre = 2 To nbColonnes
+            For indDate = 3 To nbLignes
+                'On calcule la rentabilité
+                tabRenta(indDate - 3, titre - 2) = (currentSheet.Cells(indDate, titre).Value - currentSheet.Cells(indDate - 1, titre).Value) / currentSheet.Cells(indDate - 1, titre).Value
+            Next indDate
+        Next titre
+        'On affiche les rentabilités
+        currentSheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
+        For titre = 2 To nbColonnes
+            For indDate = 3 To nbLignes
+                currentSheet.Cells(indDate - 1, titre).Value = tabRenta(indDate - 3, titre - 2)
+            Next indDate
+        Next titre
+    End Sub
+
 End Class
