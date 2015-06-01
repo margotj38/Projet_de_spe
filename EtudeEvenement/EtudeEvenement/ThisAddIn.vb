@@ -433,7 +433,7 @@ Public Class ThisAddIn
         'Tri du tableau selon les dates
         Tri(datesEv, 2, LBound(datesEv, 1), UBound(datesEv, 1))
 
-        'on se positionne sur la feuille des rentabilités
+        'on se positionne sur la feuille des prix
         currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("Prix"), Excel.Worksheet)
         Dim nbLignes As Integer = currentSheet.UsedRange.Rows.Count
         Dim nbColonnes As Integer = currentSheet.UsedRange.Columns.Count
@@ -441,12 +441,11 @@ Public Class ThisAddIn
         'calul taille fenetre globale
         Dim minUp As Integer, minDown As Integer
         'indice premiere date evenement - indice premiere date
-        'minUp = currentSheet.Range("B:B").Find(datesEv(1, 2)).Row - 2
-        minUp = currentSheet.Range("B:B").Find(What:=CDate("18.07.2011")).Row - 2
+        minUp = currentSheet.Range("A:A").Find(Format(datesEv(1, 2), "Short date").ToString).Row - 2
         'indice derniere date - derniere date evenement
-        minDown = nbLignes - currentSheet.Columns("A:A").Find(datesEv(UBound(datesEv, 1), 2)).Row
+        minDown = nbLignes - currentSheet.Columns("A:A").Find(Format(datesEv(UBound(datesEv, 1), 2), "Short date").ToString).Row
 
-        'on se positionne sur la nouvelle feuille
+        'écritures des entêtes de lignes et colonnes sur la nouvelle feuille prixCentres
         currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("prixCentres"), Excel.Worksheet)
         currentSheet.Cells(1, 1).Value = "Date"
         For i = 2 To nbColonnes - 1
@@ -455,27 +454,36 @@ Public Class ThisAddIn
         For i = -minUp To minDown
             currentSheet.Cells(i + minUp + 2, 1).Value = i
         Next
+        'de même pour marcheCentre
+        currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("marcheCentre"), Excel.Worksheet)
+        currentSheet.Cells(1, 1).Value = "Date"
+        For i = 2 To nbColonnes - 1
+            currentSheet.Cells(1, i).Value = "Pm pour P" & i - 1
+        Next
+        For i = -minUp To minDown
+            currentSheet.Cells(i + minUp + 2, 1).Value = i
+        Next
 
-        For i = 0 To nbColonnes - 3
+        For i = 1 To nbColonnes - 2
             'on se positionne sur la feuille contenant les prix
             currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("Prix"), Excel.Worksheet)
             Dim fenetreInf As Integer, fenetreSup As Integer
             Dim dateCour As Excel.Range, firmeCour As Excel.Range
             Dim data As Excel.Range, marche As Excel.Range
-            dateCour = currentSheet.Columns("A:A").Find(datesEv(i, 2))
+            dateCour = currentSheet.Columns("A:A").Find(Format(datesEv(i, 2), "Short date").ToString)
             fenetreInf = dateCour.Row - minUp
             fenetreSup = dateCour.Row + minDown
-            firmeCour = currentSheet.Rows("1:1").Find(datesEv(i, 1))
+            firmeCour = currentSheet.Rows("1:1").Find(datesEv(i, 1).ToString)
             'récupération des prix centrés autour de l'évènement
             data = currentSheet.Range(currentSheet.Cells(fenetreInf, firmeCour.Column), currentSheet.Cells(fenetreSup, firmeCour.Column))
             'récupération des indices de marché correspondants
             marche = currentSheet.Range(currentSheet.Cells(fenetreInf, 2), currentSheet.Cells(fenetreSup, 2))
             'on se positionne sur la feuille contenant les prix centrés pour écrire dedans
             currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("prixCentres"), Excel.Worksheet)
-            currentSheet.Range(currentSheet.Cells(2, i + 2), currentSheet.Cells(minUp + minDown + 2, i + 2)).Value = data.Value
+            currentSheet.Range(currentSheet.Cells(2, i + 1), currentSheet.Cells(minUp + minDown + 2, i + 1)).Value = data.Value
             'on se positionne sur la feuille contenant les indices de marché pour écrire dedans
             currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("marcheCentre"), Excel.Worksheet)
-            currentSheet.Range(currentSheet.Cells(2, i + 2), currentSheet.Cells(minUp + minDown + 2, i + 2)).Value = marche.Value
+            currentSheet.Range(currentSheet.Cells(2, i + 1), currentSheet.Cells(minUp + minDown + 2, i + 1)).Value = marche.Value
         Next
     End Sub
 
