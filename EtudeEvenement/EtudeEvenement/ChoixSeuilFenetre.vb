@@ -95,8 +95,8 @@ Public Class ChoixSeuilFenetre
                         Dim testHyp As Double = Globals.ThisAddIn.patellTest(tabAR, fenetreEstDebut, fenetreEstFin, fenetreEvDebut, fenetreEvFin)
                         pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHyp), True)) * 100
                     Case 2
-                        'test de signe : à compléter'
-                        Dim testHyp As Double = Globals.ThisAddIn.statTestSigne(tabAR, fenetreEvDebut, fenetreEvFin)
+                        'test de signe'
+                        Dim testHyp As Double = Globals.ThisAddIn.statTestSigne(tabAR, fenetreEstDebut, fenetreEstFin, fenetreEvDebut, fenetreEvFin)
                         pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHyp), True)) * 100
                 End Select
 
