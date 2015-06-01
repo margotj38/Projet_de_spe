@@ -303,36 +303,41 @@ Public Class ThisAddIn
         Dim indFenetreEvFin As Integer = fenetreEvFin - currentSheet.Cells(2, 1).Value
         Dim tailleFenetreEst As Integer = fenetreEstFin - fenetreEstDebut + 1
         Dim tailleFenetreEv As Integer = fenetreEvFin - fenetreEvDebut + 1
+        Dim N = currentSheet.UsedRange.Columns.Count - 1
 
-        Dim nbPosAR As Double
-        nbPosAR = 0
+        Dim nbPosAR As Double = 0
         'On prend les AR > 0 sur la fenêtre d'événement
         For colonne = 0 To tabAR.GetUpperBound(1)
-            For i = indFenetreEvDeb To indFenetreEstFin
+            For i = indFenetreEvDeb To indFenetreEvFin
                 If (tabAR(i, colonne) > 0) Then
                     nbPosAR = nbPosAR + 1
                 End If
             Next i
         Next colonne
+        MsgBox(nbPosAR)
 
         'Estimation de p sur la fenêtre d'estimation
-        Dim p As Double
-        p = 0
+        Dim p As Double = 0
+        Dim nb As Double = 0
         For colonne = 0 To tabAR.GetUpperBound(1)
             For i = indFenetreEstDeb To indFenetreEstFin
                 If (tabAR(i, colonne) > 0) Then
-                    p = p + 1
+                    nb = nb + 1
                 End If
             Next i
-            p = p / tailleFenetreEst
+            p = p + nb / tailleFenetreEst
         Next colonne
+        MsgBox(p)
         p = p / tailleFenetreEv
+        MsgBox(p)
 
         'Calcul de la statistique du test
         Dim stat As Double
         stat = (nbPosAR - tailleFenetreEv * p) / (Math.Sqrt(tailleFenetreEv * p * (1 - p)))
-       
+
+        MsgBox(stat)
         statTestSigne = stat
+
     End Function
 
     'Renvoie true si l'hypothèse H0 est rejetée
