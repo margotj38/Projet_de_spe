@@ -314,7 +314,7 @@ Public Class ThisAddIn
                 End If
             Next i
         Next colonne
-        MsgBox(nbPosAR)
+        'MsgBox(nbPosAR)
 
         'Estimation de p sur la fenêtre d'estimation
         Dim p As Double = 0
@@ -329,13 +329,13 @@ Public Class ThisAddIn
         Next colonne
         MsgBox(p)
         p = p / tailleFenetreEv
-        MsgBox(p)
+        'MsgBox(p)
 
         'Calcul de la statistique du test
         Dim stat As Double
         stat = (nbPosAR - tailleFenetreEv * p) / (Math.Sqrt(tailleFenetreEv * p * (1 - p)))
 
-        MsgBox(stat)
+        'MsgBox(stat)
         statTestSigne = stat
 
     End Function

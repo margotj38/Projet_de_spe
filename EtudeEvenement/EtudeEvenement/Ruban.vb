@@ -1,7 +1,7 @@
 ﻿Imports Microsoft.Office.Tools.Ribbon
 Imports System.Windows.Forms.DataVisualization.Charting
 
-Public Class Ruban
+Public Class 
 
     'Public choixSeuil As ChoixSeuil
     'Public WithEvents myTaskPane As Microsoft.Office.Tools.CustomTaskPane
