@@ -257,17 +257,15 @@ Public Class ThisAddIn
         Return Application.WorksheetFunction.T_Dist_2T(testHyp, tailleEchant - 1)
     End Function
 
-    Public Sub tracerPValeur(tailleEchant As Integer, ajustementEst As Boolean, fenetreEstDebut As Integer, _
-                             fenetreEstFin As Integer, fenetreEvDebut As Integer, fenetreEvFin As Integer)
-        Dim evolEstDeb As Integer = fenetreEstDebut
-        Dim evolEstFin As Integer = fenetreEstFin
-        Dim evolEvDeb As Integer = fenetreEvDebut
-        Dim evolEvFin As Integer = fenetreEvFin
+    Public Sub tracerPValeur(tailleEchant As Integer, maxFenetre As Integer)
+        'Sélection de la feuille contenant les Rt
+        Dim currentSheet As Excel.Worksheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
 
         'Tant que la fenêtre contient au moins un élément
-        While evolEvFin >= evolEvDeb
+        For i = 0 To maxFenetre
             Dim tabAR As Double(,)
-            tabAR = calculAR(evolEstDeb, evolEstFin)
+            'On apprend sur toutes les données disponibles
+            tabAR = calculAR(currentSheet.Cells(2, 1).Value, -i - 1)
 
             Dim pValeur As Double
 
@@ -275,12 +273,12 @@ Public Class ThisAddIn
                 Case 0
                     'test simple
                     Dim tabCAR As Double()
-                    tabCAR = Globals.ThisAddIn.calculCAR(tabAR, evolEstDeb, evolEstFin, evolEvDeb, evolEvFin)
+                    tabCAR = Globals.ThisAddIn.calculCAR(tabAR, currentSheet.Cells(2, 1).Value, -i - 1, -i, i)
                     Dim testHyp As Double = Globals.ThisAddIn.calculStatistique(tabCAR)
                     pValeur = Globals.ThisAddIn.calculPValeur(tailleEchant, testHyp) * 100
                 Case 1
                     'test de Patell
-                    Dim testHyp As Double = Globals.ThisAddIn.patellTest(tabAR, evolEstDeb, evolEstFin, evolEvDeb, evolEvFin)
+                    Dim testHyp As Double = Globals.ThisAddIn.patellTest(tabAR, currentSheet.Cells(2, 1).Value, -i - 1, -i, i)
                     pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHyp), True)) * 100
                 Case 2
                     'test de signe
@@ -288,19 +286,40 @@ Public Class ThisAddIn
             End Select
 
             Dim p As New DataPoint
-            p.XValue = evolEvFin - evolEvDeb + 1 'nombre de dates dans la période d'événement
+            p.XValue = i
             p.YValues = {pValeur.ToString("0.00000")}
 
             Globals.Ribbons.Ruban.graphPVal.GraphiqueChart.Series("Series1").Points.Add(p)
-
-            'On fait évoluer les bornes
-            evolEvDeb = evolEvDeb + 1
-            evolEvFin = evolEvFin - 1
-            If ajustementEst Then
-                evolEstFin = evolEstFin + 1
-            End If
-        End While
+        Next i
     End Sub
+
+    'A revoir !!
+    Function statTestSigne(tabAR(,) As Double, fenetreDebut As Integer, fenetreFin As Double) As Double
+        Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("Rt"), Excel.Worksheet)
+        Dim indDebFenetre As Integer = 2 + fenetreDebut - currentSheet.Cells(2, 1).Value
+        Dim indFinFenetre As Integer = 2 + fenetreFin - currentSheet.Cells(2, 1).Value
+        'La taille de l'échantillon
+        Dim taille As Integer = (fenetreFin - fenetreDebut + 1) * (currentSheet.UsedRange.Columns.Count)
+        Dim cptPosAR As Double
+        cptPosAR = 0
+
+        'On prend les AR sur la fenêtre d'événement
+        For colonne = 0 To tabAR.GetUpperBound(1)
+            For i = indDebFenetre - 2 To indFinFenetre - 2
+                If (tabAR(i, colonne) > 0) Then
+                    cptPosAR = cptPosAR + 1
+                End If
+            Next i
+        Next colonne
+
+        Dim prop As Double
+        prop = cptPosAR / taille  'La proportion des valeurs positives
+        'MsgBox(prop)
+        cptPosAR = (prop - (taille / 2)) / (Math.Sqrt(taille / 4)) 'La statistique du test
+        'MsgBox(cptPosAR)
+        statTestSigne = cptPosAR
+    End Function
+
 
     'Renvoie true si l'hypothèse H0 est rejetée
     Public Function calculStatistique(tabCAR() As Double) As Double
