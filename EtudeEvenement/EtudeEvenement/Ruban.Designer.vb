@@ -41,15 +41,14 @@
     'Ne la modifiez pas à l'aide de l'éditeur de code.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Ruban))
         Me.EtudeEvenement = Me.Factory.CreateRibbonTab
         Me.ModelesClassiques = Me.Factory.CreateRibbonGroup
-        Me.TestsTemp = Me.Factory.CreateRibbonGroup
-        Me.Group1 = Me.Factory.CreateRibbonGroup
         Me.ModeleMoyenne = Me.Factory.CreateRibbonButton
         Me.ModeleMarcheSimple = Me.Factory.CreateRibbonButton
         Me.ModeleMarche = Me.Factory.CreateRibbonButton
+        Me.TestsTemp = Me.Factory.CreateRibbonGroup
         Me.AR = Me.Factory.CreateRibbonButton
+        Me.Group1 = Me.Factory.CreateRibbonGroup
         Me.ModeleMoy = Me.Factory.CreateRibbonMenu
         Me.testSimpleR = Me.Factory.CreateRibbonButton
         Me.TestPatellR = Me.Factory.CreateRibbonButton
@@ -83,20 +82,6 @@
         Me.ModelesClassiques.Label = "Modèles classiques"
         Me.ModelesClassiques.Name = "ModelesClassiques"
         '
-        'TestsTemp
-        '
-        Me.TestsTemp.Items.Add(Me.AR)
-        Me.TestsTemp.Label = "Tests temporaires"
-        Me.TestsTemp.Name = "TestsTemp"
-        '
-        'Group1
-        '
-        Me.Group1.Items.Add(Me.ModeleMoy)
-        Me.Group1.Items.Add(Me.ModeleMS)
-        Me.Group1.Items.Add(Me.ModeleM)
-        Me.Group1.Label = "Modèles"
-        Me.Group1.Name = "Group1"
-        '
         'ModeleMoyenne
         '
         Me.ModeleMoyenne.Label = "Modèle moyenne des rentabilités"
@@ -112,15 +97,29 @@
         Me.ModeleMarche.Label = "Modèle de marché classique"
         Me.ModeleMarche.Name = "ModeleMarche"
         '
+        'TestsTemp
+        '
+        Me.TestsTemp.Items.Add(Me.AR)
+        Me.TestsTemp.Label = "Tests temporaires"
+        Me.TestsTemp.Name = "TestsTemp"
+        '
         'AR
         '
         Me.AR.Label = "Etude depuis AR"
         Me.AR.Name = "AR"
         '
+        'Group1
+        '
+        Me.Group1.Items.Add(Me.ModeleMoy)
+        Me.Group1.Items.Add(Me.ModeleMS)
+        Me.Group1.Items.Add(Me.ModeleM)
+        Me.Group1.Label = "Modèles"
+        Me.Group1.Name = "Group1"
+        '
         'ModeleMoy
         '
         Me.ModeleMoy.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
-        Me.ModeleMoy.Image = CType(resources.GetObject("ModeleMoy.Image"), System.Drawing.Image)
+        Me.ModeleMoy.Image = Global.EtudeEvenement.My.Resources.Resources.Symbole_moyenne
         Me.ModeleMoy.Items.Add(Me.testSimpleR)
         Me.ModeleMoy.Items.Add(Me.TestPatellR)
         Me.ModeleMoy.Items.Add(Me.testSigneR)
@@ -149,7 +148,7 @@
         'ModeleMS
         '
         Me.ModeleMS.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
-        Me.ModeleMS.Image = CType(resources.GetObject("ModeleMS.Image"), System.Drawing.Image)
+        Me.ModeleMS.Image = Global.EtudeEvenement.My.Resources.Resources.up_down_market
         Me.ModeleMS.Items.Add(Me.testSimpleMS)
         Me.ModeleMS.Items.Add(Me.testPatellMS)
         Me.ModeleMS.Items.Add(Me.testSigneMS)
@@ -178,7 +177,7 @@
         'ModeleM
         '
         Me.ModeleM.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
-        Me.ModeleM.Image = CType(resources.GetObject("ModeleM.Image"), System.Drawing.Image)
+        Me.ModeleM.Image = Global.EtudeEvenement.My.Resources.Resources.resgress
         Me.ModeleM.Items.Add(Me.testSimpleM)
         Me.ModeleM.Items.Add(Me.testPatellM)
         Me.ModeleM.Items.Add(Me.testSigneM)
