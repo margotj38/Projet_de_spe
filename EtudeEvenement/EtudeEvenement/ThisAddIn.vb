@@ -416,6 +416,89 @@ Public Class ThisAddIn
         Next titre
     End Sub
 
+    'génère le tableau des prix centrés autour de la date d'évènement
+    '2 nouveaux onglets sont créés, un pour les prix, un pour le marché
+    Sub prixCentres()
+        'Création des deux nouvelles feuilles
+        Application.Sheets.Add()
+        Application.ActiveSheet.Name = "prixCentres"
+        Application.Sheets.Add()
+        Application.ActiveSheet.Name = "marcheCentre"
+
+        'on se positionne sur la feuille des evenements
+        Application.Worksheets("DateEvt").Select()
+        'tableau des dates d'évènements
+        Dim datesEv(,)
+        datesEv = Application.Range("A2:B101").Value
+        'Tri du tableau selon les dates
+        Tri(datesEv, 2, LBound(datesEv, 1), UBound(datesEv, 1))
+
+        'on se positionne sur la feuille des rentabilités
+        Application.Worksheets("Prix").Select()
+        Dim nbLignes As Integer = Application.ActiveSheet.UsedRange.Rows.Count
+        Dim nbColonnes As Integer = Application.ActiveSheet.UsedRange.Columns.Count
+
+        'calul taille fenetre globale
+        Dim minUp As Integer, minDown As Integer
+        'indice premiere date evenement - indice premiere date
+        minUp = Application.Columns("A:A").Find(datesEv(0, 1)).Row - 2
+        'indice derniere date - derniere date evenement
+        minDown = nbLignes - Application.Columns("A:A").Find(datesEv(UBound(datesEv, 1), 1)).Row
+
+        'on se positionne sur la nouvelle feuille
+        Application.Worksheets("prixCentres").Select()
+        Application.Cells(1, 1).Value = "Date"
+        For i = 2 To nbColonnes - 1
+            Application.Cells(1, i).Value = "P" & i - 1
+        Next
+        For i = -minUp To minDown
+            Application.Cells(i + minUp + 2, 1).Value = i
+        Next
+
+        For i = 0 To nbColonnes - 3
+            'on se positionne sur la feuille contenant les prix
+            Application.Worksheets("Prix").Select()
+            Dim fenetreInf As Integer, fenetreSup As Integer
+            Dim dateCour As Excel.Range, firmeCour As Excel.Range
+            Dim data As Excel.Range, marche As Excel.Range
+            dateCour = Application.Columns("A:A").Find(datesEv(i, 1))
+            fenetreInf = dateCour.Row - minUp
+            fenetreSup = dateCour.Row + minDown
+            firmeCour = Application.Rows("1:1").Find(datesEv(i, 0))
+            'récupération des prix centrés autour de l'évènement
+            data = Application.Range(Application.Cells(fenetreInf, firmeCour.Column), Application.Cells(fenetreSup, firmeCour.Column))
+            'récupération des indices de marché correspondants
+            marche = Application.Range(Application.Cells(fenetreInf, 2), Application.Cells(fenetreSup, 2))
+            'on se positionne sur la feuille contenant les prix centrés pour écrire dedans
+            Application.Worksheets("prixCentres").Select()
+            Application.Range(Application.Cells(2, i + 2), Application.Cells(minUp + minDown + 2, i + 2)).Value = data.Value
+            'on se positionne sur la feuille contenant les indices de marché pour écrire dedans
+            Application.Worksheets("marcheCentre").Select()
+            Application.Range(Application.Cells(2, i + 2), Application.Cells(minUp + minDown + 2, i + 2)).Value = marche.Value
+        Next
+    End Sub
+
+    Sub Tri(a(,), ColTri, gauc, droi) ' Quick sort
+        Dim ref As VariantType = a((gauc + droi) \ 2, ColTri)
+        Dim g As Integer = gauc
+        Dim d As Integer = droi
+        Do
+            Do While a(g, ColTri) < ref : g = g + 1 : Loop
+            Do While ref < a(d, ColTri) : d = d - 1 : Loop
+            If g <= d Then
+                For k = LBound(a, 2) To UBound(a, 2)
+                    Dim temp As VariantType = a(g, k)
+                    a(g, k) = a(d, k)
+                    a(d, k) = temp
+                Next k
+                g = g + 1
+                d = d - 1
+            End If
+        Loop While g <= d
+        If g < droi Then Call Tri(a, ColTri, g, droi)
+        If gauc < d Then Call Tri(a, ColTri, gauc, d)
+    End Sub
+
     Public Sub calculRentabiliteAvecNA()
         'Création de la feuille contenant les rentabilités
         Application.Sheets.Add()
