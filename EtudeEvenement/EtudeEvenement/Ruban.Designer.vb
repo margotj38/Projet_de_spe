@@ -119,7 +119,6 @@
         'ModeleMoy
         '
         Me.ModeleMoy.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
-        Me.ModeleMoy.Image = Global.EtudeEvenement.My.Resources.Resources.Symbole_moyenne
         Me.ModeleMoy.Items.Add(Me.testSimpleR)
         Me.ModeleMoy.Items.Add(Me.TestPatellR)
         Me.ModeleMoy.Items.Add(Me.testSigneR)
@@ -148,7 +147,6 @@
         'ModeleMS
         '
         Me.ModeleMS.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
-        Me.ModeleMS.Image = Global.EtudeEvenement.My.Resources.Resources.up_down_market
         Me.ModeleMS.Items.Add(Me.testSimpleMS)
         Me.ModeleMS.Items.Add(Me.testPatellMS)
         Me.ModeleMS.Items.Add(Me.testSigneMS)
@@ -177,7 +175,6 @@
         'ModeleM
         '
         Me.ModeleM.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
-        Me.ModeleM.Image = Global.EtudeEvenement.My.Resources.Resources.resgress
         Me.ModeleM.Items.Add(Me.testSimpleM)
         Me.ModeleM.Items.Add(Me.testPatellM)
         Me.ModeleM.Items.Add(Me.testSigneM)

@@ -467,15 +467,21 @@ Public Class ThisAddIn
         'On s'occupe des titres des entreprises
         'Variable permettant de savoir à quelle date il faut remonter (une avant, deux avant, ...)
         Dim prixPresent As Integer = 0
+        'Pour savoir combien de tableaux stockant les Rt et Rm on va déclaré
+        Dim maxPrixAbsent As Integer = 0
         'On calcule les rentabilités et les rentabilités de marché associées
         Dim tabRenta(nbLignes - 3, nbColonnes - 3)
         Dim tabRentaMarche(nbLignes - 3, nbColonnes - 3)
+
         For titre = 3 To nbColonnes
             For indDate = 2 To nbLignes
                 If prixPresent = 0 Then
                     'Si on est sur le premier prix
                     If Not Application.WorksheetFunction.IsNA(currentSheet.Cells(indDate, titre)) Then
                         prixPresent = prixPresent + 1
+                        If prixPresent > maxPrixAbsent Then
+                            maxPrixAbsent = prixPresent
+                        End If
                     End If
                 ElseIf Application.WorksheetFunction.IsNA(currentSheet.Cells(indDate, titre)) Then
                     'Si il n'y a pas de prix à cette date
@@ -483,6 +489,9 @@ Public Class ThisAddIn
                     tabRenta(indDate - 3, titre - 3) = Nothing
                     tabRentaMarche(indDate - 3, titre - 3) = Nothing
                     prixPresent = prixPresent + 1
+                    If prixPresent > maxPrixAbsent Then
+                        maxPrixAbsent = prixPresent
+                    End If
                 Else
                     'Sinon on fait le calcul en remontant au dernier prix disponible
                     tabRenta(indDate - 3, titre - 3) = (currentSheet.Cells(indDate, titre).Value - currentSheet.Cells(indDate - prixPresent, titre).Value) / currentSheet.Cells(indDate - prixPresent, titre).Value
@@ -497,6 +506,13 @@ Public Class ThisAddIn
             Next indDate
             prixPresent = 0
         Next titre
+
+        'On crée les tableaux de rentabilité (et rentabilité de marché) pour les périodes d'estimation et d'événement
+        Dim rentaEst()() As Double = New Double(maxPrixAbsent - 1)() {}
+        Dim rentaEv()() As Double = New Double(maxPrixAbsent - 1)() {}
+        For i = 0 To maxPrixAbsent - 1
+            rentaEst(i) = New Double() {}
+        Next i
 
         'On affiche les rentabilités
         currentSheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
