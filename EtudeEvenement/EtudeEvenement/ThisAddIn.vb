@@ -426,77 +426,79 @@ Public Class ThisAddIn
         Application.ActiveSheet.Name = "marcheCentre"
 
         'on se positionne sur la feuille des evenements
-        Application.Worksheets("DateEvt").Select()
+        Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("DateEvt"), Excel.Worksheet)
         'tableau des dates d'évènements
         Dim datesEv(,)
-        datesEv = Application.Range("A2:B101").Value
+        datesEv = currentSheet.Range("A2:B101").Value
         'Tri du tableau selon les dates
         Tri(datesEv, 2, LBound(datesEv, 1), UBound(datesEv, 1))
 
         'on se positionne sur la feuille des rentabilités
-        Application.Worksheets("Prix").Select()
-        Dim nbLignes As Integer = Application.ActiveSheet.UsedRange.Rows.Count
-        Dim nbColonnes As Integer = Application.ActiveSheet.UsedRange.Columns.Count
+        currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("Prix"), Excel.Worksheet)
+        Dim nbLignes As Integer = currentSheet.UsedRange.Rows.Count
+        Dim nbColonnes As Integer = currentSheet.UsedRange.Columns.Count
 
         'calul taille fenetre globale
         Dim minUp As Integer, minDown As Integer
         'indice premiere date evenement - indice premiere date
-        minUp = Application.Columns("A:A").Find(datesEv(0, 1)).Row - 2
+        'minUp = currentSheet.Range("B:B").Find(datesEv(1, 2)).Row - 2
+        minUp = currentSheet.Range("B:B").Find(What:=CDate("18.07.2011")).Row - 2
         'indice derniere date - derniere date evenement
-        minDown = nbLignes - Application.Columns("A:A").Find(datesEv(UBound(datesEv, 1), 1)).Row
+        minDown = nbLignes - currentSheet.Columns("A:A").Find(datesEv(UBound(datesEv, 1), 2)).Row
 
         'on se positionne sur la nouvelle feuille
-        Application.Worksheets("prixCentres").Select()
-        Application.Cells(1, 1).Value = "Date"
+        currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("prixCentres"), Excel.Worksheet)
+        currentSheet.Cells(1, 1).Value = "Date"
         For i = 2 To nbColonnes - 1
-            Application.Cells(1, i).Value = "P" & i - 1
+            currentSheet.Cells(1, i).Value = "P" & i - 1
         Next
         For i = -minUp To minDown
-            Application.Cells(i + minUp + 2, 1).Value = i
+            currentSheet.Cells(i + minUp + 2, 1).Value = i
         Next
 
         For i = 0 To nbColonnes - 3
             'on se positionne sur la feuille contenant les prix
-            Application.Worksheets("Prix").Select()
+            currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("Prix"), Excel.Worksheet)
             Dim fenetreInf As Integer, fenetreSup As Integer
             Dim dateCour As Excel.Range, firmeCour As Excel.Range
             Dim data As Excel.Range, marche As Excel.Range
-            dateCour = Application.Columns("A:A").Find(datesEv(i, 1))
+            dateCour = currentSheet.Columns("A:A").Find(datesEv(i, 2))
             fenetreInf = dateCour.Row - minUp
             fenetreSup = dateCour.Row + minDown
-            firmeCour = Application.Rows("1:1").Find(datesEv(i, 0))
+            firmeCour = currentSheet.Rows("1:1").Find(datesEv(i, 1))
             'récupération des prix centrés autour de l'évènement
-            data = Application.Range(Application.Cells(fenetreInf, firmeCour.Column), Application.Cells(fenetreSup, firmeCour.Column))
+            data = currentSheet.Range(currentSheet.Cells(fenetreInf, firmeCour.Column), currentSheet.Cells(fenetreSup, firmeCour.Column))
             'récupération des indices de marché correspondants
-            marche = Application.Range(Application.Cells(fenetreInf, 2), Application.Cells(fenetreSup, 2))
+            marche = currentSheet.Range(currentSheet.Cells(fenetreInf, 2), currentSheet.Cells(fenetreSup, 2))
             'on se positionne sur la feuille contenant les prix centrés pour écrire dedans
-            Application.Worksheets("prixCentres").Select()
-            Application.Range(Application.Cells(2, i + 2), Application.Cells(minUp + minDown + 2, i + 2)).Value = data.Value
+            currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("prixCentres"), Excel.Worksheet)
+            currentSheet.Range(currentSheet.Cells(2, i + 2), currentSheet.Cells(minUp + minDown + 2, i + 2)).Value = data.Value
             'on se positionne sur la feuille contenant les indices de marché pour écrire dedans
-            Application.Worksheets("marcheCentre").Select()
-            Application.Range(Application.Cells(2, i + 2), Application.Cells(minUp + minDown + 2, i + 2)).Value = marche.Value
+            currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("marcheCentre"), Excel.Worksheet)
+            currentSheet.Range(currentSheet.Cells(2, i + 2), currentSheet.Cells(minUp + minDown + 2, i + 2)).Value = marche.Value
         Next
     End Sub
 
-    Sub Tri(a(,), ColTri, gauc, droi) ' Quick sort
-        Dim ref As VariantType = a((gauc + droi) \ 2, ColTri)
-        Dim g As Integer = gauc
-        Dim d As Integer = droi
+    Sub Tri(a(,) As Object, ColTri As Integer, gauche As Integer, droite As Integer) ' Quick sort
+        Dim ref As Date = a((gauche + droite) \ 2, ColTri)
+        Dim g As Integer = gauche
+        Dim d As Integer = droite
         Do
             Do While a(g, ColTri) < ref : g = g + 1 : Loop
             Do While ref < a(d, ColTri) : d = d - 1 : Loop
             If g <= d Then
-                For k = LBound(a, 2) To UBound(a, 2)
-                    Dim temp As VariantType = a(g, k)
-                    a(g, k) = a(d, k)
-                    a(d, k) = temp
-                Next k
+                Dim tempDate As Date = a(g, 2)
+                a(g, 2) = a(d, 2)
+                a(d, 2) = tempDate
+                Dim temp As String = a(g, 1)
+                a(g, 1) = a(d, 1)
+                a(d, 1) = temp
                 g = g + 1
                 d = d - 1
             End If
         Loop While g <= d
-        If g < droi Then Call Tri(a, ColTri, g, droi)
-        If gauc < d Then Call Tri(a, ColTri, gauc, d)
+        If g < droite Then Tri(a, ColTri, g, droite)
+        If gauche < d Then Tri(a, ColTri, gauche, d)
     End Sub
 
     Public Sub calculRentabiliteAvecNA()
