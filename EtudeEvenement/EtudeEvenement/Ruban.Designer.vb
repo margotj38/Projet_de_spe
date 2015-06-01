@@ -47,7 +47,7 @@
         Me.ModeleMarcheSimple = Me.Factory.CreateRibbonButton
         Me.ModeleMarche = Me.Factory.CreateRibbonButton
         Me.TestsTemp = Me.Factory.CreateRibbonGroup
-        Me.AR = Me.Factory.CreateRibbonButton
+        Me.test = Me.Factory.CreateRibbonButton
         Me.Group1 = Me.Factory.CreateRibbonGroup
         Me.ModeleMoy = Me.Factory.CreateRibbonMenu
         Me.testSimpleR = Me.Factory.CreateRibbonButton
@@ -99,14 +99,14 @@
         '
         'TestsTemp
         '
-        Me.TestsTemp.Items.Add(Me.AR)
+        Me.TestsTemp.Items.Add(Me.test)
         Me.TestsTemp.Label = "Tests temporaires"
         Me.TestsTemp.Name = "TestsTemp"
         '
-        'AR
+        'test
         '
-        Me.AR.Label = "Etude depuis AR"
-        Me.AR.Name = "AR"
+        Me.test.Label = "test"
+        Me.test.Name = "test"
         '
         'Group1
         '
@@ -224,7 +224,7 @@
     Friend WithEvents ModeleMarche As Microsoft.Office.Tools.Ribbon.RibbonButton
     Friend WithEvents ModeleMarcheSimple As Microsoft.Office.Tools.Ribbon.RibbonButton
     Friend WithEvents TestsTemp As Microsoft.Office.Tools.Ribbon.RibbonGroup
-    Friend WithEvents AR As Microsoft.Office.Tools.Ribbon.RibbonButton
+    Friend WithEvents test As Microsoft.Office.Tools.Ribbon.RibbonButton
     Friend WithEvents ModeleMoyenne As Microsoft.Office.Tools.Ribbon.RibbonButton
     Friend WithEvents Group1 As Microsoft.Office.Tools.Ribbon.RibbonGroup
     Friend WithEvents ModeleMoy As Microsoft.Office.Tools.Ribbon.RibbonMenu
