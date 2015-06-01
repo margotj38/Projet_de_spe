@@ -421,4 +421,106 @@ Public Class ThisAddIn
         Next titre
     End Sub
 
+    Public Sub calculRentabiliteAvecNA()
+        'Création de la feuille contenant les rentabilités
+        Application.Sheets.Add()
+        Application.ActiveSheet.Name = "Rt"
+        'Et de celle contenant les rentabilités de marché associées
+        Application.Sheets.Add()
+        Application.ActiveSheet.Name = "Rm"
+        'On sélectionne la feuille contenant les cours
+        Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("prixCentres"), Excel.Worksheet)
+        Dim nbLignes As Integer = currentSheet.UsedRange.Rows.Count
+        Dim nbColonnes As Integer = currentSheet.UsedRange.Columns.Count
+
+        'On commence par recopier les dates
+        Dim tmp(nbLignes - 3) As Integer
+        For ligne = 3 To nbLignes
+            tmp(ligne - 3) = currentSheet.Cells(ligne, 1).Value
+        Next ligne
+        'On se place sur la feuille des rentabilités
+        currentSheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
+        For ligne = 2 To nbLignes - 1
+            currentSheet.Cells(ligne, 1).Value = tmp(ligne - 2)
+        Next ligne
+        'Puis sur celle des rentabilités de marché
+        currentSheet = CType(Application.Worksheets("Rm"), Excel.Worksheet)
+        For ligne = 2 To nbLignes - 1
+            currentSheet.Cells(ligne, 1).Value = tmp(ligne - 2)
+        Next ligne
+
+        'On écrit la première ligne des deux feuilles (Rt et Rm)
+        'Premiere case
+        currentSheet = CType(Application.Worksheets("prixCentres"), Excel.Worksheet)
+        Dim nom As String = currentSheet.Cells(1, 1).Value
+        currentSheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
+        currentSheet.Cells(1, 1).Value = nom
+        currentSheet = CType(Application.Worksheets("Rm"), Excel.Worksheet)
+        currentSheet.Cells(1, 1).Value = nom
+        'Cases suivantes (sauf la deuxième qui correspond au marché)
+        For colonne = 2 To nbColonnes - 1
+            currentSheet.Cells(1, colonne).Value = "R" & colonne - 1
+        Next colonne
+        'Cases suivantes pour les Rt
+        currentSheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
+        For colonne = 2 To nbColonnes - 1
+            currentSheet.Cells(1, colonne).Value = "Rm titre " & colonne - 1
+        Next colonne
+
+        currentSheet = CType(Application.Worksheets("prixCentres"), Excel.Worksheet)
+
+        'On s'occupe des titres des entreprises
+        'Variable permettant de savoir à quelle date il faut remonter (une avant, deux avant, ...)
+        Dim prixPresent As Integer = 0
+        'On calcule les rentabilités et les rentabilités de marché associées
+        Dim tabRenta(nbLignes - 3, nbColonnes - 3)
+        Dim tabRentaMarche(nbLignes - 3, nbColonnes - 3)
+        For titre = 3 To nbColonnes
+            For indDate = 2 To nbLignes
+                If prixPresent = 0 Then
+                    'Si on est sur le premier prix
+                    If Not Application.WorksheetFunction.IsNA(currentSheet.Cells(indDate, titre)) Then
+                        prixPresent = prixPresent + 1
+                    End If
+                ElseIf Application.WorksheetFunction.IsNA(currentSheet.Cells(indDate, titre)) Then
+                    'Si il n'y a pas de prix à cette date
+                    'On met un équivalent de #N/A dans les tableaux
+                    tabRenta(indDate - 3, titre - 3) = Nothing
+                    tabRentaMarche(indDate - 3, titre - 3) = Nothing
+                    prixPresent = prixPresent + 1
+                Else
+                    'Sinon on fait le calcul en remontant au dernier prix disponible
+                    tabRenta(indDate - 3, titre - 3) = (currentSheet.Cells(indDate, titre).Value - currentSheet.Cells(indDate - prixPresent, titre).Value) / currentSheet.Cells(indDate - prixPresent, titre).Value
+                    'On fait de même pour les rentabilités de marché
+                    currentSheet = CType(Application.Worksheets("marcheCentre"), Excel.Worksheet)
+                    tabRentaMarche(indDate - 3, titre - 3) = (currentSheet.Cells(indDate, titre).Value - currentSheet.Cells(indDate - prixPresent, titre).Value) / currentSheet.Cells(indDate - prixPresent, titre).Value
+                    'Puis on se replace sur la feuille des prix
+                    currentSheet = CType(Application.Worksheets("prixCentres"), Excel.Worksheet)
+                    'Et on indique qu'un prix était présent
+                    prixPresent = 1
+                End If
+            Next indDate
+            prixPresent = 0
+        Next titre
+
+        'On affiche les rentabilités
+        currentSheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
+        For titre = 2 To nbColonnes - 1
+            For indDate = 3 To nbLignes
+                If Not IsNothing(tabRenta(indDate - 3, titre - 2)) Then
+                    currentSheet.Cells(indDate - 1, titre).Value = tabRenta(indDate - 3, titre - 2)
+                End If
+            Next indDate
+        Next titre
+        'Et les rentabilités de marché
+        currentSheet = CType(Application.Worksheets("Rm"), Excel.Worksheet)
+        For titre = 2 To nbColonnes - 1
+            For indDate = 3 To nbLignes
+                If Not IsNothing(tabRentaMarche(indDate - 3, titre - 2)) Then
+                    currentSheet.Cells(indDate - 1, titre).Value = tabRentaMarche(indDate - 3, titre - 2)
+                End If
+            Next indDate
+        Next titre
+    End Sub
+
 End Class

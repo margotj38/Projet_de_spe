@@ -43,12 +43,12 @@
     Private Sub InitializeComponent()
         Me.EtudeEvenement = Me.Factory.CreateRibbonTab
         Me.ModelesClassiques = Me.Factory.CreateRibbonGroup
-        Me.TestsTemp = Me.Factory.CreateRibbonGroup
-        Me.Group1 = Me.Factory.CreateRibbonGroup
         Me.ModeleMoyenne = Me.Factory.CreateRibbonButton
         Me.ModeleMarcheSimple = Me.Factory.CreateRibbonButton
         Me.ModeleMarche = Me.Factory.CreateRibbonButton
+        Me.TestsTemp = Me.Factory.CreateRibbonGroup
         Me.AR = Me.Factory.CreateRibbonButton
+        Me.Group1 = Me.Factory.CreateRibbonGroup
         Me.ModeleMoy = Me.Factory.CreateRibbonMenu
         Me.testSimpleR = Me.Factory.CreateRibbonButton
         Me.TestPatellR = Me.Factory.CreateRibbonButton
@@ -82,20 +82,6 @@
         Me.ModelesClassiques.Label = "Modèles classiques"
         Me.ModelesClassiques.Name = "ModelesClassiques"
         '
-        'TestsTemp
-        '
-        Me.TestsTemp.Items.Add(Me.AR)
-        Me.TestsTemp.Label = "Tests temporaires"
-        Me.TestsTemp.Name = "TestsTemp"
-        '
-        'Group1
-        '
-        Me.Group1.Items.Add(Me.ModeleMoy)
-        Me.Group1.Items.Add(Me.ModeleMS)
-        Me.Group1.Items.Add(Me.ModeleM)
-        Me.Group1.Label = "Modèles"
-        Me.Group1.Name = "Group1"
-        '
         'ModeleMoyenne
         '
         Me.ModeleMoyenne.Label = "Modèle moyenne des rentabilités"
@@ -111,10 +97,24 @@
         Me.ModeleMarche.Label = "Modèle de marché classique"
         Me.ModeleMarche.Name = "ModeleMarche"
         '
+        'TestsTemp
+        '
+        Me.TestsTemp.Items.Add(Me.AR)
+        Me.TestsTemp.Label = "Tests temporaires"
+        Me.TestsTemp.Name = "TestsTemp"
+        '
         'AR
         '
         Me.AR.Label = "Etude depuis AR"
         Me.AR.Name = "AR"
+        '
+        'Group1
+        '
+        Me.Group1.Items.Add(Me.ModeleMoy)
+        Me.Group1.Items.Add(Me.ModeleMS)
+        Me.Group1.Items.Add(Me.ModeleM)
+        Me.Group1.Label = "Modèles"
+        Me.Group1.Name = "Group1"
         '
         'ModeleMoy
         '
