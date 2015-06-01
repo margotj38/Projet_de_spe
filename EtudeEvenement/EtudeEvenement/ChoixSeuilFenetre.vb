@@ -85,7 +85,7 @@ Public Class ChoixSeuilFenetre
                 Dim pValeur As Double
                 Select Case test
                     Case 0
-                        'test simple'
+                        'test simple bilatéral'
                         Dim tabCAR As Double()
                         tabCAR = Globals.ThisAddIn.calculCAR(tabAR, fenetreEstDebut, fenetreEstFin, fenetreEvDebut, fenetreEvFin)
                         Dim testHyp As Double = Globals.ThisAddIn.calculStatistique(tabCAR)
