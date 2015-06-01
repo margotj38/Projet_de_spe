@@ -282,7 +282,8 @@ Public Class ThisAddIn
                     pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHyp), True)) * 100
                 Case 2
                     'test de signe
-                    pValeur = 0
+                    Dim testHyp As Double = Globals.ThisAddIn.statTestSigne(tabAR, currentSheet.Cells(2, 1).Value, -i - 1, -i, i)
+                    pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHyp), True)) * 100
             End Select
 
             Dim p As New DataPoint
@@ -294,32 +295,45 @@ Public Class ThisAddIn
     End Sub
 
     'A revoir !!
-    Function statTestSigne(tabAR(,) As Double, fenetreDebut As Integer, fenetreFin As Double) As Double
+    Function statTestSigne(tabAR(,) As Double, fenetreEstDebut As Integer, fenetreEstFin As Integer, fenetreEvDebut As Integer, fenetreEvFin As Integer) As Double
         Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("Rt"), Excel.Worksheet)
-        Dim indDebFenetre As Integer = 2 + fenetreDebut - currentSheet.Cells(2, 1).Value
-        Dim indFinFenetre As Integer = 2 + fenetreFin - currentSheet.Cells(2, 1).Value
-        'La taille de l'échantillon
-        Dim taille As Integer = (fenetreFin - fenetreDebut + 1) * (currentSheet.UsedRange.Columns.Count)
-        Dim cptPosAR As Double
-        cptPosAR = 0
+        Dim indFenetreEstDeb As Integer = fenetreEstDebut - currentSheet.Cells(2, 1).Value
+        Dim indFenetreEstFin As Integer = fenetreEstFin - currentSheet.Cells(2, 1).Value
+        Dim indFenetreEvDeb As Integer = fenetreEvDebut - currentSheet.Cells(2, 1).Value
+        Dim indFenetreEvFin As Integer = fenetreEvFin - currentSheet.Cells(2, 1).Value
+        Dim tailleFenetreEst As Integer = fenetreEstFin - fenetreEstDebut + 1
+        Dim tailleFenetreEv As Integer = fenetreEvFin - fenetreEvDebut + 1
 
-        'On prend les AR sur la fenêtre d'événement
+        Dim nbPosAR As Double
+        nbPosAR = 0
+        'On prend les AR > 0 sur la fenêtre d'événement
         For colonne = 0 To tabAR.GetUpperBound(1)
-            For i = indDebFenetre - 2 To indFinFenetre - 2
+            For i = indFenetreEvDeb To indFenetreEstFin
                 If (tabAR(i, colonne) > 0) Then
-                    cptPosAR = cptPosAR + 1
+                    nbPosAR = nbPosAR + 1
                 End If
             Next i
         Next colonne
 
-        Dim prop As Double
-        prop = cptPosAR / taille  'La proportion des valeurs positives
-        'MsgBox(prop)
-        cptPosAR = (prop - (taille / 2)) / (Math.Sqrt(taille / 4)) 'La statistique du test
-        'MsgBox(cptPosAR)
-        statTestSigne = cptPosAR
-    End Function
+        'Estimation de p sur la fenêtre d'estimation
+        Dim p As Double
+        p = 0
+        For colonne = 0 To tabAR.GetUpperBound(1)
+            For i = indFenetreEstDeb To indFenetreEstFin
+                If (tabAR(i, colonne) > 0) Then
+                    p = p + 1
+                End If
+            Next i
+            p = p / tailleFenetreEst
+        Next colonne
+        p = p / tailleFenetreEv
 
+        'Calcul de la statistique du test
+        Dim stat As Double
+        stat = (nbPosAR - tailleFenetreEv * p) / (Math.Sqrt(tailleFenetreEv * p * (1 - p)))
+       
+        statTestSigne = stat
+    End Function
 
     'Renvoie true si l'hypothèse H0 est rejetée
     Public Function calculStatistique(tabCAR() As Double) As Double
