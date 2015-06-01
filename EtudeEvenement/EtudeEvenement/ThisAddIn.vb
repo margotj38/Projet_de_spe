@@ -331,7 +331,7 @@ Public Class ThisAddIn
         'Calcul de la statistique du test
         Dim stat As Double
         stat = (nbPosAR - tailleFenetreEv * p) / (Math.Sqrt(tailleFenetreEv * p * (1 - p)))
-       
+
         statTestSigne = stat
     End Function
 
