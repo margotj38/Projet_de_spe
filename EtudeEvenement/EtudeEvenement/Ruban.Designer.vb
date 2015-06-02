@@ -41,13 +41,8 @@
     'Ne la modifiez pas à l'aide de l'éditeur de code.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Ruban))
         Me.EtudeEvenement = Me.Factory.CreateRibbonTab
-        Me.ModelesClassiques = Me.Factory.CreateRibbonGroup
-        Me.ModeleMoyenne = Me.Factory.CreateRibbonButton
-        Me.ModeleMarcheSimple = Me.Factory.CreateRibbonButton
-        Me.ModeleMarche = Me.Factory.CreateRibbonButton
-        Me.TestsTemp = Me.Factory.CreateRibbonGroup
-        Me.test = Me.Factory.CreateRibbonButton
         Me.Group1 = Me.Factory.CreateRibbonGroup
         Me.ModeleMoy = Me.Factory.CreateRibbonMenu
         Me.testSimpleR = Me.Factory.CreateRibbonButton
@@ -62,51 +57,13 @@
         Me.testPatellM = Me.Factory.CreateRibbonButton
         Me.testSigneM = Me.Factory.CreateRibbonButton
         Me.EtudeEvenement.SuspendLayout()
-        Me.ModelesClassiques.SuspendLayout()
-        Me.TestsTemp.SuspendLayout()
         Me.Group1.SuspendLayout()
         '
         'EtudeEvenement
         '
-        Me.EtudeEvenement.Groups.Add(Me.ModelesClassiques)
-        Me.EtudeEvenement.Groups.Add(Me.TestsTemp)
         Me.EtudeEvenement.Groups.Add(Me.Group1)
         Me.EtudeEvenement.Label = "Etude d'événements"
         Me.EtudeEvenement.Name = "EtudeEvenement"
-        '
-        'ModelesClassiques
-        '
-        Me.ModelesClassiques.Items.Add(Me.ModeleMoyenne)
-        Me.ModelesClassiques.Items.Add(Me.ModeleMarcheSimple)
-        Me.ModelesClassiques.Items.Add(Me.ModeleMarche)
-        Me.ModelesClassiques.Label = "Modèles classiques"
-        Me.ModelesClassiques.Name = "ModelesClassiques"
-        '
-        'ModeleMoyenne
-        '
-        Me.ModeleMoyenne.Label = "Modèle moyenne des rentabilités"
-        Me.ModeleMoyenne.Name = "ModeleMoyenne"
-        '
-        'ModeleMarcheSimple
-        '
-        Me.ModeleMarcheSimple.Label = "Modèle de marché simplifié"
-        Me.ModeleMarcheSimple.Name = "ModeleMarcheSimple"
-        '
-        'ModeleMarche
-        '
-        Me.ModeleMarche.Label = "Modèle de marché classique"
-        Me.ModeleMarche.Name = "ModeleMarche"
-        '
-        'TestsTemp
-        '
-        Me.TestsTemp.Items.Add(Me.test)
-        Me.TestsTemp.Label = "Tests temporaires"
-        Me.TestsTemp.Name = "TestsTemp"
-        '
-        'test
-        '
-        Me.test.Label = "test"
-        Me.test.Name = "test"
         '
         'Group1
         '
@@ -119,6 +76,7 @@
         'ModeleMoy
         '
         Me.ModeleMoy.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
+        Me.ModeleMoy.Image = CType(resources.GetObject("ModeleMoy.Image"), System.Drawing.Image)
         Me.ModeleMoy.Items.Add(Me.testSimpleR)
         Me.ModeleMoy.Items.Add(Me.TestPatellR)
         Me.ModeleMoy.Items.Add(Me.testSigneR)
@@ -147,6 +105,7 @@
         'ModeleMS
         '
         Me.ModeleMS.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
+        Me.ModeleMS.Image = CType(resources.GetObject("ModeleMS.Image"), System.Drawing.Image)
         Me.ModeleMS.Items.Add(Me.testSimpleMS)
         Me.ModeleMS.Items.Add(Me.testPatellMS)
         Me.ModeleMS.Items.Add(Me.testSigneMS)
@@ -175,6 +134,7 @@
         'ModeleM
         '
         Me.ModeleM.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
+        Me.ModeleM.Image = CType(resources.GetObject("ModeleM.Image"), System.Drawing.Image)
         Me.ModeleM.Items.Add(Me.testSimpleM)
         Me.ModeleM.Items.Add(Me.testPatellM)
         Me.ModeleM.Items.Add(Me.testSigneM)
@@ -207,22 +167,12 @@
         Me.Tabs.Add(Me.EtudeEvenement)
         Me.EtudeEvenement.ResumeLayout(False)
         Me.EtudeEvenement.PerformLayout()
-        Me.ModelesClassiques.ResumeLayout(False)
-        Me.ModelesClassiques.PerformLayout()
-        Me.TestsTemp.ResumeLayout(False)
-        Me.TestsTemp.PerformLayout()
         Me.Group1.ResumeLayout(False)
         Me.Group1.PerformLayout()
 
     End Sub
 
     Friend WithEvents EtudeEvenement As Microsoft.Office.Tools.Ribbon.RibbonTab
-    Friend WithEvents ModelesClassiques As Microsoft.Office.Tools.Ribbon.RibbonGroup
-    Friend WithEvents ModeleMarche As Microsoft.Office.Tools.Ribbon.RibbonButton
-    Friend WithEvents ModeleMarcheSimple As Microsoft.Office.Tools.Ribbon.RibbonButton
-    Friend WithEvents TestsTemp As Microsoft.Office.Tools.Ribbon.RibbonGroup
-    Friend WithEvents test As Microsoft.Office.Tools.Ribbon.RibbonButton
-    Friend WithEvents ModeleMoyenne As Microsoft.Office.Tools.Ribbon.RibbonButton
     Friend WithEvents Group1 As Microsoft.Office.Tools.Ribbon.RibbonGroup
     Friend WithEvents ModeleMoy As Microsoft.Office.Tools.Ribbon.RibbonMenu
     Friend WithEvents ModeleMS As Microsoft.Office.Tools.Ribbon.RibbonMenu

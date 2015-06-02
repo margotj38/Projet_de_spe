@@ -3,9 +3,6 @@ Imports System.Windows.Forms.DataVisualization.Charting
 
 Public Class Ruban
 
-    'Public choixSeuil As ChoixSeuil
-    'Public WithEvents myTaskPane As Microsoft.Office.Tools.CustomTaskPane
-
     Public choixSeuilFenetre As ChoixSeuilFenetre
     Public WithEvents seuilFenetreTaskPane As Microsoft.Office.Tools.CustomTaskPane
 
@@ -35,33 +32,6 @@ Public Class Ruban
         graphPVal.GraphiqueChart.Series("Series1").IsValueShownAsLabel = True
         graphPVal.GraphiqueChart.ChartAreas(0).AxisX.MajorGrid.Enabled = False
         graphPVal.GraphiqueChart.ChartAreas(0).AxisY.MajorGrid.Enabled = False
-    End Sub
-
-    Private Sub ModeleMoyenne_Click(ByVal sender As System.Object, _
-    ByVal e As Microsoft.Office.Tools.Ribbon.RibbonControlEventArgs) _
-        Handles ModeleMoyenne.Click
-        initialisationGraphPVal()
-        choixSeuilFenetre.modele = 0
-        choixSeuilFenetre.nomModel.Text = "Modèle moyenne des rentabilités"
-        seuilFenetreTaskPane.Visible = True
-    End Sub
-
-    Private Sub ModeleMarcheSimple_Click(ByVal sender As System.Object, _
-        ByVal e As Microsoft.Office.Tools.Ribbon.RibbonControlEventArgs) _
-            Handles ModeleMarcheSimple.Click
-        initialisationGraphPVal()
-        choixSeuilFenetre.modele = 1
-        choixSeuilFenetre.nomModel.Text = "Modèle de marché simplifié"
-        seuilFenetreTaskPane.Visible = True
-    End Sub
-
-    Private Sub ModeleMarche_Click(ByVal sender As System.Object, _
-        ByVal e As Microsoft.Office.Tools.Ribbon.RibbonControlEventArgs) _
-            Handles ModeleMarche.Click
-        initialisationGraphPVal()
-        choixSeuilFenetre.modele = 2
-        choixSeuilFenetre.nomModel.Text = "Modèle de marché classique"
-        seuilFenetreTaskPane.Visible = True
     End Sub
 
     Private Sub testSimpleR_Click(sender As Object, e As RibbonControlEventArgs) Handles testSimpleR.Click
@@ -136,8 +106,4 @@ Public Class Ruban
         seuilFenetreTaskPane.Visible = True
     End Sub
 
-    Private Sub test_Click(sender As Object, e As RibbonControlEventArgs) Handles test.Click
-        'Globals.ThisAddIn.prixCentres()
-        Globals.ThisAddIn.calculARAvecNA(-259, -11, -10, 10)
-    End Sub
 End Class
