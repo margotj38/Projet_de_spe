@@ -509,17 +509,23 @@ Public Class ThisAddIn
         If gauche < d Then Tri(a, ColTri, gauche, d)
     End Sub
 
-    Public Sub calculRentabiliteAvecNA()
+    Public Sub calculRentabiliteAvecNA(fenetreEstDebut As Integer, fenetreEstFin As Integer, fenetreEvDebut As Integer, fenetreEvFin As Integer)
         'Création de la feuille contenant les rentabilités
         Application.Sheets.Add()
         Application.ActiveSheet.Name = "Rt"
         'Et de celle contenant les rentabilités de marché associées
         Application.Sheets.Add()
         Application.ActiveSheet.Name = "Rm"
+
         'On sélectionne la feuille contenant les cours
         Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("prixCentres"), Excel.Worksheet)
         Dim nbLignes As Integer = currentSheet.UsedRange.Rows.Count
         Dim nbColonnes As Integer = currentSheet.UsedRange.Columns.Count
+        'On récupère les indices correspondants aux différentes dates
+        Dim indFenetreEstDeb As Integer = fenetreEstDebut - currentSheet.Cells(2, 1).Value
+        Dim indFenetreEstFin As Integer = fenetreEstFin - currentSheet.Cells(2, 1).Value
+        Dim indFenetreEvDeb As Integer = fenetreEvDebut - currentSheet.Cells(2, 1).Value
+        Dim indFenetreEvFin As Integer = fenetreEvFin - currentSheet.Cells(2, 1).Value
 
         'On commence par recopier les dates
         Dim tmp(nbLignes - 3) As Integer
@@ -545,14 +551,14 @@ Public Class ThisAddIn
         currentSheet.Cells(1, 1).Value = nom
         currentSheet = CType(Application.Worksheets("Rm"), Excel.Worksheet)
         currentSheet.Cells(1, 1).Value = nom
-        'Cases suivantes (sauf la deuxième qui correspond au marché)
+        'Cases suivantes
         For colonne = 2 To nbColonnes - 1
-            currentSheet.Cells(1, colonne).Value = "R" & colonne - 1
+            currentSheet.Cells(1, colonne).Value = "Rm titre " & colonne - 1
         Next colonne
         'Cases suivantes pour les Rt
         currentSheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
         For colonne = 2 To nbColonnes - 1
-            currentSheet.Cells(1, colonne).Value = "Rm titre " & colonne - 1
+            currentSheet.Cells(1, colonne).Value = "R" & colonne - 1
         Next colonne
 
         currentSheet = CType(Application.Worksheets("prixCentres"), Excel.Worksheet)
@@ -563,34 +569,37 @@ Public Class ThisAddIn
         'Pour savoir combien de tableaux stockant les Rt et Rm on va déclaré
         Dim maxPrixAbsent As Integer = 0
         'On calcule les rentabilités et les rentabilités de marché associées
-        Dim tabRenta(nbLignes - 3, nbColonnes - 3)
-        Dim tabRentaMarche(nbLignes - 3, nbColonnes - 3)
+        Dim tabRenta(nbLignes - 3, nbColonnes - 2)
+        Dim tabRentaMarche(nbLignes - 3, nbColonnes - 2)
 
-        For titre = 3 To nbColonnes
+        For titre = 2 To nbColonnes
             For indDate = 2 To nbLignes
                 If prixPresent = 0 Then
                     'Si on est sur le premier prix
-                    If Not Application.WorksheetFunction.IsNA(currentSheet.Cells(indDate, titre)) Then
+                    '(-2146826246 est la valeur obtenue lorsqu'un ".Value" est fait sur une cellule #N/A)
+                    If Not (Application.WorksheetFunction.IsNA(currentSheet.Cells(indDate, titre)) Or _
+                            currentSheet.Cells(indDate, titre).Value = -2146826246) Then
                         prixPresent = prixPresent + 1
                         If prixPresent > maxPrixAbsent Then
                             maxPrixAbsent = prixPresent
                         End If
                     End If
-                ElseIf Application.WorksheetFunction.IsNA(currentSheet.Cells(indDate, titre)) Then
+                ElseIf Application.WorksheetFunction.IsNA(currentSheet.Cells(indDate, titre)) Or _
+                            currentSheet.Cells(indDate, titre).Value = -2146826246 Then
                     'Si il n'y a pas de prix à cette date
                     'On met un équivalent de #N/A dans les tableaux
-                    tabRenta(indDate - 3, titre - 3) = Nothing
-                    tabRentaMarche(indDate - 3, titre - 3) = Nothing
+                    tabRenta(indDate - 3, titre - 2) = Nothing
+                    tabRentaMarche(indDate - 3, titre - 2) = Nothing
                     prixPresent = prixPresent + 1
                     If prixPresent > maxPrixAbsent Then
                         maxPrixAbsent = prixPresent
                     End If
                 Else
                     'Sinon on fait le calcul en remontant au dernier prix disponible
-                    tabRenta(indDate - 3, titre - 3) = (currentSheet.Cells(indDate, titre).Value - currentSheet.Cells(indDate - prixPresent, titre).Value) / currentSheet.Cells(indDate - prixPresent, titre).Value
+                    tabRenta(indDate - 3, titre - 2) = (currentSheet.Cells(indDate, titre).Value - currentSheet.Cells(indDate - prixPresent, titre).Value) / currentSheet.Cells(indDate - prixPresent, titre).Value
                     'On fait de même pour les rentabilités de marché
                     currentSheet = CType(Application.Worksheets("marcheCentre"), Excel.Worksheet)
-                    tabRentaMarche(indDate - 3, titre - 3) = (currentSheet.Cells(indDate, titre).Value - currentSheet.Cells(indDate - prixPresent, titre).Value) / currentSheet.Cells(indDate - prixPresent, titre).Value
+                    tabRentaMarche(indDate - 3, titre - 2) = (currentSheet.Cells(indDate, titre).Value - currentSheet.Cells(indDate - prixPresent, titre).Value) / currentSheet.Cells(indDate - prixPresent, titre).Value
                     'Puis on se replace sur la feuille des prix
                     currentSheet = CType(Application.Worksheets("prixCentres"), Excel.Worksheet)
                     'Et on indique qu'un prix était présent
@@ -601,15 +610,80 @@ Public Class ThisAddIn
         Next titre
 
         'On crée les tableaux de rentabilité (et rentabilité de marché) pour les périodes d'estimation et d'événement
-        Dim rentaEst()() As Double = New Double(maxPrixAbsent - 1)() {}
-        Dim rentaEv()() As Double = New Double(maxPrixAbsent - 1)() {}
+        Dim rentaEst(,)(,) As Double = New Double(maxPrixAbsent - 1, nbColonnes - 2)(,) {}
+        Dim rentaEv(,)(,) As Double = New Double(maxPrixAbsent - 1, nbColonnes - 2)(,) {}
         For i = 0 To maxPrixAbsent - 1
-            rentaEst(i) = New Double() {}
+            For j = 0 To nbColonnes - 2
+                'Tableau à 2 lignes (Rt et Rm) et à 2 colonnes (à redimensionner)
+                rentaEst(i, j) = New Double(1, 1) {}
+                rentaEv(i, j) = New Double(1, 1) {}
+            Next j
         Next i
+
+        prixPresent = 0
+        'On remplit ces tableaux
+        For titre = 2 To nbColonnes
+            'Tableau permettant de savoir si un redimensionnement est nécessaire
+            Dim tabRedimEst(maxPrixAbsent - 1) As Integer
+            Dim tabRedimEv(maxPrixAbsent - 1) As Integer
+            For indDate = 2 To nbLignes
+                If prixPresent = 0 Then
+                    'Si on est sur le premier prix
+                    '(-2146826246 est la valeur obtenue lorsqu'un ".Value" est fait sur une cellule #N/A)
+                    If Not (Application.WorksheetFunction.IsNA(currentSheet.Cells(indDate, titre)) Or _
+                            currentSheet.Cells(indDate, titre).Value = -2146826246) Then
+                        prixPresent = prixPresent + 1
+                    End If
+                ElseIf Application.WorksheetFunction.IsNA(currentSheet.Cells(indDate, titre)) Or _
+                            currentSheet.Cells(indDate, titre).Value = -2146826246 Then
+                    'Si il n'y a pas de prix à cette date
+                    prixPresent = prixPresent + 1
+                Else
+                    'Sinon, on range les rentabilités dans le tableau qui convient
+
+                    'Si on est sur une date correspondant à la période d'estimation
+                    If indDate >= indFenetreEstDeb And indDate <= indFenetreEstFin Then
+
+                        'Si le tableau adéquat est plein, on le redimensionne
+                        If rentaEst(prixPresent - 1, titre - 2).GetLength(1) = tabRedimEst(prixPresent - 1) Then
+                            Dim nbL As Integer = rentaEst(prixPresent - 1, titre - 2).GetUpperBound(0)
+                            Dim nbC As Integer = rentaEst(prixPresent - 1, titre - 2).GetUpperBound(1)
+                            ReDim Preserve rentaEst(prixPresent - 1, titre - 2)(nbL, 2 * nbC)
+                        End If
+
+                        'On ajoute Rt et Rm au tableau
+                        rentaEst(prixPresent - 1, titre - 2)(0, tabRedimEst(prixPresent - 1)) = tabRenta(indDate - 3, titre - 2)
+                        rentaEst(prixPresent - 1, titre - 2)(1, tabRedimEst(prixPresent - 1)) = tabRentaMarche(indDate - 3, titre - 2)
+                        'On indique qu'on a ajouté un nouvel élément
+                        tabRedimEst(prixPresent - 1) = tabRedimEst(prixPresent - 1) + 1
+
+                    ElseIf indDate >= indFenetreEvDeb And indDate <= indFenetreEvFin Then
+
+                        'Si le tableau adéquat est plein, on le redimensionne
+                        If rentaEv(prixPresent - 1, titre - 2).GetLength(1) = tabRedimEv(prixPresent - 1) Then
+                            Dim nbL As Integer = rentaEv(prixPresent - 1, titre - 2).GetUpperBound(0)
+                            Dim nbC As Integer = rentaEv(prixPresent - 1, titre - 2).GetUpperBound(1)
+                            ReDim Preserve rentaEv(prixPresent - 1, titre - 2)(nbL, 2 * nbC)
+                        End If
+
+                        'On ajoute Rt et Rm au tableau
+                        rentaEv(prixPresent - 1, titre - 2)(0, tabRedimEv(prixPresent - 1)) = tabRenta(indDate - 3, titre - 2)
+                        rentaEv(prixPresent - 1, titre - 2)(1, tabRedimEv(prixPresent - 1)) = tabRentaMarche(indDate - 3, titre - 2)
+                        'On indique qu'on a ajouté un nouvel élément
+                        tabRedimEv(prixPresent - 1) = tabRedimEv(prixPresent - 1) + 1
+
+                    End If
+
+                    'Et on indique qu'un prix était présent
+                    prixPresent = 1
+                End If
+            Next indDate
+            prixPresent = 0
+        Next titre
 
         'On affiche les rentabilités
         currentSheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
-        For titre = 2 To nbColonnes - 1
+        For titre = 2 To nbColonnes
             For indDate = 3 To nbLignes
                 If Not IsNothing(tabRenta(indDate - 3, titre - 2)) Then
                     currentSheet.Cells(indDate - 1, titre).Value = tabRenta(indDate - 3, titre - 2)
@@ -618,7 +692,7 @@ Public Class ThisAddIn
         Next titre
         'Et les rentabilités de marché
         currentSheet = CType(Application.Worksheets("Rm"), Excel.Worksheet)
-        For titre = 2 To nbColonnes - 1
+        For titre = 2 To nbColonnes
             For indDate = 3 To nbLignes
                 If Not IsNothing(tabRentaMarche(indDate - 3, titre - 2)) Then
                     currentSheet.Cells(indDate - 1, titre).Value = tabRentaMarche(indDate - 3, titre - 2)
