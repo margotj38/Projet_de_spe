@@ -87,25 +87,27 @@ Public Class ThisAddIn
         Dim tabAR(tailleFenetre - 1, rentaEst.GetUpperBound(1)) As Double
 
         'pour chaque entreprise...
-        For colonne = 0 To rentaEst.GetLength(1)
+        For colonne = 0 To rentaEst.GetUpperBound(1)
             Dim nbRent As Integer = 0
             'pour chaque tableau
             For reg = 0 To nbReg - 1
-                'extraction des Rt
-                Dim Y(rentaEst(reg, colonne).GetUpperBound(0)) As Double
-                Dim X(rentaEst(reg, colonne).GetUpperBound(0)) As Double
-                For t = 0 To rentaEst(reg, colonne).GetUpperBound(0)
-                    Y(t) = rentaEst(reg, colonne)(1, t)
-                    'extraction des Rm
-                    X(t) = rentaEst(reg, colonne)(0, t)
-                Next
-                'calcul des coefficients des différentes régressions
-                a(reg) = Application.WorksheetFunction.Index(Application.WorksheetFunction.LinEst(Y, X), 2) / (reg + 1)
-                b(reg) = Application.WorksheetFunction.Index(Application.WorksheetFunction.LinEst(Y, X), 1) / (reg + 1)
-                'somme pondérée
-                alpha = alpha + a(reg) * rentaEst(reg, colonne).GetLength(1)
-                beta = beta + b(reg) * rentaEst(reg, colonne).GetLength(1)
-                nbRent = nbRent + rentaEst(reg, colonne).GetLength(1)
+                If Not rentaEst(reg, colonne).GetLength(1) = 0 Then
+                    'extraction des Rt
+                    Dim Y(rentaEst(reg, colonne).GetUpperBound(1)) As Double
+                    Dim X(rentaEst(reg, colonne).GetUpperBound(1)) As Double
+                    For t = 0 To rentaEst(reg, colonne).GetUpperBound(1)
+                        Y(t) = rentaEst(reg, colonne)(1, t)
+                        'extraction des Rm
+                        X(t) = rentaEst(reg, colonne)(0, t)
+                    Next
+                    'calcul des coefficients des différentes régressions
+                    a(reg) = Application.WorksheetFunction.Index(Application.WorksheetFunction.LinEst(Y, X), 2) / (reg + 1)
+                    b(reg) = Application.WorksheetFunction.Index(Application.WorksheetFunction.LinEst(Y, X), 1) / (reg + 1)
+                    'somme pondérée
+                    alpha = alpha + a(reg) * rentaEst(reg, colonne).GetLength(1)
+                    beta = beta + b(reg) * rentaEst(reg, colonne).GetLength(1)
+                    nbRent = nbRent + rentaEst(reg, colonne).GetLength(1)
+                End If
             Next
             'moyenne pondérée
             alpha = alpha / nbRent
@@ -661,10 +663,10 @@ Public Class ThisAddIn
                                      ByRef rentaEst(,)(,) As Double, ByRef rentaEv(,)(,) As Double)
         Dim currentSheet As Excel.Worksheet = CType(Application.Worksheets("prixCentres"), Excel.Worksheet)
         'On récupère les indices correspondants aux différentes dates
-        Dim indFenetreEstDeb As Integer = fenetreEstDebut - currentSheet.Cells(2, 1).Value
-        Dim indFenetreEstFin As Integer = fenetreEstFin - currentSheet.Cells(2, 1).Value
-        Dim indFenetreEvDeb As Integer = fenetreEvDebut - currentSheet.Cells(2, 1).Value
-        Dim indFenetreEvFin As Integer = fenetreEvFin - currentSheet.Cells(2, 1).Value
+        Dim indFenetreEstDeb As Integer = 2 + fenetreEstDebut - currentSheet.Cells(2, 1).Value
+        Dim indFenetreEstFin As Integer = 2 + fenetreEstFin - currentSheet.Cells(2, 1).Value
+        Dim indFenetreEvDeb As Integer = 2 + fenetreEvDebut - currentSheet.Cells(2, 1).Value
+        Dim indFenetreEvFin As Integer = 2 + fenetreEvFin - currentSheet.Cells(2, 1).Value
 
         Dim prixPresent = 0
         For titre = 2 To nbColonnes
