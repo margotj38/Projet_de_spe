@@ -13,7 +13,7 @@ Public Class ThisAddIn
             Case 1
                 calculAR = modeleMarcheSimple()
             Case 2
-                calculAR = modeleMarche(tailleFenetre, rentaEst, rentaEv)
+                calculAR = modeleMarche(tailleComplete, rentaEst, rentaEv)
             Case Else
                 MsgBox("Erreur interne : numero de modèle incorrect dans ChoixSeuilFenetre", 16)
                 calculAR = Nothing
@@ -86,9 +86,9 @@ Public Class ThisAddIn
             'pour chaque tableau
             For reg = 0 To nbReg - 1
                 'extraction des Rt
-                Dim Y() As Double = Application.WorksheetFunction.Index(rentaEst(reg, colonne), 1)
+                Dim Y As VariantType = Application.WorksheetFunction.Index(rentaEst(reg, colonne), 1)
                 'extraction des Rm
-                Dim X() As Double = Application.WorksheetFunction.Index(rentaEst(reg, colonne), 2)
+                Dim X As VariantType = Application.WorksheetFunction.Index(rentaEst(reg, colonne), 2)
                 'calcul des coefficients des différentes régressions
                 a(reg) = Application.WorksheetFunction.Index(Application.WorksheetFunction.LinEst(Y, X), 2) / (reg + 1)
                 b(reg) = Application.WorksheetFunction.Index(Application.WorksheetFunction.LinEst(Y, X), 1) / (reg + 1)
