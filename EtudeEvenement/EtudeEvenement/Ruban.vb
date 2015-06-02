@@ -138,6 +138,6 @@ Public Class Ruban
 
     Private Sub test_Click(sender As Object, e As RibbonControlEventArgs) Handles test.Click
         'Globals.ThisAddIn.prixCentres()
-        Globals.ThisAddIn.calculRentabiliteAvecNA(-259, -11, -10, 10)
+        Globals.ThisAddIn.calculARAvecNA(-259, -11, -10, 10)
     End Sub
 End Class
