@@ -13,7 +13,7 @@ Public Class ThisAddIn
             Case 1
                 calculAR = modeleMarcheSimple()
             Case 2
-                calculAR = modeleMarche(fenetreEstDebut, fenetreEstFin)
+                calculAR = modeleMarche(tailleFenetre, rentaEst, rentaEv)
             Case Else
                 MsgBox("Erreur interne : numero de modèle incorrect dans ChoixSeuilFenetre", 16)
                 calculAR = Nothing
@@ -58,41 +58,106 @@ Public Class ThisAddIn
     End Function
 
     'Estimation des AR à partir du modèle de marché : K = alpha + beta*Rm
-    Public Function modeleMarche(fenetreEstDebut As Integer, fenetreEstFin As Integer) As Double(,)
-        'On se positionne sur la feuille des Rt
-        Dim currentSheet As Excel.Worksheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
-        'On compte le nombre de lignes et de colonnes
-        Dim nbLignes As Integer = currentSheet.UsedRange.Rows.Count
-        Dim nbColonnes As Integer = currentSheet.UsedRange.Columns.Count
+    Public Function modeleMarche(tailleFenetre As Integer, ByRef rentaEst(,)(,) As Double, ByRef rentaEv(,)(,) As Double) As Double(,)
+        'traitement de rentaEst : régression linéaire
 
-        'Indices de la fenetre d'estimation
-        Dim indFenetreEstDeb As Integer = 2 + fenetreEstDebut - currentSheet.Cells(2, 1).Value
-        Dim indFenetreEstFin As Integer = 2 + fenetreEstFin - currentSheet.Cells(2, 1).Value
+        'nombre de différentes régressions
+        Dim nbReg = rentaEst.GetLength(0)
+        'déclaration des tableaux contenant les alpha et beta de la régression
+        Dim a(nbReg) As Double
+        Dim b(nbReg) As Double
+        'moyenne pondérée pour obtenir les véritables alpha et beta
+        Dim alpha As Double = 0
+        Dim beta As Double = 0
+        'tableau des AR
+        Dim tabAR(tailleFenetre - 1, rentaEst.GetUpperBound(1)) As Double
 
-        'Tableau stockant les AR calculés grâce à la régression
-        Dim tabAR(nbLignes - 2, nbColonnes - 2) As Double
-
-        For i = 0 To nbColonnes - 2
-            Dim plageY As Excel.Range
-            Dim plageX As Excel.Range
-            plageY = Application.Range(currentSheet.Cells(indFenetreEstDeb, i + 2), currentSheet.Cells(indFenetreEstFin, i + 2))
-            'On se positionne sur la feuille des Rm pour récupérer plageX
-            currentSheet = CType(Application.Worksheets("Rm"), Excel.Worksheet)
-            plageX = Application.Range(currentSheet.Cells(indFenetreEstDeb, i + 2), currentSheet.Cells(indFenetreEstFin, i + 2))
-            'Calcul des paramètres de la régression linéaire
-            Dim beta As Double = Application.WorksheetFunction.Index(Application.WorksheetFunction.LinEst(plageY, plageX), 1)
-            Dim alpha As Double = Application.WorksheetFunction.Index(Application.WorksheetFunction.LinEst(plageY, plageX), 2)
-
-            'Remplissage du tableau
-            For t = 0 To nbLignes - 2
-                Dim k As Double = alpha + beta * currentSheet.Cells(t + 2, i + 2).Value
-                currentSheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
-                tabAR(t, i) = currentSheet.Cells(t + 2, i + 2).Value - k
-                currentSheet = CType(Application.Worksheets("Rm"), Excel.Worksheet)
+        'pour chaque entreprise...
+        For colonne = 0 To rentaEst.GetLength(1)
+            Dim nbRent As Integer = 0
+            'pour chaque tableau
+            For reg = 0 To nbReg - 1
+                'extraction des Rt
+                Dim Y() As Double = Application.WorksheetFunction.Index(rentaEst(reg, colonne), 1)
+                'extraction des Rm
+                Dim X() As Double = Application.WorksheetFunction.Index(rentaEst(reg, colonne), 2)
+                'calcul des coefficients des différentes régressions
+                a(reg) = Application.WorksheetFunction.Index(Application.WorksheetFunction.LinEst(Y, X), 2) / (reg + 1)
+                b(reg) = Application.WorksheetFunction.Index(Application.WorksheetFunction.LinEst(Y, X), 1) / (reg + 1)
+                'somme pondérée
+                alpha = alpha + a(reg) * rentaEst(reg, colonne).GetLength(1)
+                beta = beta + b(reg) * rentaEst(reg, colonne).GetLength(1)
+                nbRent = nbRent + rentaEst(reg, colonne).GetLength(1)
             Next
-            'On retourne sur la feuille des Rt
-            currentSheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
+            'moyenne pondérée
+            alpha = alpha / nbRent
+            beta = beta / nbRent
+
+            'remplissage des AR
+            Dim indDateTabAR As Integer = 0
+            'On commence par les AR concernant la période d'estimation
+            For i = 0 To rentaEst.GetUpperBound(0)
+                For j = 0 To rentaEst(i, colonne).GetUpperBound(1)
+                    'On met le nombre de cases nécessaires à vide
+                    For k = 0 To i - 1
+                        '(-2146826246 est la valeur obtenue lorsqu'un ".Value" est fait sur une cellule #N/A)
+                        tabAR(indDateTabAR, colonne) = -2146826246
+                        indDateTabAR = indDateTabAR + 1
+                    Next k
+                    tabAR(indDateTabAR, colonne) = rentaEst(i, colonne)(0, j) - (alpha + beta * rentaEst(i, colonne)(1, j))
+                    indDateTabAR = indDateTabAR + 1
+                Next j
+            Next i
+
+            'Ensuite les AR concernant la période d'événement
+            For i = 0 To rentaEv.GetUpperBound(0)
+                For j = 0 To rentaEv(i, colonne).GetUpperBound(1)
+                    'On met le nombre de cases nécessaires à vide
+                    For k = 0 To i - 1
+                        '(-2146826246 est la valeur obtenue lorsqu'un ".Value" est fait sur une cellule #N/A)
+                        tabAR(indDateTabAR, colonne) = -2146826246
+                        indDateTabAR = indDateTabAR + 1
+                    Next k
+                    tabAR(indDateTabAR, colonne) = rentaEv(i, colonne)(0, j) - (alpha + beta * rentaEv(i, colonne)(1, j))
+                    indDateTabAR = indDateTabAR + 1
+                Next j
+            Next i
         Next
+
+        ''On se positionne sur la feuille des Rt
+        'Dim currentSheet As Excel.Worksheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
+        ''On compte le nombre de lignes et de colonnes
+        'Dim nbLignes As Integer = currentSheet.UsedRange.Rows.Count
+        'Dim nbColonnes As Integer = currentSheet.UsedRange.Columns.Count
+
+        ''Indices de la fenetre d'estimation
+        'Dim indFenetreEstDeb As Integer = 2 + fenetreEstDebut - currentSheet.Cells(2, 1).Value
+        'Dim indFenetreEstFin As Integer = 2 + fenetreEstFin - currentSheet.Cells(2, 1).Value
+
+        ''Tableau stockant les AR calculés grâce à la régression
+        'Dim tabAR(nbLignes - 2, nbColonnes - 2) As Double
+
+        'For i = 0 To nbColonnes - 2
+        '    Dim plageY As Excel.Range
+        '    Dim plageX As Excel.Range
+        '    plageY = Application.Range(currentSheet.Cells(indFenetreEstDeb, i + 2), currentSheet.Cells(indFenetreEstFin, i + 2))
+        '    'On se positionne sur la feuille des Rm pour récupérer plageX
+        '    currentSheet = CType(Application.Worksheets("Rm"), Excel.Worksheet)
+        '    plageX = Application.Range(currentSheet.Cells(indFenetreEstDeb, i + 2), currentSheet.Cells(indFenetreEstFin, i + 2))
+        '    'Calcul des paramètres de la régression linéaire
+        '    Dim beta As Double = Application.WorksheetFunction.Index(Application.WorksheetFunction.LinEst(plageY, plageX), 1)
+        '    Dim alpha As Double = Application.WorksheetFunction.Index(Application.WorksheetFunction.LinEst(plageY, plageX), 2)
+
+        '    'Remplissage du tableau
+        '    For t = 0 To nbLignes - 2
+        '        Dim k As Double = alpha + beta * currentSheet.Cells(t + 2, i + 2).Value
+        '        currentSheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
+        '        tabAR(t, i) = currentSheet.Cells(t + 2, i + 2).Value - k
+        '        currentSheet = CType(Application.Worksheets("Rm"), Excel.Worksheet)
+        '    Next
+        '    'On retourne sur la feuille des Rt
+        '    currentSheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
+        'Next
         modeleMarche = tabAR
     End Function
 
