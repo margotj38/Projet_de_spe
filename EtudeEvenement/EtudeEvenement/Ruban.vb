@@ -135,4 +135,8 @@ Public Class
         choixSeuilFenetre.nomModel.Text = "Test de signe - Modèle de marché classique"
         seuilFenetreTaskPane.Visible = True
     End Sub
+
+    Private Sub test_Click(sender As Object, e As RibbonControlEventArgs) Handles test.Click
+        Globals.ThisAddIn.prixCentres()
+    End Sub
 End Class
