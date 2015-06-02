@@ -9,7 +9,7 @@ Public Class ThisAddIn
         'appelle une fonction pour chaque modèle
         Select Case Globals.Ribbons.Ruban.choixSeuilFenetre.modele
             Case 0
-                calculAR = modeleMoyenne(tailleComplete, rentaEst, rentaEv)
+                calculAR = modeleMoyenne(tailleComplete, fenetreEstFin - fenetreEstDebut + 1, rentaEst, rentaEv)
             Case 1
                 calculAR = modeleMarcheSimple()
             Case 2
@@ -43,6 +43,12 @@ Public Class ThisAddIn
                 End If
             Next i
             Dim moyenne As Double = 0
+
+            'debug
+            For i = 0 To tabAR.GetUpperBound(0)
+                Debug.WriteLine(tabAR(i, colonne))
+            Next i
+
             For i = indFenetreEstDeb To indFenetreEstFin
                 If Not tabAR(i, colonne) = -2146826246 Then
                     moyenne = moyenne + tabAR(i, colonne)
@@ -191,7 +197,7 @@ Public Class ThisAddIn
     End Function
 
     'Estimation des AR à partir du modèle de la moyenne : K = R
-    Public Function modeleMoyenne(tailleFenetre As Integer, ByRef rentaEst(,)(,) As Double, _
+    Public Function modeleMoyenne(tailleFenetre As Integer, nbDateEst As Integer, ByRef rentaEst(,)(,) As Double, _
                                   ByRef rentaEv(,)(,) As Double) As Double(,)
         'Tableau des moyennes de chaque titre
         Dim tabMoy(rentaEst.GetUpperBound(1)) As Double
@@ -203,7 +209,7 @@ Public Class ThisAddIn
                     tabMoy(colonne) = tabMoy(colonne) + (rentaEst(i, colonne)(0, j) * (i + 1))
                 Next j
             Next i
-            tabMoy(colonne) = tabMoy(colonne) / rentaEst.GetLength(1)
+            tabMoy(colonne) = tabMoy(colonne) / nbDateEst
         Next colonne
 
         'Calcul des AR sur la fenêtre
