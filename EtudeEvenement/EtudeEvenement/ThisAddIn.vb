@@ -92,9 +92,13 @@ Public Class ThisAddIn
             'pour chaque tableau
             For reg = 0 To nbReg - 1
                 'extraction des Rt
-                Dim Y As VariantType = Application.WorksheetFunction.Index(rentaEst(reg, colonne), 1)
-                'extraction des Rm
-                Dim X As VariantType = Application.WorksheetFunction.Index(rentaEst(reg, colonne), 2)
+                Dim Y(rentaEst(reg, colonne).GetUpperBound(0)) As Double
+                Dim X(rentaEst(reg, colonne).GetUpperBound(0)) As Double
+                For t = 0 To rentaEst(reg, colonne).GetUpperBound(0)
+                    Y(t) = rentaEst(reg, colonne)(1, t)
+                    'extraction des Rm
+                    X(t) = rentaEst(reg, colonne)(0, t)
+                Next
                 'calcul des coefficients des différentes régressions
                 a(reg) = Application.WorksheetFunction.Index(Application.WorksheetFunction.LinEst(Y, X), 2) / (reg + 1)
                 b(reg) = Application.WorksheetFunction.Index(Application.WorksheetFunction.LinEst(Y, X), 1) / (reg + 1)
