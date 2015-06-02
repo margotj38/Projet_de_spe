@@ -61,51 +61,52 @@ Public Class ChoixSeuilFenetre
     End Sub
 
     Private Sub PValeur_Click(sender As Object, e As EventArgs) Handles PValeur.Click
-        Try
-            Dim fenetreEstDebut As Integer = CInt(textFenetreEstDebut)
-            Dim fenetreEstFin As Integer = CInt(textFenetreEstFin)
-            Dim fenetreEvDebut As Integer = CInt(textFenetreEvDebut)
-            Dim fenetreEvFin As Integer = CInt(textFenetreEvFin)
+        'Try
+        Dim fenetreEstDebut As Integer = CInt(textFenetreEstDebut)
+        Dim fenetreEstFin As Integer = CInt(textFenetreEstFin)
+        Dim fenetreEvDebut As Integer = CInt(textFenetreEvDebut)
+        Dim fenetreEvFin As Integer = CInt(textFenetreEvFin)
 
-            Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("Rt"), Excel.Worksheet)
-            Dim premiereDate As Integer = currentSheet.Cells(2, 1).Value
-            Dim tailleEchant As Integer = currentSheet.UsedRange.Columns.Count - 1
+        'On effectue le centrage des prix autour des événements
+        Globals.ThisAddIn.prixCentres()
 
-            If fenetreEvDebut > fenetreEvFin Or fenetreEvFin > premiereDate + currentSheet.UsedRange.Rows.Count - 1 _
-                Or fenetreEstDebut > fenetreEstFin Or fenetreEstDebut < premiereDate Or fenetreEstFin >= fenetreEvDebut Then
-                MsgBox("Erreur : La fenêtre de temps de l'événement doit être cohérente avec les données", 16)
-            Else
-                'Calcul des AR
-                Dim tabAR As Double(,)
-                tabAR = Globals.ThisAddIn.calculAR(fenetreEstDebut, fenetreEstFin)
-                'For i = 0 To tabAR.GetUpperBound(0)
-                'Debug.WriteLine(tabAR(i, 0))
-                'Next
-                'Calcul de la pValeur
-                Dim pValeur As Double
-                Select Case test
-                    Case 0
-                        'test simple'
-                        Dim tabCAR As Double()
-                        tabCAR = Globals.ThisAddIn.calculCAR(tabAR, fenetreEstDebut, fenetreEstFin, fenetreEvDebut, fenetreEvFin)
-                        Dim testHyp As Double = Globals.ThisAddIn.calculStatistique(tabCAR)
-                        pValeur = Globals.ThisAddIn.calculPValeur(tailleEchant, testHyp) * 100
-                    Case 1
-                        'test de Patell'
-                        Dim testHyp As Double = Globals.ThisAddIn.patellTest(tabAR, fenetreEstDebut, fenetreEstFin, fenetreEvDebut, fenetreEvFin)
-                        pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHyp), True)) * 100
-                    Case 2
-                        'test de signe'
-                        Dim testHyp As Double = Globals.ThisAddIn.statTestSigne(tabAR, fenetreEstDebut, fenetreEstFin, fenetreEvDebut, fenetreEvFin)
-                        pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHyp), True)) * 100
-                End Select
+        Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("prixCentres"), Excel.Worksheet)
+        Dim premiereDate As Integer = currentSheet.Cells(2, 1).Value
+        Dim tailleEchant As Integer = currentSheet.UsedRange.Columns.Count - 1
 
-                MsgBox("P-Valeur : " & pValeur.ToString("0.0000") & "%")
-                Globals.Ribbons.Ruban.seuilFenetreTaskPane.Visible = False
-            End If
-        Catch erreur As InvalidCastException
-            MsgBox("Erreur : Vous devez entrer des données correctes (utiliser la virgule pour les nombres décimaux)", 16)
-        End Try
+        If fenetreEvDebut > fenetreEvFin Or fenetreEvFin > premiereDate + currentSheet.UsedRange.Rows.Count - 1 _
+            Or fenetreEstDebut > fenetreEstFin Or fenetreEstDebut < premiereDate + 1 Or fenetreEstFin >= fenetreEvDebut Then
+            MsgBox("Erreur : La fenêtre de temps de l'événement doit être cohérente avec les données", 16)
+        Else
+            'Calcul des AR
+            Dim tabAR As Double(,)
+            tabAR = Globals.ThisAddIn.calculARAvecNA(fenetreEstDebut, fenetreEstFin, fenetreEvDebut, fenetreEvFin)
+            'tabAR = Globals.ThisAddIn.calculAR(fenetreEstDebut, fenetreEstFin)
+            'Calcul de la pValeur
+            Dim pValeur As Double
+            Select Case test
+                Case 0
+                    'test simple'
+                    Dim tabCAR As Double()
+                    tabCAR = Globals.ThisAddIn.calculCAR(tabAR, premiereDate + 1, fenetreEstDebut, fenetreEstFin, fenetreEvDebut, fenetreEvFin)
+                    Dim testHyp As Double = Globals.ThisAddIn.calculStatistique(tabCAR)
+                    pValeur = Globals.ThisAddIn.calculPValeur(tailleEchant, testHyp) * 100
+                Case 1
+                    'test de Patell'
+                    Dim testHyp As Double = Globals.ThisAddIn.patellTest(tabAR, fenetreEstDebut, fenetreEstFin, fenetreEvDebut, fenetreEvFin)
+                    pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHyp), True)) * 100
+                Case 2
+                    'test de signe'
+                    Dim testHyp As Double = Globals.ThisAddIn.statTestSigne(tabAR, fenetreEstDebut, fenetreEstFin, fenetreEvDebut, fenetreEvFin)
+                    pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHyp), True)) * 100
+            End Select
+
+            MsgBox("P-Valeur : " & pValeur.ToString("0.0000") & "%")
+            Globals.Ribbons.Ruban.seuilFenetreTaskPane.Visible = False
+        End If
+        'Catch erreur As InvalidCastException
+        'MsgBox("Erreur : Vous devez entrer des données correctes (utiliser la virgule pour les nombres décimaux)", 16)
+        'End Try
     End Sub
 
     Private Sub PValeurFenetre_Click(sender As Object, e As EventArgs) Handles PValeurFenetre.Click

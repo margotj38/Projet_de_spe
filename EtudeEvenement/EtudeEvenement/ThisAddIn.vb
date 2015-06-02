@@ -4,12 +4,12 @@ Imports System.Diagnostics
 Public Class ThisAddIn
 
     'Calcule les AR avec le modèle considéré
-    Public Function calculAR(fenetreEstDebut As Integer, fenetreEstFin As Integer, _
+    Public Function calculAR(tailleComplete As Integer, fenetreEstDebut As Integer, fenetreEstFin As Integer, _
                              Optional rentaEst(,)(,) As Double = Nothing, Optional rentaEv(,)(,) As Double = Nothing) As Double(,)
         'appelle une fonction pour chaque modèle
         Select Case Globals.Ribbons.Ruban.choixSeuilFenetre.modele
             Case 0
-                calculAR = modeleMoyenne(fenetreEstDebut, fenetreEstFin, rentaEst, rentaEv)
+                calculAR = modeleMoyenne(tailleComplete, rentaEst, rentaEv)
             Case 1
                 calculAR = modeleMarcheSimple()
             Case 2
@@ -21,13 +21,14 @@ Public Class ThisAddIn
     End Function
 
     'Calcule les CAR "normalisés" pour le test statistique
-    Public Function calculCAR(tabAR As Double(,), fenetreEstDebut As Integer, fenetreEstFin As Integer, fenetreEvDebut As Integer, fenetreEvFin As Integer) As Double()
+    Public Function calculCAR(tabAR As Double(,), debutInd As Integer, fenetreEstDebut As Integer, fenetreEstFin As Integer, _
+                              fenetreEvDebut As Integer, fenetreEvFin As Integer) As Double()
         Dim normCar(tabAR.GetUpperBound(1)) As Double   'Variable aléatoire correspondant aux CAR "normalisés"
-        Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("Rt"), Excel.Worksheet)
-        Dim indFenetreEstDeb As Integer = fenetreEstDebut - currentSheet.Cells(2, 1).Value
-        Dim indFenetreEstFin As Integer = fenetreEstFin - currentSheet.Cells(2, 1).Value
-        Dim indFenetreEvDeb As Integer = fenetreEvDebut - currentSheet.Cells(2, 1).Value
-        Dim indFenetreEvFin As Integer = fenetreEvFin - currentSheet.Cells(2, 1).Value
+        'Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("Rt"), Excel.Worksheet)
+        Dim indFenetreEstDeb As Integer = fenetreEstDebut - debutInd
+        Dim indFenetreEstFin As Integer = fenetreEstFin - debutInd
+        Dim indFenetreEvDeb As Integer = fenetreEvDebut - debutInd
+        Dim indFenetreEvFin As Integer = fenetreEvFin - debutInd
         Dim tailleFenetreEst As Integer = fenetreEstFin - fenetreEstDebut + 1
         Dim tailleFenetreEv As Integer = fenetreEvFin - fenetreEvDebut + 1
 
@@ -36,18 +37,25 @@ Public Class ThisAddIn
             'Calcul de CAR sur la fenetre d'événement paramétrée
             Dim CAR As Double = 0
             For i = indFenetreEvDeb To indFenetreEvFin
-                CAR = CAR + tabAR(i, colonne)
+                '(-2146826246 est la valeur obtenue lorsqu'un ".Value" est fait sur une cellule #N/A)
+                If Not tabAR(i, colonne) = -2146826246 Then
+                    CAR = CAR + tabAR(i, colonne)
+                End If
             Next i
             Dim moyenne As Double = 0
             For i = indFenetreEstDeb To indFenetreEstFin
-                moyenne = moyenne + tabAR(i, colonne)
+                If Not tabAR(i, colonne) = -2146826246 Then
+                    moyenne = moyenne + tabAR(i, colonne)
+                End If
             Next i
             moyenne = moyenne / tailleFenetreEst
             'Calcul de la variance des AR sur la période d'estimation
             Dim variance As Double = 0
             For i = indFenetreEstDeb To indFenetreEstFin
-                Dim tmp As Double = tabAR(i, colonne) - moyenne
-                variance = variance + tmp * tmp
+                If Not tabAR(i, colonne) = -2146826246 Then
+                    Dim tmp As Double = tabAR(i, colonne) - moyenne
+                    variance = variance + tmp * tmp
+                End If
             Next i
             variance = variance / (tailleFenetreEst - 1)
             normCar(colonne) = CAR / Math.Sqrt(tailleFenetreEv * variance)
@@ -118,33 +126,53 @@ Public Class ThisAddIn
     End Function
 
     'Estimation des AR à partir du modèle de la moyenne : K = R
-    Public Function modeleMoyenne(fenetreEstDebut As Integer, fenetreEstFin As Integer) As Double(,)
-        Dim currentSheet As Excel.Worksheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
-        'On compte le nombre de lignes et de colonnes
-        Dim nbLignes As Integer = currentSheet.UsedRange.Rows.Count
-        Dim nbColonnes As Integer = currentSheet.UsedRange.Columns.Count
-
-        'Indices de la fenetre d'estimation
-        Dim indFenetreEstDeb As Integer = 2 + fenetreEstDebut - currentSheet.Cells(2, 1).Value
-        Dim indFenetreEstFin As Integer = 2 + fenetreEstFin - currentSheet.Cells(2, 1).Value
-
+    Public Function modeleMoyenne(tailleFenetre As Integer, ByRef rentaEst(,)(,) As Double, _
+                                  ByRef rentaEv(,)(,) As Double) As Double(,)
         'Tableau des moyennes de chaque titre
-        Dim tabMoy(nbColonnes - 2) As Double
+        Dim tabMoy(rentaEst.GetUpperBound(1)) As Double
 
         'Calcul des moyennes
-        For colonne = 2 To nbColonnes
-            Dim plage As Excel.Range = Application.Range(currentSheet.Cells(indFenetreEstDeb, colonne), currentSheet.Cells(indFenetreEstFin, colonne))
-            tabMoy(colonne - 2) = Application.WorksheetFunction.Average(plage)
+        For colonne = 0 To rentaEst.GetUpperBound(1)
+            For i = 0 To rentaEst.GetUpperBound(0)
+                For j = 0 To rentaEst(i, colonne).GetUpperBound(1)
+                    tabMoy(colonne) = tabMoy(colonne) + (rentaEst(i, colonne)(0, j) * (i + 1))
+                Next j
+            Next i
+            tabMoy(colonne) = tabMoy(colonne) / rentaEst.GetLength(1)
         Next colonne
 
         'Calcul des AR sur la fenêtre
-        Dim tabAR(nbLignes - 2, nbColonnes - 2) As Double                          'Tableau des AR sur la fenêtre de l'événement
-        For colonne = 2 To nbColonnes
-            For indDate = 2 To nbLignes
-                tabAR(indDate - 2, colonne - 2) = currentSheet.Cells(indDate, colonne).Value - tabMoy(colonne - 2)
-            Next indDate
+        Dim tabAR(tailleFenetre - 1, rentaEst.GetUpperBound(1)) As Double
+        For colonne = 0 To rentaEst.GetUpperBound(1)
+            Dim indDateTabAR As Integer = 0
+            'On commence par les AR concernant la période d'estimation
+            For i = 0 To rentaEst.GetUpperBound(0)
+                For j = 0 To rentaEst(i, colonne).GetUpperBound(1)
+                    'On met le nombre de cases nécessaires à vide
+                    For k = 0 To i - 1
+                        '(-2146826246 est la valeur obtenue lorsqu'un ".Value" est fait sur une cellule #N/A)
+                        tabAR(indDateTabAR, colonne) = -2146826246
+                        indDateTabAR = indDateTabAR + 1
+                    Next k
+                    tabAR(indDateTabAR, colonne) = rentaEst(i, colonne)(0, j) - tabMoy(colonne)
+                    indDateTabAR = indDateTabAR + 1
+                Next j
+            Next i
+            'On continue avec les AR de la période d'événement
+            For i = 0 To rentaEv.GetUpperBound(0)
+                For j = 0 To rentaEv(i, colonne).GetUpperBound(1)
+                    'On met le nombre de cases nécessaires à vide
+                    For k = 0 To i - 1
+                        '(-2146826246 est la valeur obtenue lorsqu'un ".Value" est fait sur une cellule #N/A)
+                        tabAR(indDateTabAR, colonne) = -2146826246
+                        indDateTabAR = indDateTabAR + 1
+                    Next k
+                    tabAR(indDateTabAR, colonne) = rentaEv(i, colonne)(0, j) - tabMoy(colonne)
+                    indDateTabAR = indDateTabAR + 1
+                Next j
+            Next i
         Next colonne
-        modeleMoyenne = tabAR
+        Return tabAR
     End Function
 
     Public Function patellTest(tabAR(,) As Double, fenetreEstDebut As Integer, fenetreEstFin As Integer, fenetreEvDebut As Integer, fenetreEvFin As Integer) As Double
@@ -266,7 +294,10 @@ Public Class ThisAddIn
         For i = 0 To maxFenetre
             Dim tabAR As Double(,)
             'On apprend sur toutes les données disponibles
-            tabAR = calculAR(currentSheet.Cells(2, 1).Value, -i - 1)
+
+
+            ''''Commenté pour test
+            'tabAR = calculAR(currentSheet.Cells(2, 1).Value, -i - 1)
 
             Dim pValeur As Double
 
@@ -274,7 +305,9 @@ Public Class ThisAddIn
                 Case 0
                     'test simple
                     Dim tabCAR As Double()
-                    tabCAR = Globals.ThisAddIn.calculCAR(tabAR, currentSheet.Cells(2, 1).Value, -i - 1, -i, i)
+
+                    ''''Commenté pour test
+                    'tabCAR = Globals.ThisAddIn.calculCAR(tabAR, currentSheet.Cells(2, 1).Value, -i - 1, -i, i)
                     Dim testHyp As Double = Globals.ThisAddIn.calculStatistique(tabCAR)
                     pValeur = Globals.ThisAddIn.calculPValeur(tailleEchant, testHyp) * 100
                 Case 1
@@ -538,7 +571,8 @@ Public Class ThisAddIn
                              fenetreEvDebut, fenetreEvFin, tabRenta, tabRentaMarche, rentaEst, rentaEv)
 
         'On calcule maintenant les AR
-        calculARAvecNA = calculAR(fenetreEstDebut, fenetreEstFin, rentaEst, rentaEv)
+        Dim tailleComplete As Integer = fenetreEstFin - fenetreEstDebut + 1 + fenetreEvFin - fenetreEvDebut + 1
+        calculARAvecNA = calculAR(tailleComplete, fenetreEstDebut, fenetreEstFin, rentaEst, rentaEv)
     End Function
 
     Private Sub constructionTableauxNA(nbLignes As Integer, nbColonnes As Integer, maxPrixAbsent As Integer, _
@@ -583,8 +617,9 @@ Public Class ThisAddIn
                         End If
 
                         'On ajoute Rt et Rm au tableau
-                        rentaEst(prixPresent - 1, titre - 2)(0, tabRedimEst(prixPresent - 1)) = tabRenta(indDate - 3, titre - 2)
-                        rentaEst(prixPresent - 1, titre - 2)(1, tabRedimEst(prixPresent - 1)) = tabRentaMarche(indDate - 3, titre - 2)
+                        'Les rentabilités sont ramenées en équivalent à une période (par division par prixPresent)
+                        rentaEst(prixPresent - 1, titre - 2)(0, tabRedimEst(prixPresent - 1)) = tabRenta(indDate - 3, titre - 2) / prixPresent
+                        rentaEst(prixPresent - 1, titre - 2)(1, tabRedimEst(prixPresent - 1)) = tabRentaMarche(indDate - 3, titre - 2) / prixPresent
                         'On indique qu'on a ajouté un nouvel élément
                         tabRedimEst(prixPresent - 1) = tabRedimEst(prixPresent - 1) + 1
 
