@@ -88,7 +88,7 @@ Public Class ThisAddIn
         Dim alpha As Double = 0
         Dim beta As Double = 0
         'tableau des AR
-        Dim tabAR(tailleFenetre - 1, tabRenta.GetUpperBound(1)) As Double
+        Dim tabAR(tabRenta.GetUpperBound(0), tabRenta.GetUpperBound(1)) As Double
 
         'pour chaque entreprise...
         For colonne = 0 To tabRentaReg.GetUpperBound(0)
@@ -111,9 +111,9 @@ Public Class ThisAddIn
                     a(reg) = Application.WorksheetFunction.Index(Application.WorksheetFunction.LinEst(Y, X), 2) / (reg + 1)
                     b(reg) = Application.WorksheetFunction.Index(Application.WorksheetFunction.LinEst(Y, X), 1) / (reg + 1)
                     'somme pondérée
-                    alpha = alpha + a(reg) * tabRentaReg(reg, colonne, 1).GetLength(0)
-                    beta = beta + b(reg) * tabRentaReg(reg, colonne, 1).GetLength(0)
-                    nbRent = nbRent + tabRentaReg(reg, colonne, 1).GetLength(0)
+                    alpha = alpha + a(reg) * tabRentaReg(colonne, reg, 1).GetLength(0)
+                    beta = beta + b(reg) * tabRentaReg(colonne, reg, 1).GetLength(0)
+                    nbRent = nbRent + tabRentaReg(colonne, reg, 1).GetLength(0)
                 End If
             Next
             'moyenne pondérée
@@ -129,6 +129,7 @@ Public Class ThisAddIn
                     prixPresent = prixPresent + 1
                 Else
                     tabAR(i, colonne) = (tabRenta(i, colonne) - (alpha + beta * tabRentaMarche(i, colonne))) * prixPresent
+                    prixPresent = 1
                 End If
             Next i
         Next
