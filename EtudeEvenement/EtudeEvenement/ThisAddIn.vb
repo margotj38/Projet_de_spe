@@ -4,12 +4,12 @@ Imports System.Diagnostics
 Public Class ThisAddIn
 
     'Calcule les AR avec le modèle considéré
-    Public Function calculAR(tailleComplete As Integer, maxPrixAbsent As Integer, fenetreEstDebut As Integer, fenetreEstFin As Integer, _
-                             Optional tabRenta(,) As Double = Nothing, Optional tabRentaMarche(,) As Double = Nothing) As Double(,)
+    Public Function calculAR(tailleComplete As Integer, maxPrixAbsent As Integer, fenetreEstDebut As Integer, _
+                             fenetreEstFin As Integer, premiereDate As Integer, Optional tabRenta(,) As Double = Nothing, Optional tabRentaMarche(,) As Double = Nothing) As Double(,)
         'appelle une fonction pour chaque modèle
         Select Case Globals.Ribbons.Ruban.choixSeuilFenetre.modele
             Case 0
-                calculAR = modeleMoyenne(tailleComplete, fenetreEstFin - fenetreEstDebut + 1, tabRenta)
+                calculAR = modeleMoyenne(tailleComplete, premiereDate, fenetreEstDebut, fenetreEstFin, tabRenta)
             Case 1
                 calculAR = modeleMarcheSimple()
             Case 2
@@ -26,7 +26,6 @@ Public Class ThisAddIn
     Public Function calculCAR(tabAR As Double(,), debutInd As Integer, fenetreEstDebut As Integer, fenetreEstFin As Integer, _
                               fenetreEvDebut As Integer, fenetreEvFin As Integer) As Double()
         Dim normCar(tabAR.GetUpperBound(1)) As Double   'Variable aléatoire correspondant aux CAR "normalisés"
-        'Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("Rt"), Excel.Worksheet)
         Dim indFenetreEstDeb As Integer = fenetreEstDebut - debutInd
         Dim indFenetreEstFin As Integer = fenetreEstFin - debutInd
         Dim indFenetreEvDeb As Integer = fenetreEvDebut - debutInd
@@ -38,51 +37,36 @@ Public Class ThisAddIn
         For colonne = 0 To tabAR.GetUpperBound(1)
             'Calcul de CAR sur la fenetre d'événement paramétrée
             Dim CAR As Double = 0
-            'Variable pour savoir s'il manque des AR
-            Dim precAR As Integer = 1
             For i = indFenetreEvDeb To indFenetreEvFin
                 '(-2146826246 est la valeur obtenue lorsqu'un ".Value" est fait sur une cellule #N/A)
-                If tabAR(i, colonne) = -2146826246 Then
-                    'Si on n'a pas d'AR, on incrémente precAR
-                    precAR = precAR + 1
-                Else
-                    CAR = CAR + tabAR(i, colonne) * precAR
-                    precAR = 1
+                If Not tabAR(i, colonne) = -2146826246 Then
+                    CAR = CAR + tabAR(i, colonne)
                 End If
             Next i
-            'Si à la fin il manquait encore des AR, on ajoute celui qui précédait
-            CAR = CAR + tabAR(indFenetreEvFin - precAR + 1, colonne) * (precAR - 1)
 
             Dim moyenne As Double = 0
-            'Variable pour savoir s'il manque des AR
-            precAR = 1
             For i = indFenetreEstDeb To indFenetreEstFin
-                If tabAR(i, colonne) = -2146826246 Then
-                    precAR = precAR + 1
-                Else
-                    moyenne = moyenne + tabAR(i, colonne) * precAR
-                    precAR = 1
+                If Not tabAR(i, colonne) = -2146826246 Then
+                    moyenne = moyenne + tabAR(i, colonne)
                 End If
             Next i
-            'Si à la fin il manquait encore des AR, on ajoute celui qui précédait
-            moyenne = moyenne + tabAR(indFenetreEstFin - precAR + 1, colonne) * (precAR - 1)
             moyenne = moyenne / tailleFenetreEst
 
             'Calcul de la variance des AR sur la période d'estimation
             Dim variance As Double = 0
-            precAR = 1
+            'Variable pour savoir si des NA précédaient
+            Dim precAR As Integer = 1
             For i = indFenetreEstDeb To indFenetreEstFin
                 If tabAR(i, colonne) = -2146826246 Then
                     precAR = precAR + 1
                 Else
-                    Dim tmp As Double = tabAR(i, colonne) - moyenne
+                    'On divise l'AR par precAR pour pouvoir le comparer à la moyenne
+                    Dim tmp As Double = tabAR(i, colonne) / precAR - moyenne
+                    'On multiplie tmp² par precAR afin de simuler une variance sur le bon nombre de périodes
                     variance = variance + tmp * tmp * precAR
                     precAR = 1
                 End If
             Next i
-            'Si à la fin il manquait encore des AR, on ajoute celui qui précédait
-            Dim temp As Double = tabAR(indFenetreEstFin - precAR + 1, colonne) - moyenne
-            moyenne = moyenne + temp * temp * (precAR - 1)
             variance = variance / (tailleFenetreEst - 1)
             normCar(colonne) = CAR / Math.Sqrt(tailleFenetreEv * variance)
         Next colonne
@@ -223,53 +207,42 @@ Public Class ThisAddIn
     End Function
 
     'Estimation des AR à partir du modèle de la moyenne : K = R
-    Public Function modeleMoyenne(tailleFenetre As Integer, nbDateEst As Integer, ByRef tabRenta(,) As Double) As Double(,)
-        ''Tableau des moyennes de chaque titre
-        'Dim tabMoy(rentaEst.GetUpperBound(1)) As Double
+    Public Function modeleMoyenne(tailleFenetre As Integer, premiereDate As Integer, fenetreEstDebut As Integer, fenetreEstFin As Integer, ByRef tabRenta(,) As Double) As Double(,)
+        'Indices de la fenêtre d'estimation dans le tableau tabRenta
+        Dim indFenetreEstDeb As Integer = fenetreEstDebut - premiereDate
+        Dim indFenetreEstFin As Integer = fenetreEstFin - premiereDate
 
-        ''Calcul des moyennes
-        'For colonne = 0 To rentaEst.GetUpperBound(1)
-        '    For i = 0 To rentaEst.GetUpperBound(0)
-        '        For j = 0 To rentaEst(i, colonne).GetUpperBound(1)
-        '            tabMoy(colonne) = tabMoy(colonne) + (rentaEst(i, colonne)(0, j) * (i + 1))
-        '        Next j
-        '    Next i
-        '    tabMoy(colonne) = tabMoy(colonne) / nbDateEst
-        'Next colonne
+        'Tableau des moyennes de chaque titre
+        Dim tabMoy(tabRenta.GetUpperBound(1)) As Double
 
-        ''Calcul des AR sur la fenêtre
-        'Dim tabAR(tailleFenetre - 1, rentaEst.GetUpperBound(1)) As Double
-        'For colonne = 0 To rentaEst.GetUpperBound(1)
-        '    Dim indDateTabAR As Integer = 0
-        '    'On commence par les AR concernant la période d'estimation
-        '    For i = 0 To rentaEst.GetUpperBound(0)
-        '        For j = 0 To rentaEst(i, colonne).GetUpperBound(1)
-        '            'On met le nombre de cases nécessaires à vide
-        '            For k = 0 To i - 1
-        '                '(-2146826246 est la valeur obtenue lorsqu'un ".Value" est fait sur une cellule #N/A)
-        '                tabAR(indDateTabAR, colonne) = -2146826246
-        '                indDateTabAR = indDateTabAR + 1
-        '            Next k
-        '            tabAR(indDateTabAR, colonne) = rentaEst(i, colonne)(0, j) - tabMoy(colonne)
-        '            indDateTabAR = indDateTabAR + 1
-        '        Next j
-        '    Next i
-        '    'On continue avec les AR de la période d'événement
-        '    For i = 0 To rentaEv.GetUpperBound(0)
-        '        For j = 0 To rentaEv(i, colonne).GetUpperBound(1)
-        '            'On met le nombre de cases nécessaires à vide
-        '            For k = 0 To i - 1
-        '                '(-2146826246 est la valeur obtenue lorsqu'un ".Value" est fait sur une cellule #N/A)
-        '                tabAR(indDateTabAR, colonne) = -2146826246
-        '                indDateTabAR = indDateTabAR + 1
-        '            Next k
-        '            tabAR(indDateTabAR, colonne) = rentaEv(i, colonne)(0, j) - tabMoy(colonne)
-        '            indDateTabAR = indDateTabAR + 1
-        '        Next j
-        '    Next i
-        'Next colonne
-        'Return tabAR
-        Return Nothing
+        'Calcul des moyennes sur la fenêtre d'estimation
+        For colonne = 0 To tabRenta.GetUpperBound(1)
+            For i = indFenetreEstDeb To indFenetreEstFin
+                'S'il n'y avait pas de NA, on somme
+                If Not tabRenta(i, colonne) = -2146826246 Then
+                    tabMoy(colonne) = tabMoy(colonne) + tabRenta(i, colonne)
+                End If
+            Next i
+            tabMoy(colonne) = tabMoy(colonne) / (indFenetreEstFin - indFenetreEstDeb + 1)
+        Next colonne
+
+        'Calcul des AR sur la fenêtre
+        'Variable pour savoir si des AR précédents sont manquants
+        Dim prixPresent As Integer = 1
+        Dim tabAR(tailleFenetre - 1, tabRenta.GetUpperBound(1)) As Double
+        For colonne = 0 To tabRenta.GetUpperBound(1)
+            For i = 0 To tabRenta.GetUpperBound(0)
+                If tabRenta(i, colonne) = -2146826246 Then
+                    tabAR(i, colonne) = -2146826246
+                    prixPresent = prixPresent + 1
+                Else
+                    'On divise la rentabilité par prixPresent pour se ramenner à un équivalent sur une période
+                    'Puis on multiplie par cette même valeur pour avoir un AR correspondant au bon nombre de périodes
+                    tabAR(i, colonne) = (tabRenta(i, colonne) / prixPresent - tabMoy(colonne)) * prixPresent
+                End If
+            Next i
+        Next colonne
+        Return tabAR
     End Function
 
     Public Function patellTest(tabAR(,) As Double, fenetreEstDebut As Integer, fenetreEstFin As Integer, fenetreEvDebut As Integer, fenetreEvFin As Integer) As Double
@@ -674,7 +647,7 @@ Public Class ThisAddIn
 
         'On calcule maintenant les AR
         Dim tailleComplete As Integer = fenetreEstFin - fenetreEstDebut + 1 + fenetreEvFin - fenetreEvDebut + 1
-        calculARAvecNA = calculAR(tailleComplete, maxPrixAbsent, fenetreEstDebut, fenetreEstFin, tabRenta, tabRentaMarche)
+        calculARAvecNA = calculAR(tailleComplete, maxPrixAbsent, fenetreEstDebut, currentSheet.Cells(2, 1), fenetreEstFin, tabRenta, tabRentaMarche)
     End Function
 
     Private Function constructionTableauxNA(maxPrixAbsent As Integer, fenetreEstDebut As Integer, fenetreEstFin As Integer, _
