@@ -6,20 +6,32 @@ Public Class ThisAddIn
     'Calcule les AR avec le modèle considéré
     Public Function calculAR(tailleComplete As Integer, maxPrixAbsent As Integer, fenetreEstDebut As Integer, _
                              fenetreEstFin As Integer, premiereDate As Integer, Optional tabRenta(,) As Double = Nothing, Optional tabRentaMarche(,) As Double = Nothing) As Double(,)
+        Dim tabAR(,) As Double
         'appelle une fonction pour chaque modèle
         Select Case Globals.Ribbons.Ruban.choixSeuilFenetre.modele
             Case 0
-                calculAR = modeleMoyenne(tailleComplete, premiereDate, fenetreEstDebut, fenetreEstFin, tabRenta)
+                tabAR = modeleMoyenne(tailleComplete, premiereDate, fenetreEstDebut, fenetreEstFin, tabRenta)
             Case 1
-                calculAR = modeleMarcheSimple()
+                tabAR = modeleMarcheSimple()
             Case 2
                 'Création des tableaux pour pouvoir les X et Y de la régression
                 Dim tabRentaReg(,,)() = constructionTableauxNA(maxPrixAbsent, fenetreEstDebut, fenetreEstFin, tabRenta, tabRentaMarche)
-                calculAR = modeleMarche(tailleComplete, premiereDate, fenetreEstDebut, fenetreEstFin, tabRenta, tabRentaMarche, tabRentaReg)
+                tabAR = modeleMarche(tailleComplete, premiereDate, fenetreEstDebut, fenetreEstFin, tabRenta, tabRentaMarche, tabRentaReg)
             Case Else
                 MsgBox("Erreur interne : numero de modèle incorrect dans ChoixSeuilFenetre", 16)
-                calculAR = Nothing
+                tabAR = Nothing
         End Select
+        'affichage des AR dans une nouvelle feuille excel
+        Application.Sheets.Add()
+        Application.ActiveSheet.Name = "AR"
+        Dim currentSheet As Excel.Worksheet = CType(Application.Worksheets("AR"), Excel.Worksheet)
+        For i = fenetreEstDebut To fenetreEstFin
+            currentSheet.Cells(i + fenetreEstDebut + 1, 1).Value = i
+            For j = 0 To tabAR.GetUpperBound(1)
+                currentSheet.Cells(i + fenetreEstDebut + 1, j + 2).Value = tabAR(i, j)
+            Next
+        Next
+        Return tabAR
     End Function
 
     'Calcule les CAR "normalisés" pour le test statistique
