@@ -25,7 +25,7 @@ Partial Class ChoixSeuilFenetre
         Me.FenetreText = New System.Windows.Forms.Label()
         Me.FenetreDebBox = New System.Windows.Forms.TextBox()
         Me.FenetreFinBox = New System.Windows.Forms.TextBox()
-        Me.PValeur = New System.Windows.Forms.Button()
+        Me.LancementEtEv = New System.Windows.Forms.Button()
         Me.PValeurFenetre = New System.Windows.Forms.Button()
         Me.nomModel = New System.Windows.Forms.Label()
         Me.FenetreEstFinBox = New System.Windows.Forms.TextBox()
@@ -56,14 +56,14 @@ Partial Class ChoixSeuilFenetre
         Me.FenetreFinBox.Size = New System.Drawing.Size(100, 20)
         Me.FenetreFinBox.TabIndex = 8
         '
-        'PValeur
+        'LancementEtEv
         '
-        Me.PValeur.Location = New System.Drawing.Point(86, 203)
-        Me.PValeur.Name = "PValeur"
-        Me.PValeur.Size = New System.Drawing.Size(111, 23)
-        Me.PValeur.TabIndex = 10
-        Me.PValeur.Text = "Calculer la P-Valeur"
-        Me.PValeur.UseVisualStyleBackColor = True
+        Me.LancementEtEv.Location = New System.Drawing.Point(86, 203)
+        Me.LancementEtEv.Name = "LancementEtEv"
+        Me.LancementEtEv.Size = New System.Drawing.Size(111, 23)
+        Me.LancementEtEv.TabIndex = 10
+        Me.LancementEtEv.Text = "Lancement"
+        Me.LancementEtEv.UseVisualStyleBackColor = True
         '
         'PValeurFenetre
         '
@@ -115,7 +115,7 @@ Partial Class ChoixSeuilFenetre
         Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.nomModel)
         Me.Controls.Add(Me.PValeurFenetre)
-        Me.Controls.Add(Me.PValeur)
+        Me.Controls.Add(Me.LancementEtEv)
         Me.Controls.Add(Me.FenetreFinBox)
         Me.Controls.Add(Me.FenetreDebBox)
         Me.Controls.Add(Me.FenetreText)
@@ -128,7 +128,7 @@ Partial Class ChoixSeuilFenetre
     Friend WithEvents FenetreText As System.Windows.Forms.Label
     Friend WithEvents FenetreDebBox As System.Windows.Forms.TextBox
     Friend WithEvents FenetreFinBox As System.Windows.Forms.TextBox
-    Friend WithEvents PValeur As System.Windows.Forms.Button
+    Friend WithEvents LancementEtEv As System.Windows.Forms.Button
     Friend WithEvents PValeurFenetre As System.Windows.Forms.Button
     Friend WithEvents nomModel As System.Windows.Forms.Label
     Friend WithEvents FenetreEstFinBox As System.Windows.Forms.TextBox

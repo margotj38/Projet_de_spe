@@ -60,7 +60,7 @@ Public Class ChoixSeuilFenetre
         textFenetreEvFin = FenetreFinBox.Text
     End Sub
 
-    Private Sub PValeur_Click(sender As Object, e As EventArgs) Handles PValeur.Click
+    Private Sub LancementEtEv_Click(sender As Object, e As EventArgs) Handles LancementEtEv.Click
         'Try
         Dim fenetreEstDebut As Integer = CInt(textFenetreEstDebut)
         Dim fenetreEstFin As Integer = CInt(textFenetreEstFin)
@@ -68,7 +68,7 @@ Public Class ChoixSeuilFenetre
         Dim fenetreEvFin As Integer = CInt(textFenetreEvFin)
 
         'On effectue le centrage des prix autour des événements
-        Globals.ThisAddIn.prixCentres()
+        PretraitementPrix.prixCentres()
 
         Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("prixCentres"), Excel.Worksheet)
         Dim premiereDate As Integer = currentSheet.Cells(2, 1).Value
@@ -80,7 +80,7 @@ Public Class ChoixSeuilFenetre
         Else
             'Calcul des AR
             Dim tabAR As Double(,)
-            tabAR = Globals.ThisAddIn.calculARAvecNA(fenetreEstDebut, fenetreEstFin, fenetreEvDebut, fenetreEvFin)
+            tabAR = RentaAnormales.calculARAvecNA(fenetreEstDebut, fenetreEstFin, fenetreEvDebut, fenetreEvFin)
             'tabAR = Globals.ThisAddIn.calculAR(fenetreEstDebut, fenetreEstFin)
             'Calcul de la pValeur
             Dim pValeur As Double
@@ -88,16 +88,16 @@ Public Class ChoixSeuilFenetre
                 Case 0
                     'test simple'
                     Dim tabCAR As Double()
-                    tabCAR = Globals.ThisAddIn.calculCAR(tabAR, premiereDate + 1, fenetreEstDebut, fenetreEstFin, fenetreEvDebut, fenetreEvFin)
-                    Dim testHyp As Double = Globals.ThisAddIn.calculStatistique(tabCAR)
-                    pValeur = Globals.ThisAddIn.calculPValeur(tailleEchant, testHyp) * 100
+                    tabCAR = TestsStatistiques.calculCAR(tabAR, premiereDate + 1, fenetreEstDebut, fenetreEstFin, fenetreEvDebut, fenetreEvFin)
+                    Dim testHyp As Double = TestsStatistiques.calculStatStudent(tabCAR)
+                    pValeur = MiseEnFormeRes.calculPValeur(tailleEchant, testHyp) * 100
                 Case 1
                     'test de Patell'
-                    Dim testHyp As Double = Globals.ThisAddIn.patellTest(tabAR, fenetreEstDebut, fenetreEstFin, fenetreEvDebut, fenetreEvFin)
+                    Dim testHyp As Double = TestsStatistiques.patellTest(tabAR, fenetreEstDebut, fenetreEstFin, fenetreEvDebut, fenetreEvFin)
                     pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHyp), True)) * 100
                 Case 2
                     'test de signe'
-                    Dim testHyp As Double = Globals.ThisAddIn.statTestSigne(tabAR, fenetreEstDebut, fenetreEstFin, fenetreEvDebut, fenetreEvFin)
+                    Dim testHyp As Double = TestsStatistiques.statTestSigne(tabAR, fenetreEstDebut, fenetreEstFin, fenetreEvDebut, fenetreEvFin)
                     pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHyp), True)) * 100
             End Select
 
@@ -116,33 +116,9 @@ Public Class ChoixSeuilFenetre
         Dim tailleEchant As Integer = currentSheet.UsedRange.Columns.Count - 1
 
         'Calcul des pvaleurs et affichage de la courbe
-        Globals.ThisAddIn.tracerPValeur(tailleEchant, derniereDate)
+        MiseEnFormeRes.tracerPValeur(tailleEchant, derniereDate)
         Globals.Ribbons.Ruban.seuilFenetreTaskPane.Visible = False
         Globals.Ribbons.Ruban.graphPVal.Visible = True
     End Sub
-    'Private Sub BoutonPatell_Click(sender As Object, e As EventArgs) Handles BoutonPatell.Click
-    '    Try
-    '        Dim fenetreDebut As Integer = CInt(textFenetreDebut)
-    '        Dim fenetreFin As Integer = CInt(textFenetreFin)
-    '        Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("Rt"), Excel.Worksheet)
-    '        Dim premiereDate As Integer = currentSheet.Cells(2, 1).Value
-    '        Dim tailleEchant As Integer = currentSheet.UsedRange.Columns.Count - 1
-    '        If fenetreDebut > fenetreFin Or fenetreDebut <= premiereDate Or fenetreFin > premiereDate + currentSheet.UsedRange.Rows.Count - 1 Then
-    '            MsgBox("Erreur : La fenêtre de temps de l'événement doit être cohérente avec les données", 16)
-    '        Else
-    '            'Calcul de la pvaleur
-    '            Dim tabAR As Double(,)
-    '            tabAR = Globals.ThisAddIn.calculAR(fenetreDebut)
-
-    '            Dim testHyp As Double = Globals.ThisAddIn.patellTest(tabAR, fenetreDebut, fenetreFin)
-    '            Dim pValeur As Double = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHyp), True)) * 100
-
-    '            MsgBox("P-Valeur : " & pValeur.ToString("0.0000") & "%")
-    '            Globals.Ribbons.Ruban.seuilFenetreTaskPane.Visible = False
-    '        End If
-    '    Catch erreur As InvalidCastException
-    '        MsgBox("Erreur : Vous devez entrer des données correctes (utiliser la virgule pour les nombres décimaux)", 16)
-    '    End Try
-    'End Sub
 
 End Class
