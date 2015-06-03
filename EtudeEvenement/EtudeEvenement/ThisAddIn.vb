@@ -4,16 +4,18 @@ Imports System.Diagnostics
 Public Class ThisAddIn
 
     'Calcule les AR avec le modèle considéré
-    Public Function calculAR(tailleComplete As Integer, fenetreEstDebut As Integer, fenetreEstFin As Integer, _
-                             Optional rentaEst(,)(,) As Double = Nothing, Optional rentaEv(,)(,) As Double = Nothing) As Double(,)
+    Public Function calculAR(tailleComplete As Integer, maxPrixAbsent As Integer, fenetreEstDebut As Integer, fenetreEstFin As Integer, _
+                             Optional tabRenta(,) As Double = Nothing, Optional tabRentaMarche(,) As Double = Nothing) As Double(,)
         'appelle une fonction pour chaque modèle
         Select Case Globals.Ribbons.Ruban.choixSeuilFenetre.modele
             Case 0
-                calculAR = modeleMoyenne(tailleComplete, fenetreEstFin - fenetreEstDebut + 1, rentaEst, rentaEv)
+                calculAR = modeleMoyenne(tailleComplete, fenetreEstFin - fenetreEstDebut + 1, tabRenta)
             Case 1
                 calculAR = modeleMarcheSimple()
             Case 2
-                calculAR = modeleMarche(tailleComplete, rentaEst, rentaEv)
+                'Création des tableaux pour pouvoir les X et Y de la régression
+                Dim tabRentaReg(,,)() = constructionTableauxNA(maxPrixAbsent, fenetreEstDebut, fenetreEstFin, tabRenta, tabRentaMarche)
+                calculAR = modeleMarche(tailleComplete, tabRentaReg)
             Case Else
                 MsgBox("Erreur interne : numero de modèle incorrect dans ChoixSeuilFenetre", 16)
                 calculAR = Nothing
@@ -36,113 +38,130 @@ Public Class ThisAddIn
         For colonne = 0 To tabAR.GetUpperBound(1)
             'Calcul de CAR sur la fenetre d'événement paramétrée
             Dim CAR As Double = 0
+            'Variable pour savoir s'il manque des AR
+            Dim precAR As Integer = 1
             For i = indFenetreEvDeb To indFenetreEvFin
                 '(-2146826246 est la valeur obtenue lorsqu'un ".Value" est fait sur une cellule #N/A)
-                If Not tabAR(i, colonne) = -2146826246 Then
-                    CAR = CAR + tabAR(i, colonne)
+                If tabAR(i, colonne) = -2146826246 Then
+                    'Si on n'a pas d'AR, on incrémente precAR
+                    precAR = precAR + 1
+                Else
+                    CAR = CAR + tabAR(i, colonne) * precAR
+                    precAR = 1
                 End If
             Next i
+            'Si à la fin il manquait encore des AR, on ajoute celui qui précédait
+            CAR = CAR + tabAR(indFenetreEvFin - precAR + 1, colonne) * (precAR - 1)
+
             Dim moyenne As Double = 0
-
-            'debug
-            For i = 0 To tabAR.GetUpperBound(0)
-                Debug.WriteLine(tabAR(i, colonne))
-            Next i
-
+            'Variable pour savoir s'il manque des AR
+            precAR = 1
             For i = indFenetreEstDeb To indFenetreEstFin
-                If Not tabAR(i, colonne) = -2146826246 Then
-                    moyenne = moyenne + tabAR(i, colonne)
+                If tabAR(i, colonne) = -2146826246 Then
+                    precAR = precAR + 1
+                Else
+                    moyenne = moyenne + tabAR(i, colonne) * precAR
+                    precAR = 1
                 End If
             Next i
+            'Si à la fin il manquait encore des AR, on ajoute celui qui précédait
+            moyenne = moyenne + tabAR(indFenetreEstFin - precAR + 1, colonne) * (precAR - 1)
             moyenne = moyenne / tailleFenetreEst
+
             'Calcul de la variance des AR sur la période d'estimation
             Dim variance As Double = 0
+            precAR = 1
             For i = indFenetreEstDeb To indFenetreEstFin
-                If Not tabAR(i, colonne) = -2146826246 Then
+                If tabAR(i, colonne) = -2146826246 Then
+                    precAR = precAR + 1
+                Else
                     Dim tmp As Double = tabAR(i, colonne) - moyenne
-                    variance = variance + tmp * tmp
+                    variance = variance + tmp * tmp * precAR
+                    precAR = 1
                 End If
             Next i
+            'Si à la fin il manquait encore des AR, on ajoute celui qui précédait
+            Dim temp As Double = tabAR(indFenetreEstFin - precAR + 1, colonne) - moyenne
+            moyenne = moyenne + temp * temp * (precAR - 1)
             variance = variance / (tailleFenetreEst - 1)
             normCar(colonne) = CAR / Math.Sqrt(tailleFenetreEv * variance)
-            'Debug.WriteLine(normCar(colonne))
         Next colonne
         'retourne le tableau des CAR normalisés
         calculCAR = normCar
     End Function
 
     'Estimation des AR à partir du modèle de marché : K = alpha + beta*Rm
-    Public Function modeleMarche(tailleFenetre As Integer, ByRef rentaEst(,)(,) As Double, ByRef rentaEv(,)(,) As Double) As Double(,)
-        'traitement de rentaEst : régression linéaire
+    Public Function modeleMarche(tailleFenetre As Integer, ByRef tabRentaReg(,,)() As Double) As Double(,)
+        ''traitement de rentaEst : régression linéaire
 
-        'nombre de différentes régressions
-        Dim nbReg = rentaEst.GetLength(0)
-        'déclaration des tableaux contenant les alpha et beta de la régression
-        Dim a(nbReg) As Double
-        Dim b(nbReg) As Double
-        'moyenne pondérée pour obtenir les véritables alpha et beta
-        Dim alpha As Double = 0
-        Dim beta As Double = 0
-        'tableau des AR
-        Dim tabAR(tailleFenetre - 1, rentaEst.GetUpperBound(1)) As Double
+        ''nombre de différentes régressions
+        'Dim nbReg = rentaEst.GetLength(0)
+        ''déclaration des tableaux contenant les alpha et beta de la régression
+        'Dim a(nbReg) As Double
+        'Dim b(nbReg) As Double
+        ''moyenne pondérée pour obtenir les véritables alpha et beta
+        'Dim alpha As Double = 0
+        'Dim beta As Double = 0
+        ''tableau des AR
+        'Dim tabAR(tailleFenetre - 1, rentaEst.GetUpperBound(1)) As Double
 
-        'pour chaque entreprise...
-        For colonne = 0 To rentaEst.GetUpperBound(1)
-            Dim nbRent As Integer = 0
-            'pour chaque tableau
-            For reg = 0 To nbReg - 1
-                If Not rentaEst(reg, colonne).GetLength(1) = 0 Then
-                    'extraction des Rt
-                    Dim Y(rentaEst(reg, colonne).GetUpperBound(1)) As Double
-                    Dim X(rentaEst(reg, colonne).GetUpperBound(1)) As Double
-                    For t = 0 To rentaEst(reg, colonne).GetUpperBound(1)
-                        Y(t) = rentaEst(reg, colonne)(1, t)
-                        'extraction des Rm
-                        X(t) = rentaEst(reg, colonne)(0, t)
-                    Next
-                    'calcul des coefficients des différentes régressions
-                    a(reg) = Application.WorksheetFunction.Index(Application.WorksheetFunction.LinEst(Y, X), 2) / (reg + 1)
-                    b(reg) = Application.WorksheetFunction.Index(Application.WorksheetFunction.LinEst(Y, X), 1) / (reg + 1)
-                    'somme pondérée
-                    alpha = alpha + a(reg) * rentaEst(reg, colonne).GetLength(1)
-                    beta = beta + b(reg) * rentaEst(reg, colonne).GetLength(1)
-                    nbRent = nbRent + rentaEst(reg, colonne).GetLength(1)
-                End If
-            Next
-            'moyenne pondérée
-            alpha = alpha / nbRent
-            beta = beta / nbRent
+        ''pour chaque entreprise...
+        'For colonne = 0 To rentaEst.GetUpperBound(1)
+        '    Dim nbRent As Integer = 0
+        '    'pour chaque tableau
+        '    For reg = 0 To nbReg - 1
+        '        If Not rentaEst(reg, colonne).GetLength(1) = 0 Then
+        '            'extraction des Rt
+        '            Dim Y(rentaEst(reg, colonne).GetUpperBound(1)) As Double
+        '            Dim X(rentaEst(reg, colonne).GetUpperBound(1)) As Double
+        '            For t = 0 To rentaEst(reg, colonne).GetUpperBound(1)
+        '                Y(t) = rentaEst(reg, colonne)(1, t)
+        '                'extraction des Rm
+        '                X(t) = rentaEst(reg, colonne)(0, t)
+        '            Next
+        '            'calcul des coefficients des différentes régressions
+        '            a(reg) = Application.WorksheetFunction.Index(Application.WorksheetFunction.LinEst(Y, X), 2) / (reg + 1)
+        '            b(reg) = Application.WorksheetFunction.Index(Application.WorksheetFunction.LinEst(Y, X), 1) / (reg + 1)
+        '            'somme pondérée
+        '            alpha = alpha + a(reg) * rentaEst(reg, colonne).GetLength(1)
+        '            beta = beta + b(reg) * rentaEst(reg, colonne).GetLength(1)
+        '            nbRent = nbRent + rentaEst(reg, colonne).GetLength(1)
+        '        End If
+        '    Next
+        '    'moyenne pondérée
+        '    alpha = alpha / nbRent
+        '    beta = beta / nbRent
 
-            'remplissage des AR
-            Dim indDateTabAR As Integer = 0
-            'On commence par les AR concernant la période d'estimation
-            For i = 0 To rentaEst.GetUpperBound(0)
-                For j = 0 To rentaEst(i, colonne).GetUpperBound(1)
-                    'On met le nombre de cases nécessaires à vide
-                    For k = 0 To i - 1
-                        '(-2146826246 est la valeur obtenue lorsqu'un ".Value" est fait sur une cellule #N/A)
-                        tabAR(indDateTabAR, colonne) = -2146826246
-                        indDateTabAR = indDateTabAR + 1
-                    Next k
-                    tabAR(indDateTabAR, colonne) = rentaEst(i, colonne)(0, j) - (alpha + beta * rentaEst(i, colonne)(1, j))
-                    indDateTabAR = indDateTabAR + 1
-                Next j
-            Next i
+        '    'remplissage des AR
+        '    Dim indDateTabAR As Integer = 0
+        '    'On commence par les AR concernant la période d'estimation
+        '    For i = 0 To rentaEst.GetUpperBound(0)
+        '        For j = 0 To rentaEst(i, colonne).GetUpperBound(1)
+        '            'On met le nombre de cases nécessaires à vide
+        '            For k = 0 To i - 1
+        '                '(-2146826246 est la valeur obtenue lorsqu'un ".Value" est fait sur une cellule #N/A)
+        '                tabAR(indDateTabAR, colonne) = -2146826246
+        '                indDateTabAR = indDateTabAR + 1
+        '            Next k
+        '            tabAR(indDateTabAR, colonne) = rentaEst(i, colonne)(0, j) - (alpha + beta * rentaEst(i, colonne)(1, j))
+        '            indDateTabAR = indDateTabAR + 1
+        '        Next j
+        '    Next i
 
-            'Ensuite les AR concernant la période d'événement
-            For i = 0 To rentaEv.GetUpperBound(0)
-                For j = 0 To rentaEv(i, colonne).GetUpperBound(1)
-                    'On met le nombre de cases nécessaires à vide
-                    For k = 0 To i - 1
-                        '(-2146826246 est la valeur obtenue lorsqu'un ".Value" est fait sur une cellule #N/A)
-                        tabAR(indDateTabAR, colonne) = -2146826246
-                        indDateTabAR = indDateTabAR + 1
-                    Next k
-                    tabAR(indDateTabAR, colonne) = rentaEv(i, colonne)(0, j) - (alpha + beta * rentaEv(i, colonne)(1, j))
-                    indDateTabAR = indDateTabAR + 1
-                Next j
-            Next i
-        Next
+        '    'Ensuite les AR concernant la période d'événement
+        '    For i = 0 To rentaEv.GetUpperBound(0)
+        '        For j = 0 To rentaEv(i, colonne).GetUpperBound(1)
+        '            'On met le nombre de cases nécessaires à vide
+        '            For k = 0 To i - 1
+        '                '(-2146826246 est la valeur obtenue lorsqu'un ".Value" est fait sur une cellule #N/A)
+        '                tabAR(indDateTabAR, colonne) = -2146826246
+        '                indDateTabAR = indDateTabAR + 1
+        '            Next k
+        '            tabAR(indDateTabAR, colonne) = rentaEv(i, colonne)(0, j) - (alpha + beta * rentaEv(i, colonne)(1, j))
+        '            indDateTabAR = indDateTabAR + 1
+        '        Next j
+        '    Next i
+        'Next
 
         ''On se positionne sur la feuille des Rt
         'Dim currentSheet As Excel.Worksheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
@@ -178,7 +197,8 @@ Public Class ThisAddIn
         '    'On retourne sur la feuille des Rt
         '    currentSheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
         'Next
-        modeleMarche = tabAR
+        'modeleMarche = tabAR
+        Return Nothing
     End Function
 
     'Estimation des AR à partir du modèle de marché simplifié : K = moyenne des rentabilités
@@ -203,53 +223,53 @@ Public Class ThisAddIn
     End Function
 
     'Estimation des AR à partir du modèle de la moyenne : K = R
-    Public Function modeleMoyenne(tailleFenetre As Integer, nbDateEst As Integer, ByRef rentaEst(,)(,) As Double, _
-                                  ByRef rentaEv(,)(,) As Double) As Double(,)
-        'Tableau des moyennes de chaque titre
-        Dim tabMoy(rentaEst.GetUpperBound(1)) As Double
+    Public Function modeleMoyenne(tailleFenetre As Integer, nbDateEst As Integer, ByRef tabRenta(,) As Double) As Double(,)
+        ''Tableau des moyennes de chaque titre
+        'Dim tabMoy(rentaEst.GetUpperBound(1)) As Double
 
-        'Calcul des moyennes
-        For colonne = 0 To rentaEst.GetUpperBound(1)
-            For i = 0 To rentaEst.GetUpperBound(0)
-                For j = 0 To rentaEst(i, colonne).GetUpperBound(1)
-                    tabMoy(colonne) = tabMoy(colonne) + (rentaEst(i, colonne)(0, j) * (i + 1))
-                Next j
-            Next i
-            tabMoy(colonne) = tabMoy(colonne) / nbDateEst
-        Next colonne
+        ''Calcul des moyennes
+        'For colonne = 0 To rentaEst.GetUpperBound(1)
+        '    For i = 0 To rentaEst.GetUpperBound(0)
+        '        For j = 0 To rentaEst(i, colonne).GetUpperBound(1)
+        '            tabMoy(colonne) = tabMoy(colonne) + (rentaEst(i, colonne)(0, j) * (i + 1))
+        '        Next j
+        '    Next i
+        '    tabMoy(colonne) = tabMoy(colonne) / nbDateEst
+        'Next colonne
 
-        'Calcul des AR sur la fenêtre
-        Dim tabAR(tailleFenetre - 1, rentaEst.GetUpperBound(1)) As Double
-        For colonne = 0 To rentaEst.GetUpperBound(1)
-            Dim indDateTabAR As Integer = 0
-            'On commence par les AR concernant la période d'estimation
-            For i = 0 To rentaEst.GetUpperBound(0)
-                For j = 0 To rentaEst(i, colonne).GetUpperBound(1)
-                    'On met le nombre de cases nécessaires à vide
-                    For k = 0 To i - 1
-                        '(-2146826246 est la valeur obtenue lorsqu'un ".Value" est fait sur une cellule #N/A)
-                        tabAR(indDateTabAR, colonne) = -2146826246
-                        indDateTabAR = indDateTabAR + 1
-                    Next k
-                    tabAR(indDateTabAR, colonne) = rentaEst(i, colonne)(0, j) - tabMoy(colonne)
-                    indDateTabAR = indDateTabAR + 1
-                Next j
-            Next i
-            'On continue avec les AR de la période d'événement
-            For i = 0 To rentaEv.GetUpperBound(0)
-                For j = 0 To rentaEv(i, colonne).GetUpperBound(1)
-                    'On met le nombre de cases nécessaires à vide
-                    For k = 0 To i - 1
-                        '(-2146826246 est la valeur obtenue lorsqu'un ".Value" est fait sur une cellule #N/A)
-                        tabAR(indDateTabAR, colonne) = -2146826246
-                        indDateTabAR = indDateTabAR + 1
-                    Next k
-                    tabAR(indDateTabAR, colonne) = rentaEv(i, colonne)(0, j) - tabMoy(colonne)
-                    indDateTabAR = indDateTabAR + 1
-                Next j
-            Next i
-        Next colonne
-        Return tabAR
+        ''Calcul des AR sur la fenêtre
+        'Dim tabAR(tailleFenetre - 1, rentaEst.GetUpperBound(1)) As Double
+        'For colonne = 0 To rentaEst.GetUpperBound(1)
+        '    Dim indDateTabAR As Integer = 0
+        '    'On commence par les AR concernant la période d'estimation
+        '    For i = 0 To rentaEst.GetUpperBound(0)
+        '        For j = 0 To rentaEst(i, colonne).GetUpperBound(1)
+        '            'On met le nombre de cases nécessaires à vide
+        '            For k = 0 To i - 1
+        '                '(-2146826246 est la valeur obtenue lorsqu'un ".Value" est fait sur une cellule #N/A)
+        '                tabAR(indDateTabAR, colonne) = -2146826246
+        '                indDateTabAR = indDateTabAR + 1
+        '            Next k
+        '            tabAR(indDateTabAR, colonne) = rentaEst(i, colonne)(0, j) - tabMoy(colonne)
+        '            indDateTabAR = indDateTabAR + 1
+        '        Next j
+        '    Next i
+        '    'On continue avec les AR de la période d'événement
+        '    For i = 0 To rentaEv.GetUpperBound(0)
+        '        For j = 0 To rentaEv(i, colonne).GetUpperBound(1)
+        '            'On met le nombre de cases nécessaires à vide
+        '            For k = 0 To i - 1
+        '                '(-2146826246 est la valeur obtenue lorsqu'un ".Value" est fait sur une cellule #N/A)
+        '                tabAR(indDateTabAR, colonne) = -2146826246
+        '                indDateTabAR = indDateTabAR + 1
+        '            Next k
+        '            tabAR(indDateTabAR, colonne) = rentaEv(i, colonne)(0, j) - tabMoy(colonne)
+        '            indDateTabAR = indDateTabAR + 1
+        '        Next j
+        '    Next i
+        'Next colonne
+        'Return tabAR
+        Return Nothing
     End Function
 
     Public Function patellTest(tabAR(,) As Double, fenetreEstDebut As Integer, fenetreEstFin As Integer, fenetreEvDebut As Integer, fenetreEvFin As Integer) As Double
@@ -649,79 +669,51 @@ Public Class ThisAddIn
                 rentaEv(i, j) = New Double(1, 49) {}
             Next j
         Next i
-        constructionTableauxNA(nbLignes, nbColonnes, maxPrixAbsent, fenetreEstDebut, fenetreEstFin, _
-                             fenetreEvDebut, fenetreEvFin, tabRenta, tabRentaMarche, rentaEst, rentaEv)
+        'constructionTableauxNA(nbLignes, nbColonnes, maxPrixAbsent, fenetreEstDebut, fenetreEstFin, _
+        'fenetreEvDebut, fenetreEvFin, tabRenta, tabRentaMarche, rentaEst, rentaEv)
 
         'On calcule maintenant les AR
         Dim tailleComplete As Integer = fenetreEstFin - fenetreEstDebut + 1 + fenetreEvFin - fenetreEvDebut + 1
-        calculARAvecNA = calculAR(tailleComplete, fenetreEstDebut, fenetreEstFin, rentaEst, rentaEv)
+        calculARAvecNA = calculAR(tailleComplete, maxPrixAbsent, fenetreEstDebut, fenetreEstFin, tabRenta, tabRentaMarche)
     End Function
 
-    Private Sub constructionTableauxNA(nbLignes As Integer, nbColonnes As Integer, maxPrixAbsent As Integer, _
-                                     fenetreEstDebut As Integer, fenetreEstFin As Integer, fenetreEvDebut As Integer, fenetreEvFin As Integer, _
-                                     tabRenta(,) As Double, tabRentaMarche(,) As Double, _
-                                     ByRef rentaEst(,)(,) As Double, ByRef rentaEv(,)(,) As Double)
-        Dim currentSheet As Excel.Worksheet = CType(Application.Worksheets("prixCentres"), Excel.Worksheet)
-        'On récupère les indices correspondants aux différentes dates
-        Dim indFenetreEstDeb As Integer = 2 + fenetreEstDebut - currentSheet.Cells(2, 1).Value
-        Dim indFenetreEstFin As Integer = 2 + fenetreEstFin - currentSheet.Cells(2, 1).Value
-        Dim indFenetreEvDeb As Integer = 2 + fenetreEvDebut - currentSheet.Cells(2, 1).Value
-        Dim indFenetreEvFin As Integer = 2 + fenetreEvFin - currentSheet.Cells(2, 1).Value
+    Private Function constructionTableauxNA(maxPrixAbsent As Integer, fenetreEstDebut As Integer, fenetreEstFin As Integer, _
+                                       ByRef tabRenta(,) As Double, ByRef tabRentaMarche(,) As Double) As Double(,,)()
+        'Déclaration du tableau à retourner
+        Dim tabRentaReg(tabRenta.GetUpperBound(1), maxPrixAbsent - 1, 1)() As Double
+        For i = 0 To tabRenta.GetUpperBound(1)
+            For j = 0 To maxPrixAbsent - 1
+                For k = 0 To 1
+                    tabRentaReg(i, j, k) = New Double(fenetreEstFin - fenetreEstDebut + 1) {}
+                Next
+            Next
+        Next
 
-        Dim prixPresent = 0
-        For titre = 2 To nbColonnes
+        Dim currentSheet As Excel.Worksheet = CType(Application.Worksheets("prixCentres"), Excel.Worksheet)
+        Dim nbLignes As Integer = currentSheet.UsedRange.Rows.Count
+        Dim nbColonnes As Integer = currentSheet.UsedRange.Columns.Count
+        'On récupère les indices correspondants aux différentes dates
+        Dim indFenetreEstDeb As Integer = fenetreEstDebut - currentSheet.Cells(2, 1).Value
+        Dim indFenetreEstFin As Integer = fenetreEstFin - currentSheet.Cells(2, 1).Value
+
+        Dim prixPresent = 1
+        For titre = 0 To nbColonnes - 2
             'Tableau permettant de savoir si un redimensionnement est nécessaire
             Dim tabRedimEst(maxPrixAbsent - 1) As Integer
-            Dim tabRedimEv(maxPrixAbsent - 1) As Integer
-            For indDate = 2 To nbLignes
-                If prixPresent = 0 Then
-                    'Si on est sur le premier prix
-                    '(-2146826246 est la valeur obtenue lorsqu'un ".Value" est fait sur une cellule #N/A)
-                    If Not (Application.WorksheetFunction.IsNA(currentSheet.Cells(indDate, titre)) Or _
-                            currentSheet.Cells(indDate, titre).Value = -2146826246) Then
-                        prixPresent = prixPresent + 1
-                    End If
-                ElseIf Application.WorksheetFunction.IsNA(currentSheet.Cells(indDate, titre)) Or _
-                            currentSheet.Cells(indDate, titre).Value = -2146826246 Then
+            For indDate = indFenetreEstDeb To indFenetreEstFin
+                If tabRenta(indDate, titre) = -2146826246 Then
                     'Si il n'y a pas de prix à cette date
                     prixPresent = prixPresent + 1
                 Else
-                    'Sinon, on range les rentabilités dans le tableau qui convient
+                    'Sinon, on range les rentabilités dans le tableau
 
-                    'Si on est sur une date correspondant à la période d'estimation
-                    If indDate >= indFenetreEstDeb And indDate <= indFenetreEstFin Then
+                    'On ajoute Rt et Rm au tableau
+                    'Les rentabilités sont ramenées en équivalent à une période (par division par prixPresent)
+                    tabRentaReg(titre, prixPresent - 1, 0)(tabRedimEst(prixPresent - 1)) = tabRenta(indDate, titre)
+                    tabRentaReg(titre, prixPresent - 1, 1)(tabRedimEst(prixPresent - 1)) = tabRentaMarche(indDate, titre)
 
-                        'Si le tableau adéquat est plein, on le redimensionne
-                        If rentaEst(prixPresent - 1, titre - 2).GetLength(1) = tabRedimEst(prixPresent - 1) Then
-                            Dim nbL As Integer = rentaEst(prixPresent - 1, titre - 2).GetUpperBound(0)
-                            Dim nbC As Integer = rentaEst(prixPresent - 1, titre - 2).GetUpperBound(1)
-                            ReDim Preserve rentaEst(prixPresent - 1, titre - 2)(nbL, 2 * nbC)
-                        End If
-
-                        'On ajoute Rt et Rm au tableau
-                        'Les rentabilités sont ramenées en équivalent à une période (par division par prixPresent)
-                        rentaEst(prixPresent - 1, titre - 2)(0, tabRedimEst(prixPresent - 1)) = tabRenta(indDate - 3, titre - 2) / prixPresent
-                        rentaEst(prixPresent - 1, titre - 2)(1, tabRedimEst(prixPresent - 1)) = tabRentaMarche(indDate - 3, titre - 2) / prixPresent
-                        'On indique qu'on a ajouté un nouvel élément
-                        tabRedimEst(prixPresent - 1) = tabRedimEst(prixPresent - 1) + 1
-
-                    ElseIf indDate >= indFenetreEvDeb And indDate <= indFenetreEvFin Then
-
-                        'Si le tableau adéquat est plein, on le redimensionne
-                        If rentaEv(prixPresent - 1, titre - 2).GetLength(1) = tabRedimEv(prixPresent - 1) Then
-                            Dim nbL As Integer = rentaEv(prixPresent - 1, titre - 2).GetUpperBound(0)
-                            Dim nbC As Integer = rentaEv(prixPresent - 1, titre - 2).GetUpperBound(1)
-                            ReDim Preserve rentaEv(prixPresent - 1, titre - 2)(nbL, 2 * nbC)
-                        End If
-
-                        'On ajoute Rt et Rm au tableau
-                        rentaEv(prixPresent - 1, titre - 2)(0, tabRedimEv(prixPresent - 1)) = tabRenta(indDate - 3, titre - 2)
-                        rentaEv(prixPresent - 1, titre - 2)(1, tabRedimEv(prixPresent - 1)) = tabRentaMarche(indDate - 3, titre - 2)
-                        'On indique qu'on a ajouté un nouvel élément
-                        tabRedimEv(prixPresent - 1) = tabRedimEv(prixPresent - 1) + 1
-
-                    End If
-
+                    'On indique qu'on a ajouté un nouvel élément
+                    tabRedimEst(prixPresent - 1) = tabRedimEst(prixPresent - 1) + 1
                     'Et on indique qu'un prix était présent
                     prixPresent = 1
                 End If
@@ -729,21 +721,16 @@ Public Class ThisAddIn
             'A la fin, on redimensionne les tableaux pour qu'ils ne contiennent que des valeurs utiles
             For prixPres = 0 To maxPrixAbsent - 1
                 'Si la taille du tableau et le nombre de valeurs qu'il contient sont différents
-                If Not rentaEst(prixPres, titre - 2).GetLength(1) = tabRedimEst(prixPres) Then
-                    Dim nbL As Integer = rentaEst(prixPres, titre - 2).GetUpperBound(0)
+                If Not tabRentaReg(titre, prixPres, 0).GetLength(0) = tabRedimEst(prixPres) Then
                     'On redimensionne pour ne garder que ce qui est utile
-                    ReDim Preserve rentaEst(prixPres, titre - 2)(nbL, tabRedimEst(prixPres) - 1)
-                End If
-                'De même pour le tableau rentaEv
-                If Not rentaEv(prixPres, titre - 2).GetLength(1) = tabRedimEv(prixPres) Then
-                    Dim nbL As Integer = rentaEv(prixPres, titre - 2).GetUpperBound(0)
-                    'On redimensionne pour ne garder que ce qui est utile
-                    ReDim Preserve rentaEv(prixPres, titre - 2)(nbL, tabRedimEv(prixPres) - 1)
+                    ReDim Preserve tabRentaReg(titre, prixPres, 0)(tabRedimEst(prixPres) - 1)
+                    ReDim Preserve tabRentaReg(titre, prixPres, 1)(tabRedimEst(prixPres) - 1)
                 End If
             Next prixPres
-            prixPresent = 0
+            prixPresent = 1
         Next titre
-    End Sub
+        Return tabRentaReg
+    End Function
 
     Private Sub constructionTableauRenta(nbLignes As Integer, nbColonnes As Integer, ByRef maxPrixAbsent As Integer, _
                                          ByRef tabRenta(,) As Double, ByRef tabRentaMarche(,) As Double)
@@ -770,8 +757,8 @@ Public Class ThisAddIn
                             currentSheet.Cells(indDate, titre).Value = -2146826246 Then
                     'Si il n'y a pas de prix à cette date
                     'On met un équivalent de #N/A dans les tableaux
-                    tabRenta(indDate - 3, titre - 2) = Nothing
-                    tabRentaMarche(indDate - 3, titre - 2) = Nothing
+                    tabRenta(indDate - 3, titre - 2) = -2146826246
+                    tabRentaMarche(indDate - 3, titre - 2) = -2146826246
                     prixPresent = prixPresent + 1
                     If prixPresent > maxPrixAbsent Then
                         maxPrixAbsent = prixPresent
