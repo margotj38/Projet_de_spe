@@ -5,7 +5,7 @@ Public Class ThisAddIn
 
     'Calcule les AR avec le modèle considéré
     Public Function calculAR(tailleComplete As Integer, maxPrixAbsent As Integer, fenetreEstDebut As Integer, _
-                             fenetreEstFin As Integer, premiereDate As Integer, Optional tabRenta(,) As Double = Nothing, Optional tabRentaMarche(,) As Double = Nothing) As Double(,)
+                             fenetreEstFin As Integer, fenetreEvDebut As Integer, fenetreEvFin As Integer, premiereDate As Integer, Optional tabRenta(,) As Double = Nothing, Optional tabRentaMarche(,) As Double = Nothing) As Double(,)
         Dim tabAR(,) As Double
         'appelle une fonction pour chaque modèle
         Select Case Globals.Ribbons.Ruban.choixSeuilFenetre.modele
@@ -25,10 +25,10 @@ Public Class ThisAddIn
         Application.Sheets.Add()
         Application.ActiveSheet.Name = "AR"
         Dim currentSheet As Excel.Worksheet = CType(Application.Worksheets("AR"), Excel.Worksheet)
-        For i = fenetreEstDebut To fenetreEstFin
-            currentSheet.Cells(i + fenetreEstDebut + 1, 1).Value = i
+        For i = fenetreEvDebut To fenetreEvFin
+            currentSheet.Cells(i - fenetreEvDebut + 1, 1).Value = i
             For j = 0 To tabAR.GetUpperBound(1)
-                currentSheet.Cells(i + fenetreEstDebut + 1, j + 2).Value = tabAR(i, j)
+                currentSheet.Cells(i - fenetreEvDebut + 1, j + 2).Value = tabAR(i - fenetreEvDebut, j)
             Next
         Next
         Return tabAR
@@ -646,7 +646,7 @@ Public Class ThisAddIn
 
         'On calcule maintenant les AR
         Dim tailleComplete As Integer = fenetreEstFin - fenetreEstDebut + 1 + fenetreEvFin - fenetreEvDebut + 1
-        calculARAvecNA = calculAR(tailleComplete, maxPrixAbsent, fenetreEstDebut, fenetreEstFin, currentSheet.Cells(2, 1).Value + 1, tabRenta, tabRentaMarche)
+        calculARAvecNA = calculAR(tailleComplete, maxPrixAbsent, fenetreEstDebut, fenetreEstFin, fenetreEvDebut, fenetreEvFin, currentSheet.Cells(2, 1).Value + 1, tabRenta, tabRentaMarche)
     End Function
 
     Private Function constructionTableauxNA(maxPrixAbsent As Integer, fenetreEstDebut As Integer, fenetreEstFin As Integer, _
