@@ -634,7 +634,7 @@ Public Class ThisAddIn
 
         'On calcule maintenant les AR
         Dim tailleComplete As Integer = fenetreEstFin - fenetreEstDebut + 1 + fenetreEvFin - fenetreEvDebut + 1
-        calculARAvecNA = calculAR(tailleComplete, maxPrixAbsent, fenetreEstDebut, fenetreEstFin, currentSheet.Cells(2, 1).Value, tabRenta, tabRentaMarche)
+        calculARAvecNA = calculAR(tailleComplete, maxPrixAbsent, fenetreEstDebut, fenetreEstFin, currentSheet.Cells(2, 1).Value + 1, tabRenta, tabRentaMarche)
     End Function
 
     Private Function constructionTableauxNA(maxPrixAbsent As Integer, fenetreEstDebut As Integer, fenetreEstFin As Integer, _
