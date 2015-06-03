@@ -92,76 +92,78 @@ Public Class ThisAddIn
 
     'Estimation des AR à partir du modèle de marché : K = alpha + beta*Rm
     Public Function modeleMarche(tailleFenetre As Integer, ByRef tabRentaReg(,,)() As Double) As Double(,)
-        ''traitement de rentaEst : régression linéaire
 
-        ''nombre de différentes régressions
-        'Dim nbReg = rentaEst.GetLength(0)
-        ''déclaration des tableaux contenant les alpha et beta de la régression
-        'Dim a(nbReg) As Double
-        'Dim b(nbReg) As Double
-        ''moyenne pondérée pour obtenir les véritables alpha et beta
-        'Dim alpha As Double = 0
-        'Dim beta As Double = 0
-        ''tableau des AR
-        'Dim tabAR(tailleFenetre - 1, rentaEst.GetUpperBound(1)) As Double
+        'nombre de différentes régressions
+        Dim nbReg = tabRentaReg.GetLength(1)
+        'déclaration des tableaux contenant les alpha et beta de la régression
+        Dim a(nbReg) As Double
+        Dim b(nbReg) As Double
+        'moyenne pondérée pour obtenir les véritables alpha et beta
+        Dim alpha As Double = 0
+        Dim beta As Double = 0
+        'tableau des AR
+        Dim tabAR(tailleFenetre - 1, tabRentaReg.GetLength(0) As Double
 
-        ''pour chaque entreprise...
-        'For colonne = 0 To rentaEst.GetUpperBound(1)
-        '    Dim nbRent As Integer = 0
-        '    'pour chaque tableau
-        '    For reg = 0 To nbReg - 1
-        '        If Not rentaEst(reg, colonne).GetLength(1) = 0 Then
-        '            'extraction des Rt
-        '            Dim Y(rentaEst(reg, colonne).GetUpperBound(1)) As Double
-        '            Dim X(rentaEst(reg, colonne).GetUpperBound(1)) As Double
-        '            For t = 0 To rentaEst(reg, colonne).GetUpperBound(1)
-        '                Y(t) = rentaEst(reg, colonne)(1, t)
-        '                'extraction des Rm
-        '                X(t) = rentaEst(reg, colonne)(0, t)
-        '            Next
-        '            'calcul des coefficients des différentes régressions
-        '            a(reg) = Application.WorksheetFunction.Index(Application.WorksheetFunction.LinEst(Y, X), 2) / (reg + 1)
-        '            b(reg) = Application.WorksheetFunction.Index(Application.WorksheetFunction.LinEst(Y, X), 1) / (reg + 1)
-        '            'somme pondérée
-        '            alpha = alpha + a(reg) * rentaEst(reg, colonne).GetLength(1)
-        '            beta = beta + b(reg) * rentaEst(reg, colonne).GetLength(1)
-        '            nbRent = nbRent + rentaEst(reg, colonne).GetLength(1)
-        '        End If
-        '    Next
-        '    'moyenne pondérée
-        '    alpha = alpha / nbRent
-        '    beta = beta / nbRent
+        'pour chaque entreprise...
+        For colonne = 0 To tabRentaReg.GetUpperBound(0)
+            'nombre de rentabilités totale (sans NA)
+            Dim nbRent As Integer = 0
+            'pour chaque tableau
+            For reg = 0 To nbReg - 1
+                If Not tabRentaReg(colonne, reg, 0).GetLength(0) = 0 Then
+                    'extraction des Rt
+                    Dim Y() As Double = tabRentaReg(colonne, reg, 0)
+                    Dim X() As Double = tabRentaReg(colonne, reg, 1)
+                    'Dim Y(rentaEst(reg, colonne).GetUpperBound(1)) As Double
+                    'Dim X(rentaEst(reg, colonne).GetUpperBound(1)) As Double
+                    'For t = 0 To rentaEst(reg, colonne).GetUpperBound(1)
+                    '    Y(t) = rentaEst(reg, colonne)(1, t)
+                    '    'extraction des Rm
+                    '    X(t) = rentaEst(reg, colonne)(0, t)
+                    'Next
+                    'calcul des coefficients des différentes régressions
+                    a(reg) = Application.WorksheetFunction.Index(Application.WorksheetFunction.LinEst(Y, X), 2) / (reg + 1)
+                    b(reg) = Application.WorksheetFunction.Index(Application.WorksheetFunction.LinEst(Y, X), 1) / (reg + 1)
+                    'somme pondérée
+                    alpha = alpha + a(reg) * tabRentaReg(reg, colonne, 1).GetLength(0)
+                    beta = beta + b(reg) * tabRentaReg(reg, colonne, 1).GetLength(0)
+                    nbRent = nbRent + tabRentaReg(reg, colonne, 1).GetLength(0)
+                End If
+            Next
+            'moyenne pondérée
+            alpha = alpha / nbRent
+            beta = beta / nbRent
 
-        '    'remplissage des AR
-        '    Dim indDateTabAR As Integer = 0
-        '    'On commence par les AR concernant la période d'estimation
-        '    For i = 0 To rentaEst.GetUpperBound(0)
-        '        For j = 0 To rentaEst(i, colonne).GetUpperBound(1)
-        '            'On met le nombre de cases nécessaires à vide
-        '            For k = 0 To i - 1
-        '                '(-2146826246 est la valeur obtenue lorsqu'un ".Value" est fait sur une cellule #N/A)
-        '                tabAR(indDateTabAR, colonne) = -2146826246
-        '                indDateTabAR = indDateTabAR + 1
-        '            Next k
-        '            tabAR(indDateTabAR, colonne) = rentaEst(i, colonne)(0, j) - (alpha + beta * rentaEst(i, colonne)(1, j))
-        '            indDateTabAR = indDateTabAR + 1
-        '        Next j
-        '    Next i
+            'remplissage des AR
+            Dim indDateTabAR As Integer = 0
+            'On commence par les AR concernant la période d'estimation
+            For i = 0 To rentaEst.GetUpperBound(0)
+                For j = 0 To rentaEst(i, colonne).GetUpperBound(1)
+                    'On met le nombre de cases nécessaires à vide
+                    For k = 0 To i - 1
+                        '(-2146826246 est la valeur obtenue lorsqu'un ".Value" est fait sur une cellule #N/A)
+                        tabAR(indDateTabAR, colonne) = -2146826246
+                        indDateTabAR = indDateTabAR + 1
+                    Next k
+                    tabAR(indDateTabAR, colonne) = rentaEst(i, colonne)(0, j) - (alpha + beta * rentaEst(i, colonne)(1, j))
+                    indDateTabAR = indDateTabAR + 1
+                Next j
+            Next i
 
-        '    'Ensuite les AR concernant la période d'événement
-        '    For i = 0 To rentaEv.GetUpperBound(0)
-        '        For j = 0 To rentaEv(i, colonne).GetUpperBound(1)
-        '            'On met le nombre de cases nécessaires à vide
-        '            For k = 0 To i - 1
-        '                '(-2146826246 est la valeur obtenue lorsqu'un ".Value" est fait sur une cellule #N/A)
-        '                tabAR(indDateTabAR, colonne) = -2146826246
-        '                indDateTabAR = indDateTabAR + 1
-        '            Next k
-        '            tabAR(indDateTabAR, colonne) = rentaEv(i, colonne)(0, j) - (alpha + beta * rentaEv(i, colonne)(1, j))
-        '            indDateTabAR = indDateTabAR + 1
-        '        Next j
-        '    Next i
-        'Next
+            'Ensuite les AR concernant la période d'événement
+            For i = 0 To rentaEv.GetUpperBound(0)
+                For j = 0 To rentaEv(i, colonne).GetUpperBound(1)
+                    'On met le nombre de cases nécessaires à vide
+                    For k = 0 To i - 1
+                        '(-2146826246 est la valeur obtenue lorsqu'un ".Value" est fait sur une cellule #N/A)
+                        tabAR(indDateTabAR, colonne) = -2146826246
+                        indDateTabAR = indDateTabAR + 1
+                    Next k
+                    tabAR(indDateTabAR, colonne) = rentaEv(i, colonne)(0, j) - (alpha + beta * rentaEv(i, colonne)(1, j))
+                    indDateTabAR = indDateTabAR + 1
+                Next j
+            Next i
+        Next
 
         ''On se positionne sur la feuille des Rt
         'Dim currentSheet As Excel.Worksheet = CType(Application.Worksheets("Rt"), Excel.Worksheet)
