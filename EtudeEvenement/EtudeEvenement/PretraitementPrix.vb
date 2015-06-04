@@ -244,13 +244,15 @@
     End Sub
 
     Private Sub parserPlageColonnes(plage As String, ByRef premiereCol As Integer, ByRef derniereCol As Integer)
-
+        Dim rangePlage As Excel.Range = Globals.ThisAddIn.Application.Range(plage)
+        premiereCol = rangePlage.Cells(1, 1).Column()
+        derniereCol = rangePlage.Cells(1, rangePlage.Columns.Count).Column()
     End Sub
 
     Private Sub parserPlageLignes(plage As String, ByRef debut As Integer, ByRef fin As Integer)
-        Dim test As Excel.Range = Globals.ThisAddIn.Application.Range(plage)
-        Dim numCol As Integer = test.Cells(1, 1).Column()
-        Dim numLigne As Integer = test.Cells(1, 1).Row()
+        Dim rangePlage As Excel.Range = Globals.ThisAddIn.Application.Range(plage)
+        debut = rangePlage.Cells(1, 1).Row()
+        fin = rangePlage.Cells(rangePlage.Rows.Count, 1).Row()
     End Sub
 
 End Module

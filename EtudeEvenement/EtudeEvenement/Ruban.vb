@@ -189,4 +189,8 @@ Public Class Ruban
         choixDatesEv.datesEv.ShowRowAbsoluteIndicator = False
         choixDatesEv.datesEv.ShowColumnAbsoluteIndicator = False
     End Sub
+
+    Private Sub BoutonTest_Click(sender As Object, e As RibbonControlEventArgs) Handles BoutonTest.Click
+
+    End Sub
 End Class
