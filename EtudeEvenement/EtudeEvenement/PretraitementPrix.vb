@@ -209,9 +209,34 @@
     'Sortie : tableaux des rentabilités du marché pour les période d'événement et d'estimation
     Public Sub constructionTabRenta(plageEst As String, plageEv As String, ByRef tabRentaMarche(,) As Double, _
                                     ByRef tabRentaMarcheEst(,) As Double, tabRentaMarcheEv(,) As Double)
+        'On parse les plages pour récupérer les indices de la fenêtre
+        Dim premiereCol As Integer, derniereCol As Integer
+        Dim debutEst As Integer, finEst As Integer, debutEv As Integer, finEv As Integer
+        parserPlageColonnes(plageEst, premiereCol, derniereCol)
+        parserPlageLignes(plageEst, debutEst, finEst)
+        parserPlageLignes(plageEv, debutEv, finEv)
 
-        'On récupère les tableaux de rentabilités des entreprises
+        'Pour chaque colonne
+        For colonne = premiereCol - 2 To derniereCol - 2
+            'On remplit le tableau d'estimation
+            For i = debutEst To finEst
+                tabRentaMarcheEst(i - debutEst, colonne - 2) = tabRentaMarche(i - 2, colonne - 2)
+            Next i
+            'Et celui d'événement
+            For i = debutEv To finEv
+                tabRentaMarcheEv(i - debutEv, colonne - 2) = tabRentaMarche(i - 2, colonne - 2)
+            Next i
+        Next colonne
+    End Sub
 
+    Private Sub parserPlageColonnes(plage As String, ByRef premiereCol As Integer, ByRef derniereCol As Integer)
+
+    End Sub
+
+    Private Sub parserPlageLignes(plage As String, ByRef debut As Integer, ByRef fin As Integer)
+        Dim test As Excel.Range = Globals.ThisAddIn.Application.Range(plage)
+        Dim numCol As Integer = test.Cells(1, 1).Column()
+        Dim numLigne As Integer = test.Cells(1, 1).Row()
     End Sub
 
 End Module
