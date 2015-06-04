@@ -22,6 +22,7 @@ Partial Class ChoixSeuilFenetre
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(ChoixSeuilFenetre))
         Me.FenetreText = New System.Windows.Forms.Label()
         Me.FenetreDebBox = New System.Windows.Forms.TextBox()
         Me.FenetreFinBox = New System.Windows.Forms.TextBox()
@@ -31,6 +32,7 @@ Partial Class ChoixSeuilFenetre
         Me.FenetreEstFinBox = New System.Windows.Forms.TextBox()
         Me.FenetreEstDebBox = New System.Windows.Forms.TextBox()
         Me.Label1 = New System.Windows.Forms.Label()
+        Me.Excel2007RefEdit1 = New LeafCreations.Excel2007RefEdit()
         Me.SuspendLayout()
         '
         'FenetreText
@@ -106,10 +108,24 @@ Partial Class ChoixSeuilFenetre
         Me.Label1.TabIndex = 14
         Me.Label1.Text = "Fenêtre d'estimation "
         '
+        'Excel2007RefEdit1
+        '
+        Me.Excel2007RefEdit1.Address = Nothing
+        Me.Excel2007RefEdit1.BackColor = System.Drawing.Color.Transparent
+        Me.Excel2007RefEdit1.ExcelConnector = Nothing
+        Me.Excel2007RefEdit1.ImageMaximized = CType(resources.GetObject("Excel2007RefEdit1.ImageMaximized"), System.Drawing.Image)
+        Me.Excel2007RefEdit1.ImageMinimized = CType(resources.GetObject("Excel2007RefEdit1.ImageMinimized"), System.Drawing.Image)
+        Me.Excel2007RefEdit1.Location = New System.Drawing.Point(47, 21)
+        Me.Excel2007RefEdit1.Name = "Excel2007RefEdit1"
+        Me.Excel2007RefEdit1.RefEditFont = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Excel2007RefEdit1.Size = New System.Drawing.Size(195, 26)
+        Me.Excel2007RefEdit1.TabIndex = 17
+        '
         'ChoixSeuilFenetre
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.Controls.Add(Me.Excel2007RefEdit1)
         Me.Controls.Add(Me.FenetreEstFinBox)
         Me.Controls.Add(Me.FenetreEstDebBox)
         Me.Controls.Add(Me.Label1)
@@ -134,5 +150,6 @@ Partial Class ChoixSeuilFenetre
     Friend WithEvents FenetreEstFinBox As System.Windows.Forms.TextBox
     Friend WithEvents FenetreEstDebBox As System.Windows.Forms.TextBox
     Friend WithEvents Label1 As System.Windows.Forms.Label
+    Friend WithEvents Excel2007RefEdit1 As LeafCreations.Excel2007RefEdit
 
 End Class

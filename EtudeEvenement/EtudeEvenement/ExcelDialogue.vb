@@ -57,14 +57,68 @@ Module ExcelDialogue
         Dim tabEvAR(,) As Object = currentSheet.Range(plageEv).Value
         'taille fenêtre  d'événement
         Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
+        Dim N As Integer = tabEvAR.GetLength(1)
 
         'tableau des AR moyen normalisés
         Dim tabMoyAR() As Double = RentaAnormales.moyNormAR(tabEstAR, tabEvAR)
         'tableau des écart-types des AR normalisés
         Dim tabEcartAR() As Double = RentaAnormales.ecartNormAR(tabEstAR, tabEvAR, tabMoyAR)
 
+
         'A FAIRE : affichage résultats
-        MsgBox("ok")
+        Dim nom As String
+        nom = InputBox("Entrer Le nom de la feuille des résultats de l'étude d'événements: ")
+        'Si l'utilisateur n'entre pas un nom
+        If nom Is "" Then nom = "Resultat"
+        Globals.ThisAddIn.Application.Sheets.Add(After:=Globals.ThisAddIn.Application.Worksheets(Globals.ThisAddIn.Application.Worksheets.Count))
+        Globals.ThisAddIn.Application.ActiveSheet.Name = nom
+
+        nomColonne(Globals.ThisAddIn.Application.Worksheets(nom).Range("B1"), "Moyenne")
+        nomColonne(Globals.ThisAddIn.Application.Worksheets(nom).Range("C1"), "Ecart-type")
+        nomColonne(Globals.ThisAddIn.Application.Worksheets(nom).Range("D1"), "T-test")
+        nomColonne(Globals.ThisAddIn.Application.Worksheets(nom).Range("E1"), "P-valeur (%)")
+
+
+        'Nombre de les colonnes de la feuille des résultats
+        Dim nbColonnes As Integer = tabMoyAR.GetUpperBound(0) + 1
+
+        Dim j As Integer
+        j = 2
+        For Each var_Rge In currentSheet.Range(plageEv)
+            nomColonne(Globals.ThisAddIn.Application.Worksheets(nom).Range("A" & j), "AR(" & var_Rge.value & ")")
+            j = j + 1
+        Next var_Rge
+
+
+        For i = 0 To nbColonnes - 1
+            j = i + 2
+            'La colonne des moyennes
+            Globals.ThisAddIn.Application.Worksheets(nom).Range("B" & j).Value = tabMoyAR(i)
+            Globals.ThisAddIn.Application.Worksheets(nom).Range("B" & j).Borders.Value = 1
+
+            'La colonne des écart-types
+            Globals.ThisAddIn.Application.Worksheets(nom).Range("C" & j).Value = tabEcartAR(i)
+            Globals.ThisAddIn.Application.Worksheets(nom).Range("C" & j).Borders.Value = 1
+
+            'La statistique du test
+            Dim stat As Double = Math.Abs(Math.Sqrt(N) * tabMoyAR(i) / tabEcartAR(i))
+            Globals.ThisAddIn.Application.Worksheets(nom).Range("D" & j).Value = stat
+            Globals.ThisAddIn.Application.Worksheets(nom).Range("D" & j).Borders.Value = 1
+
+            'La colonne des p-valeurs
+            'A Décommenter après
+            'Dim pValeur As Double = Globals.ThisAddIn.Application.WorksheetFunction.T_Dist_2T(stat, N - 1) * 100
+            'Globals.ThisAddIn.Application.Worksheets(nom).Range("E" & j).Value = pValeur
+            Globals.ThisAddIn.Application.Worksheets(nom).Range("E" & j).Borders.Value = 1
+        Next i
+
+
     End Sub
 
+
+    Private Sub nomColonne(r As Excel.Range, Valeur As String)
+        r.Value = Valeur
+        r.Font.Bold = True
+        r.Borders.Value = 1
+    End Sub
 End Module
