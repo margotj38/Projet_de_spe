@@ -58,7 +58,7 @@ Partial Class ParamAR
         '
         'LancementEtEv
         '
-        Me.LancementEtEv.Location = New System.Drawing.Point(96, 166)
+        Me.LancementEtEv.Location = New System.Drawing.Point(96, 168)
         Me.LancementEtEv.Name = "LancementEtEv"
         Me.LancementEtEv.Size = New System.Drawing.Size(111, 23)
         Me.LancementEtEv.TabIndex = 20
