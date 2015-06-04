@@ -11,7 +11,8 @@
         Dim tabRenta(nbLignes - 3, nbColonnes - 2) As Double
         Dim tabRentaMarche(nbLignes - 3, nbColonnes - 2) As Double
         Dim maxPrixAbsent As Integer
-        PretraitementPrix.constructionTableauRenta(nbLignes, nbColonnes, maxPrixAbsent, tabRenta, tabRentaMarche)
+        '''''''''''''''Comenté pour debug
+        'PretraitementPrix.constructionTableauRenta(nbLignes, nbColonnes, maxPrixAbsent, tabRenta, tabRentaMarche)
 
         'On calcule maintenant les AR
         Dim tailleComplete As Integer = fenetreEstFin - fenetreEstDebut + 1 + fenetreEvFin - fenetreEvDebut + 1

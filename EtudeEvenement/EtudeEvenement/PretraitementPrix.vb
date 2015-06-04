@@ -13,64 +13,78 @@
 
         'on se positionne sur la feuille des evenements
         Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("DateEvt"), Excel.Worksheet)
+
+        'A FAIRE : récupérer la sélection d'un vecteur de dates refEdit
+
         'tableau des dates d'évènements
-        Dim datesEv(,)
-        datesEv = currentSheet.Range("A2:B101").Value
+        Dim datesEv()
+        datesEv = currentSheet.Range("B2:B101").Value
+        'tableau 2 dimensions à trier
+        Dim aTrier(datesEv.GetLength(0) - 1, 1) As Object
+        For i = 0 To datesEv.GetLength(0) - 1
+            aTrier(i, 0) = i
+            aTrier(i, 1) = datesEv(i + 1)
+        Next
         'Tri du tableau selon les dates
-        Tri(datesEv, 2, LBound(datesEv, 1), UBound(datesEv, 1))
+        Tri(aTrier, 2, LBound(aTrier, 1), UBound(aTrier, 1))
+        'création du tableau de permutations
+        Dim tabPermut(datesEv.GetLength(1) - 1) As Integer
+        For i = LBound(datesEv, 1) To UBound(datesEv, 1)
+            tabPermut(i) = aTrier(i, 0)
+        Next
 
         'on se positionne sur la feuille des prix
         currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("Prix"), Excel.Worksheet)
         Dim nbLignes As Integer = currentSheet.UsedRange.Rows.Count
         Dim nbColonnes As Integer = currentSheet.UsedRange.Columns.Count
 
-        'calul taille fenetre globale
-        Dim minUp As Integer, minDown As Integer
-        'indice premiere date evenement - indice premiere date
-        minUp = currentSheet.Range("A:A").Find(Format(datesEv(1, 2), "Short date").ToString).Row - 2
-        'indice derniere date - derniere date evenement
-        minDown = nbLignes - currentSheet.Columns("A:A").Find(Format(datesEv(UBound(datesEv, 1), 2), "Short date").ToString).Row
+        ''calul taille fenetre globale
+        'Dim minUp As Integer, minDown As Integer
+        ''indice premiere date evenement - indice premiere date
+        'minUp = currentSheet.Range("A:A").Find(Format(datesEv(1, 2), "Short date").ToString).Row - 2
+        ''indice derniere date - derniere date evenement
+        'minDown = nbLignes - currentSheet.Columns("A:A").Find(Format(datesEv(UBound(datesEv, 1), 2), "Short date").ToString).Row
 
-        'écritures des entêtes de lignes et colonnes sur la nouvelle feuille prixCentres
-        currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("prixCentres"), Excel.Worksheet)
-        currentSheet.Cells(1, 1).Value = "Date"
-        For i = 2 To nbColonnes - 1
-            currentSheet.Cells(1, i).Value = "P" & i - 1
-        Next
-        For i = -minUp To minDown
-            currentSheet.Cells(i + minUp + 2, 1).Value = i
-        Next
-        'de même pour marcheCentre
-        currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("marcheCentre"), Excel.Worksheet)
-        currentSheet.Cells(1, 1).Value = "Date"
-        For i = 2 To nbColonnes - 1
-            currentSheet.Cells(1, i).Value = "Pm pour P" & i - 1
-        Next
-        For i = -minUp To minDown
-            currentSheet.Cells(i + minUp + 2, 1).Value = i
-        Next
+        ''écritures des entêtes de lignes et colonnes sur la nouvelle feuille prixCentres
+        'currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("prixCentres"), Excel.Worksheet)
+        'currentSheet.Cells(1, 1).Value = "Date"
+        'For i = 2 To nbColonnes - 1
+        '    currentSheet.Cells(1, i).Value = "P" & i - 1
+        'Next
+        'For i = -minUp To minDown
+        '    currentSheet.Cells(i + minUp + 2, 1).Value = i
+        'Next
+        ''de même pour marcheCentre
+        'currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("marcheCentre"), Excel.Worksheet)
+        'currentSheet.Cells(1, 1).Value = "Date"
+        'For i = 2 To nbColonnes - 1
+        '    currentSheet.Cells(1, i).Value = "Pm pour P" & i - 1
+        'Next
+        'For i = -minUp To minDown
+        '    currentSheet.Cells(i + minUp + 2, 1).Value = i
+        'Next
 
-        For i = 1 To nbColonnes - 2
-            'on se positionne sur la feuille contenant les prix
-            currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("Prix"), Excel.Worksheet)
-            Dim fenetreInf As Integer, fenetreSup As Integer
-            Dim dateCour As Excel.Range, firmeCour As Excel.Range
-            Dim data As Excel.Range, marche As Excel.Range
-            dateCour = currentSheet.Columns("A:A").Find(Format(datesEv(i, 2), "Short date").ToString)
-            fenetreInf = dateCour.Row - minUp
-            fenetreSup = dateCour.Row + minDown
-            firmeCour = currentSheet.Rows("1:1").Find(datesEv(i, 1).ToString)
-            'récupération des prix centrés autour de l'évènement
-            data = currentSheet.Range(currentSheet.Cells(fenetreInf, firmeCour.Column), currentSheet.Cells(fenetreSup, firmeCour.Column))
-            'récupération des indices de marché correspondants
-            marche = currentSheet.Range(currentSheet.Cells(fenetreInf, 2), currentSheet.Cells(fenetreSup, 2))
-            'on se positionne sur la feuille contenant les prix centrés pour écrire dedans
-            currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("prixCentres"), Excel.Worksheet)
-            currentSheet.Range(currentSheet.Cells(2, i + 1), currentSheet.Cells(minUp + minDown + 2, i + 1)).Value = data.Value
-            'on se positionne sur la feuille contenant les indices de marché pour écrire dedans
-            currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("marcheCentre"), Excel.Worksheet)
-            currentSheet.Range(currentSheet.Cells(2, i + 1), currentSheet.Cells(minUp + minDown + 2, i + 1)).Value = marche.Value
-        Next
+        'For i = 1 To nbColonnes - 2
+        '    'on se positionne sur la feuille contenant les prix
+        '    currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("Prix"), Excel.Worksheet)
+        '    Dim fenetreInf As Integer, fenetreSup As Integer
+        '    Dim dateCour As Excel.Range, firmeCour As Excel.Range
+        '    Dim data As Excel.Range, marche As Excel.Range
+        '    dateCour = currentSheet.Columns("A:A").Find(Format(datesEv(i, 2), "Short date").ToString)
+        '    fenetreInf = dateCour.Row - minUp
+        '    fenetreSup = dateCour.Row + minDown
+        '    firmeCour = currentSheet.Rows("1:1").Find(datesEv(i, 1).ToString)
+        '    'récupération des prix centrés autour de l'évènement
+        '    data = currentSheet.Range(currentSheet.Cells(fenetreInf, firmeCour.Column), currentSheet.Cells(fenetreSup, firmeCour.Column))
+        '    'récupération des indices de marché correspondants
+        '    marche = currentSheet.Range(currentSheet.Cells(fenetreInf, 2), currentSheet.Cells(fenetreSup, 2))
+        '    'on se positionne sur la feuille contenant les prix centrés pour écrire dedans
+        '    currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("prixCentres"), Excel.Worksheet)
+        '    currentSheet.Range(currentSheet.Cells(2, i + 1), currentSheet.Cells(minUp + minDown + 2, i + 1)).Value = data.Value
+        '    'on se positionne sur la feuille contenant les indices de marché pour écrire dedans
+        '    currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("marcheCentre"), Excel.Worksheet)
+        '    currentSheet.Range(currentSheet.Cells(2, i + 1), currentSheet.Cells(minUp + minDown + 2, i + 1)).Value = marche.Value
+        'Next
     End Sub
 
     Sub Tri(a(,) As Object, ColTri As Integer, gauche As Integer, droite As Integer) ' Quick sort
@@ -153,51 +167,90 @@
         Return tabRentaReg
     End Function
 
-    Public Sub constructionTableauRenta(nbLignes As Integer, nbColonnes As Integer, ByRef maxPrixAbsent As Integer, _
-                                         ByRef tabRenta(,) As Double, ByRef tabRentaMarche(,) As Double)
-        Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("prixCentres"), Excel.Worksheet)
-        'Variable permettant de savoir à quelle date il faut remonter (une avant, deux avant, ...)
-        Dim prixPresent As Integer = 0
-        'Pour savoir combien de tableaux stockant les Rt et Rm on va déclaré
-        maxPrixAbsent = 0
+    'Entrée : tableaux centrés des cours et du marché (1ère colonne : dates)
+    'Sortie : tableaux des rentabilités des entreprises et du marché (1ère colonne : dates)
+    Public Sub calculTabRenta(ByRef tabPrixCentres(,) As Double, ByRef tabMarcheCentre(,) As Double, _
+                              ByRef tabRenta(,) As Double, ByRef tabRentaMarche(,) As Double)
+
+        'On recopie la colonne des dates dans les tableaux
+        For indDate = 0 To tabPrixCentres.GetUpperBound(0)
+            tabRenta(indDate, 0) = tabPrixCentres(indDate, 0)
+            tabRentaMarche(indDate, 0) = tabMarcheCentre(indDate, 0)
+        Next indDate
 
         'On calcule les rentabilités et les rentabilités de marché associées
-        For titre = 2 To nbColonnes
-            For indDate = 2 To nbLignes
+        Dim prixPresent As Integer = 0
+        'Pour savoir combien de tableaux stockant les Rt et Rm on va déclaré
+        Dim maxPrixAbsent As Integer = 0
+
+        For titre = 1 To tabPrixCentres.GetUpperBound(1)
+            For indDate = 0 To tabPrixCentres.GetUpperBound(0)
                 If prixPresent = 0 Then
                     'Si on est sur le premier prix
                     '(-2146826246 est la valeur obtenue lorsqu'un ".Value" est fait sur une cellule #N/A)
-                    If Not (Globals.ThisAddIn.Application.WorksheetFunction.IsNA(currentSheet.Cells(indDate, titre)) Or _
-                            currentSheet.Cells(indDate, titre).Value = -2146826246) Then
+                    If Not (tabPrixCentres(indDate, titre) = -2146826246) Then
                         prixPresent = prixPresent + 1
                         If prixPresent > maxPrixAbsent Then
                             maxPrixAbsent = prixPresent
                         End If
                     End If
-                ElseIf Globals.ThisAddIn.Application.WorksheetFunction.IsNA(currentSheet.Cells(indDate, titre)) Or _
-                            currentSheet.Cells(indDate, titre).Value = -2146826246 Then
+                ElseIf tabPrixCentres(indDate, titre) = -2146826246 Then
                     'Si il n'y a pas de prix à cette date
                     'On met un équivalent de #N/A dans les tableaux
-                    tabRenta(indDate - 3, titre - 2) = -2146826246
-                    tabRentaMarche(indDate - 3, titre - 2) = -2146826246
+                    tabRenta(indDate, titre) = -2146826246
+                    tabRentaMarche(indDate, titre) = -2146826246
                     prixPresent = prixPresent + 1
                     If prixPresent > maxPrixAbsent Then
                         maxPrixAbsent = prixPresent
                     End If
                 Else
                     'Sinon on fait le calcul en remontant au dernier prix disponible
-                    tabRenta(indDate - 3, titre - 2) = (currentSheet.Cells(indDate, titre).Value - currentSheet.Cells(indDate - prixPresent, titre).Value) / currentSheet.Cells(indDate - prixPresent, titre).Value
+                    tabRenta(indDate, titre) = (tabPrixCentres(indDate, titre) - tabPrixCentres(indDate - prixPresent, titre)) / _
+                        tabPrixCentres(indDate - prixPresent, titre)
                     'On fait de même pour les rentabilités de marché
-                    currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("marcheCentre"), Excel.Worksheet)
-                    tabRentaMarche(indDate - 3, titre - 2) = (currentSheet.Cells(indDate, titre).Value - currentSheet.Cells(indDate - prixPresent, titre).Value) / currentSheet.Cells(indDate - prixPresent, titre).Value
-                    'Puis on se replace sur la feuille des prix
-                    currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("prixCentres"), Excel.Worksheet)
+                    tabRentaMarche(indDate, titre) = (tabMarcheCentre(indDate, titre) - tabMarcheCentre(indDate - prixPresent, titre)) / _
+                        tabMarcheCentre(indDate - prixPresent, titre)
                     'Et on indique qu'un prix était présent
                     prixPresent = 1
                 End If
             Next indDate
             prixPresent = 0
         Next titre
+    End Sub
+
+    'Entrée : plages des rentabilités pour les entreprises pour les période d'événement et d'estimation, 
+    'tableaux des rentabilités du marché
+    'Sortie : tableaux des rentabilités du marché pour les période d'événement et d'estimation
+    Public Sub constructionTabRenta(plageEst As String, plageEv As String, ByRef tabRentaMarche(,) As Double, _
+                                    ByRef tabRentaMarcheEst(,) As Double, tabRentaMarcheEv(,) As Double)
+        'On parse les plages pour récupérer les indices de la fenêtre
+        Dim premiereCol As Integer, derniereCol As Integer
+        Dim debutEst As Integer, finEst As Integer, debutEv As Integer, finEv As Integer
+        parserPlageColonnes(plageEst, premiereCol, derniereCol)
+        parserPlageLignes(plageEst, debutEst, finEst)
+        parserPlageLignes(plageEv, debutEv, finEv)
+
+        'Pour chaque colonne
+        For colonne = premiereCol - 2 To derniereCol - 2
+            'On remplit le tableau d'estimation
+            For i = debutEst To finEst
+                tabRentaMarcheEst(i - debutEst, colonne - 2) = tabRentaMarche(i - 2, colonne - 2)
+            Next i
+            'Et celui d'événement
+            For i = debutEv To finEv
+                tabRentaMarcheEv(i - debutEv, colonne - 2) = tabRentaMarche(i - 2, colonne - 2)
+            Next i
+        Next colonne
+    End Sub
+
+    Private Sub parserPlageColonnes(plage As String, ByRef premiereCol As Integer, ByRef derniereCol As Integer)
+
+    End Sub
+
+    Private Sub parserPlageLignes(plage As String, ByRef debut As Integer, ByRef fin As Integer)
+        Dim test As Excel.Range = Globals.ThisAddIn.Application.Range(plage)
+        Dim numCol As Integer = test.Cells(1, 1).Column()
+        Dim numLigne As Integer = test.Cells(1, 1).Row()
     End Sub
 
 End Module
