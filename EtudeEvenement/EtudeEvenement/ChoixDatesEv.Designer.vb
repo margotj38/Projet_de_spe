@@ -52,7 +52,7 @@ Partial Class ChoixDatesEv
         '
         'lancementPreT
         '
-        Me.lancementPreT.Location = New System.Drawing.Point(82, 140)
+        Me.lancementPreT.Location = New System.Drawing.Point(79, 144)
         Me.lancementPreT.Name = "lancementPreT"
         Me.lancementPreT.Size = New System.Drawing.Size(88, 58)
         Me.lancementPreT.TabIndex = 2
