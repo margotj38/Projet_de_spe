@@ -58,13 +58,13 @@ Module ExcelDialogue
         'taille fenêtre  d'événement
         Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
 
-        'tableau des AR moyen normalisés : A FAIRE remplir tableau par appel de fonction dans RentaAnormales
-        Dim tabMoyAR(tailleFenetreEv) As Double
-        'tableau des écart-types des AR normalisés : A FAIRE remplir tableau par appel de fonction dans RentaAnormales
-        Dim tabEcartAR(tailleFenetreEv) As Double
+        'tableau des AR moyen normalisés
+        Dim tabMoyAR() As Double = RentaAnormales.moyNormAR(tabEstAR, tabEvAR)
+        'tableau des écart-types des AR normalisés
+        Dim tabEcartAR() As Double = RentaAnormales.ecartNormAR(tabEstAR, tabEvAR, tabMoyAR)
 
         'A FAIRE : affichage résultats
-
+        MsgBox("ok")
     End Sub
 
 End Module
