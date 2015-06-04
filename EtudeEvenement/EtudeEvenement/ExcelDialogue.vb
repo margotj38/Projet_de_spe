@@ -53,18 +53,18 @@ Module ExcelDialogue
         'Sélection de la feuille contenant les Rt
         Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("AR"), Excel.Worksheet)
         'remplissage des tableaux
-        Dim tabEstAR(,) As Double = currentSheet.Range(plageEst).Value
-        Dim tabEvAR(,) As Double = currentSheet.Range(plageEv).Value
+        Dim tabEstAR(,) As Object = currentSheet.Range(plageEst).Value
+        Dim tabEvAR(,) As Object = currentSheet.Range(plageEv).Value
         'taille fenêtre  d'événement
         Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
 
-        'tableau des AR moyen normalisés : A FAIRE remplir tableau par appel de fonction dans RentaAnormales
-        Dim tabMoyAR(tailleFenetreEv) As Double
-        'tableau des écart-types des AR normalisés : A FAIRE remplir tableau par appel de fonction dans RentaAnormales
-        Dim tabEcartAR(tailleFenetreEv) As Double
+        'tableau des AR moyen normalisés
+        Dim tabMoyAR() As Double = RentaAnormales.moyNormAR(tabEstAR, tabEvAR)
+        'tableau des écart-types des AR normalisés
+        Dim tabEcartAR() As Double = RentaAnormales.ecartNormAR(tabEstAR, tabEvAR, tabMoyAR)
 
         'A FAIRE : affichage résultats
-
+        MsgBox("ok")
     End Sub
 
 End Module

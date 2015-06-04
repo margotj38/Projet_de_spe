@@ -62,7 +62,7 @@
         calculStatStudent = Math.Abs(Math.Sqrt(tailleTabCAR) * moyenneTab / Math.Sqrt(varianceTab))
     End Function
 
-    Private Function calcul_moyenne(tab() As Double) As Double
+    Function calcul_moyenne(tab() As Double) As Double
         calcul_moyenne = 0
         For i = 0 To tab.GetUpperBound(0)
             calcul_moyenne = calcul_moyenne + tab(i)
@@ -70,7 +70,7 @@
         calcul_moyenne = calcul_moyenne / (tab.GetLength(0))
     End Function
 
-    Private Function calcul_variance(tab() As Double, moyenne As Double) As Double
+    Function calcul_variance(tab() As Double, moyenne As Double) As Double
         calcul_variance = 0
         For i = 0 To tab.GetUpperBound(0)
             Dim tmp As Double = tab(i) - moyenne
