@@ -1,5 +1,7 @@
 ﻿Imports System.Diagnostics
 Imports System.Windows.Forms.DataVisualization.Charting
+Imports Microsoft.Office.Interop
+Imports System.Runtime.InteropServices
 
 Public Class ChoixSeuilFenetre
 
