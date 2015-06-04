@@ -36,6 +36,8 @@ Public Class Ruban
             .Visible = False
         End With
         'Initialisation du taskPane choixDatesEv
+
+        ' Commenté pour tests
         choixDatesEv = New ChoixDatesEv
         datesEvTaskPane = Globals.ThisAddIn.CustomTaskPanes.Add(choixDatesEv, "Choix des paramètres")
         With datesEvTaskPane
@@ -141,5 +143,9 @@ Public Class Ruban
 
     Private Sub preTraitRenta_Click(sender As Object, e As RibbonControlEventArgs) Handles preTraitRenta.Click
         datesEvTaskPane.Visible = True
+    End Sub
+
+    Private Sub BoutonTest_Click(sender As Object, e As RibbonControlEventArgs) Handles BoutonTest.Click
+
     End Sub
 End Class
