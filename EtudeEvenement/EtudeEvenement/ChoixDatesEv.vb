@@ -1,7 +1,4 @@
-﻿Imports System.Runtime.InteropServices
-Imports System.Net.Mime.MediaTypeNames
-Imports Microsoft.Office.Interop
-
+﻿
 Public Class ChoixDatesEv
 
     'constructeur
