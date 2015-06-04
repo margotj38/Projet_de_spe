@@ -220,7 +220,7 @@
                 tabNormAR(e - 1) = tabEvAR(i, e) / Math.Sqrt(tabVarAR(e - 1))
             Next
             'moyenne sur les ARi/si
-            tabEcartNormAR(i - 1) = Math.Sqrt(TestsStatistiques.calcul_variance(tabNormAR, tabMoyNormAR(i)))
+            tabEcartNormAR(i - 1) = Math.Sqrt(TestsStatistiques.calcul_variance(tabNormAR, tabMoyNormAR(i - 1)))
         Next
         Return tabEcartNormAR
     End Function
