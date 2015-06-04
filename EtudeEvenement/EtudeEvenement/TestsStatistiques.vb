@@ -79,6 +79,9 @@
         calcul_variance = calcul_variance / (tab.GetLength(0) - 1)
     End Function
 
+    Public Function calculPValeur(tailleEchant As Integer, testHyp As Double) As Double
+        Return Globals.ThisAddIn.Application.WorksheetFunction.T_Dist_2T(testHyp, tailleEchant - 1)
+    End Function
 
     '***************************** Test de Patell *****************************
 

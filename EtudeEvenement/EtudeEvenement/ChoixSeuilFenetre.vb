@@ -90,7 +90,7 @@ Public Class ChoixSeuilFenetre
                     Dim tabCAR As Double()
                     tabCAR = TestsStatistiques.calculCAR(tabAR, premiereDate + 1, fenetreEstDebut, fenetreEstFin, fenetreEvDebut, fenetreEvFin)
                     Dim testHyp As Double = TestsStatistiques.calculStatStudent(tabCAR)
-                    pValeur = MiseEnFormeRes.calculPValeur(tailleEchant, testHyp) * 100
+                    pValeur = TestsStatistiques.calculPValeur(tailleEchant, testHyp) * 100
                 Case 1
                     'test de Patell'
                     Dim testHyp As Double = TestsStatistiques.patellTest(tabAR, fenetreEstDebut, fenetreEstFin, fenetreEvDebut, fenetreEvFin)
@@ -116,7 +116,7 @@ Public Class ChoixSeuilFenetre
         Dim tailleEchant As Integer = currentSheet.UsedRange.Columns.Count - 1
 
         'Calcul des pvaleurs et affichage de la courbe
-        MiseEnFormeRes.tracerPValeur(tailleEchant, derniereDate)
+        ExcelDialogue.tracerPValeur(tailleEchant, derniereDate)
         Globals.Ribbons.Ruban.seuilFenetreTaskPane.Visible = False
         Globals.Ribbons.Ruban.graphPVal.Visible = True
     End Sub
