@@ -53,8 +53,8 @@ Module ExcelDialogue
         'Sélection de la feuille contenant les Rt
         Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("AR"), Excel.Worksheet)
         'remplissage des tableaux
-        Dim tabEstAR(,) As Double = currentSheet.Range(plageEst).Value
-        Dim tabEvAR(,) As Double = currentSheet.Range(plageEv).Value
+        Dim tabEstAR(,) As Object = currentSheet.Range(plageEst).Value
+        Dim tabEvAR(,) As Object = currentSheet.Range(plageEv).Value
         'taille fenêtre  d'événement
         Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
 

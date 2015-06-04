@@ -185,56 +185,56 @@
 
     '***************************** Opérations sur les AR *****************************
 
-    Public Function moyNormAR(ByRef tabEstAR(,) As Double, ByRef tabEvAR(,) As Double) As Double()
+    Public Function moyNormAR(ByRef tabEstAR(,) As Object, ByRef tabEvAR(,) As Object) As Double()
         Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
         'tableau à retourner
         Dim tabMoyNormAR(tailleFenetreEv - 1) As Double
         'tableau des variances
         Dim tabVarAR() As Double = calcVarEstAR(tabEstAR)
         'remplissage du tableau
-        For i = 0 To tailleFenetreEv - 1
+        For i = 1 To tailleFenetreEv - 1
             'tableau des ARi/si
-            Dim tabNormAR(tabEvAR.GetUpperBound(1)) As Double
-            For e = 0 To tabEvAR.GetUpperBound(1)
-                tabNormAR(e) = tabEvAR(i, e) / Math.Sqrt(tabVarAR(e))
+            Dim tabNormAR(tabEvAR.GetLength(1) - 1) As Double
+            For e = 1 To tabEvAR.GetUpperBound(1)
+                tabNormAR(e - 1) = tabEvAR(i, e) / Math.Sqrt(tabVarAR(e - 1))
             Next
             'moyenne sur les ARi/si
-            tabMoyNormAR(i) = TestsStatistiques.calcul_moyenne(tabNormAR)
+            tabMoyNormAR(i - 1) = TestsStatistiques.calcul_moyenne(tabNormAR)
         Next
         Return tabMoyNormAR
     End Function
 
 
-    Public Function ecartNormAR(ByRef tabEstAR(,) As Double, ByRef tabEvAR(,) As Double, ByRef tabMoyNormAR As Double()) As Double()
+    Public Function ecartNormAR(ByRef tabEstAR(,) As Object, ByRef tabEvAR(,) As Object, ByRef tabMoyNormAR As Double()) As Double()
         Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
         'tableau à retourner
         Dim tabEcartNormAR(tailleFenetreEv - 1) As Double
         'tableau des variances
         Dim tabVarAR() As Double = calcVarEstAR(tabEstAR)
         'remplissage du tableau
-        For i = 0 To tailleFenetreEv - 1
+        For i = 1 To tailleFenetreEv - 1
             'tableau des ARi/si
-            Dim tabNormAR(tabEvAR.GetUpperBound(1)) As Double
-            For e = 0 To tabEvAR.GetUpperBound(1)
-                tabNormAR(e) = tabEvAR(i, e) / Math.Sqrt(tabVarAR(e))
+            Dim tabNormAR(tabEvAR.GetLength(1) - 1) As Double
+            For e = 1 To tabEvAR.GetUpperBound(1)
+                tabNormAR(e - 1) = tabEvAR(i, e) / Math.Sqrt(tabVarAR(e - 1))
             Next
             'moyenne sur les ARi/si
-            tabEcartNormAR(i) = Math.Sqrt(TestsStatistiques.calcul_variance(tabNormAR, tabMoyNormAR(i)))
+            tabEcartNormAR(i - 1) = Math.Sqrt(TestsStatistiques.calcul_variance(tabNormAR, tabMoyNormAR(i)))
         Next
         Return tabEcartNormAR
     End Function
 
     'calcule la variance des AR par entreprise sur la période d'estimation pour toutes les entreprises
-    Public Function calcVarEstAR(ByRef tabEstAR(,) As Double) As Double()
+    Public Function calcVarEstAR(ByRef tabEstAR(,) As Object) As Double()
         'tableau à retourner
-        Dim tabVarAR(tabEstAR.GetUpperBound(1)) As Double
+        Dim tabVarAR(tabEstAR.GetLength(1) - 1) As Double
         'pour chaque entreprise...
-        For e = 0 To tabEstAR.GetUpperBound(1)
-            Dim vectAR(tabEstAR.GetUpperBound(0)) As Double
-            For t = 0 To tabEstAR.GetUpperBound(0)
-                vectAR(t) = tabEstAR(e, t)
+        For e = 1 To tabEstAR.GetUpperBound(1)
+            Dim vectAR(tabEstAR.GetLength(0) - 1) As Double
+            For t = 1 To tabEstAR.GetUpperBound(0)
+                vectAR(t - 1) = CDbl(tabEstAR(t, e))
             Next
-            tabVarAR(e) = TestsStatistiques.calcul_variance(vectAR, TestsStatistiques.calcul_moyenne(vectAR))
+            tabVarAR(e - 1) = TestsStatistiques.calcul_variance(vectAR, TestsStatistiques.calcul_moyenne(vectAR))
         Next
         Return tabVarAR
     End Function

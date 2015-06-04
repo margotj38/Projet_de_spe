@@ -68,7 +68,8 @@ Public Class ChoixSeuilFenetre
         Dim fenetreEvFin As Integer = CInt(textFenetreEvFin)
 
         'On effectue le centrage des prix autour des événements
-        PretraitementPrix.prixCentres()
+        '''''Commenté pour debug 
+        'PretraitementPrix.prixCentres()
 
         Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("prixCentres"), Excel.Worksheet)
         Dim premiereDate As Integer = currentSheet.Cells(2, 1).Value
