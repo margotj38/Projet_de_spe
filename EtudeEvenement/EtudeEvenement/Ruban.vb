@@ -5,8 +5,10 @@ Public Class Ruban
 
     Public choixSeuilFenetre As ChoixSeuilFenetre
     Public paramAR As ParamAR
+    Public choixDatesEv As ChoixDatesEv
     Public WithEvents seuilFenetreTaskPane As Microsoft.Office.Tools.CustomTaskPane
     Public WithEvents paramARTaskPane As Microsoft.Office.Tools.CustomTaskPane
+    Public WithEvents datesEvTaskPane As Microsoft.Office.Tools.CustomTaskPane
 
 
     Public graphPVal As GraphiquePValeur
@@ -27,6 +29,16 @@ Public Class Ruban
         paramAR = New ParamAR()
         paramARTaskPane = Globals.ThisAddIn.CustomTaskPanes.Add(paramAR, "Choix des paramètres")
         With paramARTaskPane
+            .DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionFloating
+            .Height = 500
+            .DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionRight
+            .Width = 300
+            .Visible = False
+        End With
+        'Initialisation du taskPane choixDatesEv
+        choixDatesEv = New ChoixDatesEv
+        datesEvTaskPane = Globals.ThisAddIn.CustomTaskPanes.Add(choixDatesEv, "Choix des paramètres")
+        With datesEvTaskPane
             .DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionFloating
             .Height = 500
             .DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionRight
@@ -121,5 +133,13 @@ Public Class Ruban
 
     Private Sub ARparam_Click(sender As Object, e As RibbonControlEventArgs) Handles ARparam.Click
         paramARTaskPane.Visible = True
+    End Sub
+
+    Private Sub preTraitPrix_Click(sender As Object, e As RibbonControlEventArgs) Handles preTraitPrix.Click
+        datesEvTaskPane.Visible = True
+    End Sub
+
+    Private Sub preTraitRenta_Click(sender As Object, e As RibbonControlEventArgs) Handles preTraitRenta.Click
+        datesEvTaskPane.Visible = True
     End Sub
 End Class

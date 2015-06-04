@@ -13,64 +13,78 @@
 
         'on se positionne sur la feuille des evenements
         Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("DateEvt"), Excel.Worksheet)
+
+        'A FAIRE : récupérer la sélection d'un vecteur de dates refEdit
+
         'tableau des dates d'évènements
-        Dim datesEv(,)
-        datesEv = currentSheet.Range("A2:B101").Value
+        Dim datesEv()
+        datesEv = currentSheet.Range("B2:B101").Value
+        'tableau 2 dimensions à trier
+        Dim aTrier(datesEv.GetLength(0) - 1, 1) As Object
+        For i = 0 To datesEv.GetLength(0) - 1
+            aTrier(i, 0) = i
+            aTrier(i, 1) = datesEv(i + 1)
+        Next
         'Tri du tableau selon les dates
-        Tri(datesEv, 2, LBound(datesEv, 1), UBound(datesEv, 1))
+        Tri(aTrier, 2, LBound(aTrier, 1), UBound(aTrier, 1))
+        'création du tableau de permutations
+        Dim tabPermut(datesEv.GetLength(1) - 1) As Integer
+        For i = LBound(datesEv, 1) To UBound(datesEv, 1)
+            tabPermut(i) = aTrier(i, 0)
+        Next
 
         'on se positionne sur la feuille des prix
         currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("Prix"), Excel.Worksheet)
         Dim nbLignes As Integer = currentSheet.UsedRange.Rows.Count
         Dim nbColonnes As Integer = currentSheet.UsedRange.Columns.Count
 
-        'calul taille fenetre globale
-        Dim minUp As Integer, minDown As Integer
-        'indice premiere date evenement - indice premiere date
-        minUp = currentSheet.Range("A:A").Find(Format(datesEv(1, 2), "Short date").ToString).Row - 2
-        'indice derniere date - derniere date evenement
-        minDown = nbLignes - currentSheet.Columns("A:A").Find(Format(datesEv(UBound(datesEv, 1), 2), "Short date").ToString).Row
+        ''calul taille fenetre globale
+        'Dim minUp As Integer, minDown As Integer
+        ''indice premiere date evenement - indice premiere date
+        'minUp = currentSheet.Range("A:A").Find(Format(datesEv(1, 2), "Short date").ToString).Row - 2
+        ''indice derniere date - derniere date evenement
+        'minDown = nbLignes - currentSheet.Columns("A:A").Find(Format(datesEv(UBound(datesEv, 1), 2), "Short date").ToString).Row
 
-        'écritures des entêtes de lignes et colonnes sur la nouvelle feuille prixCentres
-        currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("prixCentres"), Excel.Worksheet)
-        currentSheet.Cells(1, 1).Value = "Date"
-        For i = 2 To nbColonnes - 1
-            currentSheet.Cells(1, i).Value = "P" & i - 1
-        Next
-        For i = -minUp To minDown
-            currentSheet.Cells(i + minUp + 2, 1).Value = i
-        Next
-        'de même pour marcheCentre
-        currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("marcheCentre"), Excel.Worksheet)
-        currentSheet.Cells(1, 1).Value = "Date"
-        For i = 2 To nbColonnes - 1
-            currentSheet.Cells(1, i).Value = "Pm pour P" & i - 1
-        Next
-        For i = -minUp To minDown
-            currentSheet.Cells(i + minUp + 2, 1).Value = i
-        Next
+        ''écritures des entêtes de lignes et colonnes sur la nouvelle feuille prixCentres
+        'currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("prixCentres"), Excel.Worksheet)
+        'currentSheet.Cells(1, 1).Value = "Date"
+        'For i = 2 To nbColonnes - 1
+        '    currentSheet.Cells(1, i).Value = "P" & i - 1
+        'Next
+        'For i = -minUp To minDown
+        '    currentSheet.Cells(i + minUp + 2, 1).Value = i
+        'Next
+        ''de même pour marcheCentre
+        'currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("marcheCentre"), Excel.Worksheet)
+        'currentSheet.Cells(1, 1).Value = "Date"
+        'For i = 2 To nbColonnes - 1
+        '    currentSheet.Cells(1, i).Value = "Pm pour P" & i - 1
+        'Next
+        'For i = -minUp To minDown
+        '    currentSheet.Cells(i + minUp + 2, 1).Value = i
+        'Next
 
-        For i = 1 To nbColonnes - 2
-            'on se positionne sur la feuille contenant les prix
-            currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("Prix"), Excel.Worksheet)
-            Dim fenetreInf As Integer, fenetreSup As Integer
-            Dim dateCour As Excel.Range, firmeCour As Excel.Range
-            Dim data As Excel.Range, marche As Excel.Range
-            dateCour = currentSheet.Columns("A:A").Find(Format(datesEv(i, 2), "Short date").ToString)
-            fenetreInf = dateCour.Row - minUp
-            fenetreSup = dateCour.Row + minDown
-            firmeCour = currentSheet.Rows("1:1").Find(datesEv(i, 1).ToString)
-            'récupération des prix centrés autour de l'évènement
-            data = currentSheet.Range(currentSheet.Cells(fenetreInf, firmeCour.Column), currentSheet.Cells(fenetreSup, firmeCour.Column))
-            'récupération des indices de marché correspondants
-            marche = currentSheet.Range(currentSheet.Cells(fenetreInf, 2), currentSheet.Cells(fenetreSup, 2))
-            'on se positionne sur la feuille contenant les prix centrés pour écrire dedans
-            currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("prixCentres"), Excel.Worksheet)
-            currentSheet.Range(currentSheet.Cells(2, i + 1), currentSheet.Cells(minUp + minDown + 2, i + 1)).Value = data.Value
-            'on se positionne sur la feuille contenant les indices de marché pour écrire dedans
-            currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("marcheCentre"), Excel.Worksheet)
-            currentSheet.Range(currentSheet.Cells(2, i + 1), currentSheet.Cells(minUp + minDown + 2, i + 1)).Value = marche.Value
-        Next
+        'For i = 1 To nbColonnes - 2
+        '    'on se positionne sur la feuille contenant les prix
+        '    currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("Prix"), Excel.Worksheet)
+        '    Dim fenetreInf As Integer, fenetreSup As Integer
+        '    Dim dateCour As Excel.Range, firmeCour As Excel.Range
+        '    Dim data As Excel.Range, marche As Excel.Range
+        '    dateCour = currentSheet.Columns("A:A").Find(Format(datesEv(i, 2), "Short date").ToString)
+        '    fenetreInf = dateCour.Row - minUp
+        '    fenetreSup = dateCour.Row + minDown
+        '    firmeCour = currentSheet.Rows("1:1").Find(datesEv(i, 1).ToString)
+        '    'récupération des prix centrés autour de l'évènement
+        '    data = currentSheet.Range(currentSheet.Cells(fenetreInf, firmeCour.Column), currentSheet.Cells(fenetreSup, firmeCour.Column))
+        '    'récupération des indices de marché correspondants
+        '    marche = currentSheet.Range(currentSheet.Cells(fenetreInf, 2), currentSheet.Cells(fenetreSup, 2))
+        '    'on se positionne sur la feuille contenant les prix centrés pour écrire dedans
+        '    currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("prixCentres"), Excel.Worksheet)
+        '    currentSheet.Range(currentSheet.Cells(2, i + 1), currentSheet.Cells(minUp + minDown + 2, i + 1)).Value = data.Value
+        '    'on se positionne sur la feuille contenant les indices de marché pour écrire dedans
+        '    currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("marcheCentre"), Excel.Worksheet)
+        '    currentSheet.Range(currentSheet.Cells(2, i + 1), currentSheet.Cells(minUp + minDown + 2, i + 1)).Value = marche.Value
+        'Next
     End Sub
 
     Sub Tri(a(,) As Object, ColTri As Integer, gauche As Integer, droite As Integer) ' Quick sort

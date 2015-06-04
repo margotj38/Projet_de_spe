@@ -42,9 +42,9 @@
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Me.EtudeEvenement = Me.Factory.CreateRibbonTab
-        Me.Group1 = Me.Factory.CreateRibbonGroup
         Me.Group2 = Me.Factory.CreateRibbonGroup
         Me.ARparam = Me.Factory.CreateRibbonButton
+        Me.Group1 = Me.Factory.CreateRibbonGroup
         Me.ModeleMoy = Me.Factory.CreateRibbonMenu
         Me.testSimpleR = Me.Factory.CreateRibbonButton
         Me.TestPatellR = Me.Factory.CreateRibbonButton
@@ -57,9 +57,11 @@
         Me.testSimpleM = Me.Factory.CreateRibbonButton
         Me.testPatellM = Me.Factory.CreateRibbonButton
         Me.testSigneM = Me.Factory.CreateRibbonButton
+        Me.preTraitPrix = Me.Factory.CreateRibbonButton
+        Me.preTraitRenta = Me.Factory.CreateRibbonButton
         Me.EtudeEvenement.SuspendLayout()
-        Me.Group1.SuspendLayout()
         Me.Group2.SuspendLayout()
+        Me.Group1.SuspendLayout()
         '
         'EtudeEvenement
         '
@@ -68,26 +70,28 @@
         Me.EtudeEvenement.Label = "Etude d'événements"
         Me.EtudeEvenement.Name = "EtudeEvenement"
         '
-        'Group1
-        '
-        Me.Group1.Items.Add(Me.ModeleMoy)
-        Me.Group1.Items.Add(Me.ModeleMS)
-        Me.Group1.Items.Add(Me.ModeleM)
-        Me.Group1.Label = "Modèles"
-        Me.Group1.Name = "Group1"
-        '
         'Group2
         '
         Me.Group2.Items.Add(Me.ARparam)
-        Me.Group2.Label = "Etude AR"
+        Me.Group2.Label = "Etude à partir des AR"
         Me.Group2.Name = "Group2"
         '
         'ARparam
         '
         Me.ARparam.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
-        Me.ARparam.Label = "Paramétrer l'étude"
+        Me.ARparam.Label = "Choix des données"
         Me.ARparam.Name = "ARparam"
         Me.ARparam.ShowImage = True
+        '
+        'Group1
+        '
+        Me.Group1.Items.Add(Me.ModeleMoy)
+        Me.Group1.Items.Add(Me.ModeleMS)
+        Me.Group1.Items.Add(Me.ModeleM)
+        Me.Group1.Items.Add(Me.preTraitPrix)
+        Me.Group1.Items.Add(Me.preTraitRenta)
+        Me.Group1.Label = "Etude complète"
+        Me.Group1.Name = "Group1"
         '
         'ModeleMoy
         '
@@ -173,6 +177,16 @@
         Me.testSigneM.Name = "testSigneM"
         Me.testSigneM.ShowImage = True
         '
+        'preTraitPrix
+        '
+        Me.preTraitPrix.Label = "Prétraitement prix"
+        Me.preTraitPrix.Name = "preTraitPrix"
+        '
+        'preTraitRenta
+        '
+        Me.preTraitRenta.Label = "Prétraitement rentabilités"
+        Me.preTraitRenta.Name = "preTraitRenta"
+        '
         'Ruban
         '
         Me.Name = "Ruban"
@@ -180,10 +194,10 @@
         Me.Tabs.Add(Me.EtudeEvenement)
         Me.EtudeEvenement.ResumeLayout(False)
         Me.EtudeEvenement.PerformLayout()
-        Me.Group1.ResumeLayout(False)
-        Me.Group1.PerformLayout()
         Me.Group2.ResumeLayout(False)
         Me.Group2.PerformLayout()
+        Me.Group1.ResumeLayout(False)
+        Me.Group1.PerformLayout()
 
     End Sub
 
@@ -203,6 +217,8 @@
     Friend WithEvents testSigneM As Microsoft.Office.Tools.Ribbon.RibbonButton
     Friend WithEvents Group2 As Microsoft.Office.Tools.Ribbon.RibbonGroup
     Friend WithEvents ARparam As Microsoft.Office.Tools.Ribbon.RibbonButton
+    Friend WithEvents preTraitRenta As Microsoft.Office.Tools.Ribbon.RibbonButton
+    Friend WithEvents preTraitPrix As Microsoft.Office.Tools.Ribbon.RibbonButton
 End Class
 
 Partial Class ThisRibbonCollection

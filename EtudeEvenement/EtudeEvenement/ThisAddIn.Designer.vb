@@ -189,7 +189,7 @@ Partial Friend NotInheritable Class Globals
         Get
             Return _ThisAddIn
         End Get
-        Set(ByVal value As ThisAddIn)
+        Set(value As ThisAddIn)
             If (_ThisAddIn Is Nothing) Then
                 _ThisAddIn = value
             Else
@@ -202,7 +202,7 @@ Partial Friend NotInheritable Class Globals
         Get
             Return _factory
         End Get
-        Set(ByVal value As Global.Microsoft.Office.Tools.Excel.ApplicationFactory)
+        Set(value As Global.Microsoft.Office.Tools.Excel.ApplicationFactory)
             If (_factory Is Nothing) Then
                 _factory = value
             Else
