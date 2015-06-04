@@ -56,12 +56,12 @@ Module ExcelDialogue
         Dim tmpRange As Excel.Range
         tmpRange = currentSheet.Range(plageEst)
         'tableau des données pour l'estimation
-        Dim tabEstAR(,) As Object = tmpRange.Range(tmpRange.Cells(1, 2), tmpRange.Cells(tmpRange.Rows.Count, tmpRange.Columns.Count)).Value
+        Dim tabEstAR(,) As Object = currentSheet.Range(tmpRange.Cells(1, 2), tmpRange.Cells(tmpRange.Rows.Count, tmpRange.Columns.Count)).Value
         'extraction de la première colonne correspondant aux dates
         tmpRange = currentSheet.Range(plageEv)
-        Dim dates As Excel.Range = tmpRange.Range(tmpRange.Cells(1, 1), tmpRange.Cells(tmpRange.Rows.Count, 1))
+        Dim dates As Excel.Range = currentSheet.Range(tmpRange.Cells(1, 1), tmpRange.Cells(tmpRange.Rows.Count, 1))
         'tableau des données pour l'estimation
-        Dim tabEvAR(,) As Object = tmpRange.Range(tmpRange.Cells(1, 2), tmpRange.Cells(tmpRange.Rows.Count, tmpRange.Columns.Count)).Value
+        Dim tabEvAR(,) As Object = currentSheet.Range(tmpRange.Cells(1, 2), tmpRange.Cells(tmpRange.Rows.Count, tmpRange.Columns.Count)).Value
         'taille fenêtre  d'événement
         Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
         Dim N As Integer = tabEvAR.GetLength(1)
@@ -129,7 +129,7 @@ Module ExcelDialogue
     Public Sub mainPreTraitementPrix(dateEv As String)
         'On centre les cours des entreprises et du marché
         Dim tabPrixCentres(,) As Double, tabMarcheCentre(,) As Double
-        PretraitementPrix.prixCentres(dateEv, tabPrixCentres, tabMarcheCentre)
+        'PretraitementPrix.prixCentres(dateEv, tabPrixCentres, tabMarcheCentre)
 
         'On calcule les rentabilités
         Dim tabRenta(tabPrixCentres.GetLength(0), tabPrixCentres.GetLength(1)) As Double
