@@ -4,16 +4,29 @@ Imports System.Windows.Forms.DataVisualization.Charting
 Public Class Ruban
 
     Public choixSeuilFenetre As ChoixSeuilFenetre
+    Public paramAR As ParamAR
     Public WithEvents seuilFenetreTaskPane As Microsoft.Office.Tools.CustomTaskPane
+    Public WithEvents paramARTaskPane As Microsoft.Office.Tools.CustomTaskPane
+
 
     Public graphPVal As GraphiquePValeur
 
     Private Sub Ruban_Load(ByVal sender As System.Object, ByVal e As RibbonUIEventArgs) Handles MyBase.Load
 
-        'Initialisation du taskPane
+        'Initialisation du taskPane choixSeuilFenetre
         choixSeuilFenetre = New ChoixSeuilFenetre(0, 0)
         seuilFenetreTaskPane = Globals.ThisAddIn.CustomTaskPanes.Add(choixSeuilFenetre, "Choix des paramètres")
         With seuilFenetreTaskPane
+            .DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionFloating
+            .Height = 500
+            .DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionRight
+            .Width = 300
+            .Visible = False
+        End With
+        'Initialisation du taskPane paramAR
+        paramAR = New ParamAR()
+        paramARTaskPane = Globals.ThisAddIn.CustomTaskPanes.Add(paramAR, "Choix des paramètres")
+        With paramARTaskPane
             .DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionFloating
             .Height = 500
             .DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionRight
@@ -106,4 +119,7 @@ Public Class Ruban
         seuilFenetreTaskPane.Visible = True
     End Sub
 
+    Private Sub ARparam_Click(sender As Object, e As RibbonControlEventArgs) Handles ARparam.Click
+        paramARTaskPane.Visible = True
+    End Sub
 End Class
