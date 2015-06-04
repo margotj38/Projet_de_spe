@@ -1,5 +1,4 @@
-﻿
-Public Class ChoixDatesEv
+﻿Public Class ChoixDatesEv
 
     'constructeur
     Public Sub New()
