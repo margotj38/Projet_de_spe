@@ -59,14 +59,18 @@
         Me.testSigneM = Me.Factory.CreateRibbonButton
         Me.preTraitPrix = Me.Factory.CreateRibbonButton
         Me.preTraitRenta = Me.Factory.CreateRibbonButton
+        Me.Group3 = Me.Factory.CreateRibbonGroup
+        Me.BoutonTest = Me.Factory.CreateRibbonButton
         Me.EtudeEvenement.SuspendLayout()
         Me.Group2.SuspendLayout()
         Me.Group1.SuspendLayout()
+        Me.Group3.SuspendLayout()
         '
         'EtudeEvenement
         '
         Me.EtudeEvenement.Groups.Add(Me.Group2)
         Me.EtudeEvenement.Groups.Add(Me.Group1)
+        Me.EtudeEvenement.Groups.Add(Me.Group3)
         Me.EtudeEvenement.Label = "Etude d'événements"
         Me.EtudeEvenement.Name = "EtudeEvenement"
         '
@@ -187,6 +191,17 @@
         Me.preTraitRenta.Label = "Prétraitement rentabilités"
         Me.preTraitRenta.Name = "preTraitRenta"
         '
+        'Group3
+        '
+        Me.Group3.Items.Add(Me.BoutonTest)
+        Me.Group3.Label = "Pour tests"
+        Me.Group3.Name = "Group3"
+        '
+        'BoutonTest
+        '
+        Me.BoutonTest.Label = "Tester"
+        Me.BoutonTest.Name = "BoutonTest"
+        '
         'Ruban
         '
         Me.Name = "Ruban"
@@ -198,6 +213,8 @@
         Me.Group2.PerformLayout()
         Me.Group1.ResumeLayout(False)
         Me.Group1.PerformLayout()
+        Me.Group3.ResumeLayout(False)
+        Me.Group3.PerformLayout()
 
     End Sub
 
@@ -219,6 +236,8 @@
     Friend WithEvents ARparam As Microsoft.Office.Tools.Ribbon.RibbonButton
     Friend WithEvents preTraitRenta As Microsoft.Office.Tools.Ribbon.RibbonButton
     Friend WithEvents preTraitPrix As Microsoft.Office.Tools.Ribbon.RibbonButton
+    Friend WithEvents Group3 As Microsoft.Office.Tools.Ribbon.RibbonGroup
+    Friend WithEvents BoutonTest As Microsoft.Office.Tools.Ribbon.RibbonButton
 End Class
 
 Partial Class ThisRibbonCollection
