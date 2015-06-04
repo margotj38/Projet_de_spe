@@ -193,7 +193,7 @@
         'tableau des variances
         Dim tabVarAR() As Double = calcVarEstAR(tabEstAR)
         'remplissage du tableau
-        For i = 1 To tailleFenetreEv - 1
+        For i = 1 To tabEvAR.GetUpperBound(0)
             'tableau des ARi/si
             Dim tabNormAR(tabEvAR.GetLength(1) - 1) As Double
             For e = 1 To tabEvAR.GetUpperBound(1)
@@ -213,7 +213,7 @@
         'tableau des variances
         Dim tabVarAR() As Double = calcVarEstAR(tabEstAR)
         'remplissage du tableau
-        For i = 1 To tailleFenetreEv - 1
+        For i = 1 To tabEvAR.GetUpperBound(0)
             'tableau des ARi/si
             Dim tabNormAR(tabEvAR.GetLength(1) - 1) As Double
             For e = 1 To tabEvAR.GetUpperBound(1)
