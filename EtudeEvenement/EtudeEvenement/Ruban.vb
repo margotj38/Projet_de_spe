@@ -1,5 +1,8 @@
 ﻿Imports Microsoft.Office.Tools.Ribbon
 Imports System.Windows.Forms.DataVisualization.Charting
+Imports System.Runtime.InteropServices
+Imports System.Net.Mime.MediaTypeNames
+Imports Microsoft.Office.Interop
 
 Public Class Ruban
 
@@ -36,7 +39,7 @@ Public Class Ruban
             .Visible = False
         End With
         'Initialisation du taskPane choixDatesEv
-        choixDatesEv = New ChoixDatesEv
+        choixDatesEv = New ChoixDatesEv()
         datesEvTaskPane = Globals.ThisAddIn.CustomTaskPanes.Add(choixDatesEv, "Choix des paramètres")
         With datesEvTaskPane
             .DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionFloating
@@ -137,9 +140,53 @@ Public Class Ruban
 
     Private Sub preTraitPrix_Click(sender As Object, e As RibbonControlEventArgs) Handles preTraitPrix.Click
         datesEvTaskPane.Visible = True
+        Dim excelApp As Excel.Application = Nothing
+
+        ' Create an Excel App
+        Try
+            excelApp = Marshal.GetActiveObject("Excel.Application")
+        Catch ex As COMException
+            ' An exception is thrown if there is not an open excel instance.                    
+        Finally
+            If excelApp Is Nothing Then
+                'excelApp = New Application
+                excelApp.Workbooks.Add()
+            End If
+            excelApp.Visible = True
+
+            choixDatesEv.datesEv.ExcelConnector = excelApp
+        End Try
+
+        choixDatesEv.datesEv.Focus()
+        'définition des options de refEdit
+        choixDatesEv.datesEv.IncludeSheetName = True
+        choixDatesEv.datesEv.ShowRowAbsoluteIndicator = False
+        choixDatesEv.datesEv.ShowColumnAbsoluteIndicator = False
     End Sub
 
     Private Sub preTraitRenta_Click(sender As Object, e As RibbonControlEventArgs) Handles preTraitRenta.Click
         datesEvTaskPane.Visible = True
+        Dim excelApp As Excel.Application = Nothing
+
+        ' Create an Excel App
+        Try
+            excelApp = Marshal.GetActiveObject("Excel.Application")
+        Catch ex As COMException
+            ' An exception is thrown if there is not an open excel instance.                    
+        Finally
+            If excelApp Is Nothing Then
+                'excelApp = New Application
+                excelApp.Workbooks.Add()
+            End If
+            excelApp.Visible = True
+
+            choixDatesEv.datesEv.ExcelConnector = excelApp
+        End Try
+
+        choixDatesEv.datesEv.Focus()
+        'définition des options de refEdit
+        choixDatesEv.datesEv.IncludeSheetName = True
+        choixDatesEv.datesEv.ShowRowAbsoluteIndicator = False
+        choixDatesEv.datesEv.ShowColumnAbsoluteIndicator = False
     End Sub
 End Class
