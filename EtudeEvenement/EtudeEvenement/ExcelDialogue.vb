@@ -80,10 +80,10 @@ Module ExcelDialogue
 
 
         Dim j As Integer
-        j = 2
+        'j = 2
         'For Each var_Rge In currentSheet.Range(plageEv)
-        '    nomColonne(Globals.ThisAddIn.Application.Worksheets(nom).Range("A" & j), "AR(" & var_Rge.value & ")")
-        '    j = j + 1
+        'nomColonne(Globals.ThisAddIn.Application.Worksheets(nom).Range("A" & j), "AR(" & var_Rge.value & ")")
+        'j = j + 1
         'Next var_Rge
 
 
@@ -104,9 +104,11 @@ Module ExcelDialogue
 
             'La colonne des p-valeurs
             'A Décommenter après
-            Dim pValeur As Double = Globals.ThisAddIn.Application.WorksheetFunction.T_Dist_2T(stat, N - 1) * 100
-            Globals.ThisAddIn.Application.Worksheets(nom).Range("E" & j).Value = pValeur
+            Dim pValeur As Double = Globals.ThisAddIn.Application.WorksheetFunction.T_Dist_2T(stat, N - 1)
+            Globals.ThisAddIn.Application.Worksheets(nom).Range("E" & j).Value = pValeur * 100
             Globals.ThisAddIn.Application.Worksheets(nom).Range("E" & j).Borders.Value = 1
+            'La signification du test
+            Globals.ThisAddIn.Application.Worksheets(nom).Range("F" & j).Value = signification(pValeur)
         Next i
 
 
@@ -117,5 +119,26 @@ Module ExcelDialogue
         r.Value = Valeur
         r.Font.Bold = True
         r.Borders.Value = 1
+        r.Interior.ColorIndex = 4
     End Sub
+
+
+    Function signification(seuil As Double) As String
+        Dim signifi As String
+        Select Case seuil
+            Case Is < 0.001
+                signifi = "***"
+            Case Is < 0.01
+                signifi = "**"
+            Case Is < 0.05
+                signifi = "*"
+            Case Is < 0.1
+                signifi = "."
+            Case Else
+                signifi = ""
+        End Select
+
+        signification = signifi
+    End Function
+
 End Module
