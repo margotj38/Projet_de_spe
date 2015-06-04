@@ -167,51 +167,90 @@
         Return tabRentaReg
     End Function
 
-    Public Sub constructionTableauRenta(nbLignes As Integer, nbColonnes As Integer, ByRef maxPrixAbsent As Integer, _
-                                         ByRef tabRenta(,) As Double, ByRef tabRentaMarche(,) As Double)
-        Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("prixCentres"), Excel.Worksheet)
-        'Variable permettant de savoir à quelle date il faut remonter (une avant, deux avant, ...)
-        Dim prixPresent As Integer = 0
-        'Pour savoir combien de tableaux stockant les Rt et Rm on va déclaré
-        maxPrixAbsent = 0
+    'Entrée : tableaux centrés des cours et du marché (1ère colonne : dates)
+    'Sortie : tableaux des rentabilités des entreprises et du marché (1ère colonne : dates)
+    Public Sub calculTabRenta(ByRef tabPrixCentres(,) As Double, ByRef tabMarcheCentre(,) As Double, _
+                              ByRef tabRenta(,) As Double, ByRef tabRentaMarche(,) As Double)
+
+        'On recopie la colonne des dates dans les tableaux
+        For indDate = 0 To tabPrixCentres.GetUpperBound(0)
+            tabRenta(indDate, 0) = tabPrixCentres(indDate, 0)
+            tabRentaMarche(indDate, 0) = tabMarcheCentre(indDate, 0)
+        Next indDate
 
         'On calcule les rentabilités et les rentabilités de marché associées
-        For titre = 2 To nbColonnes
-            For indDate = 2 To nbLignes
+        Dim prixPresent As Integer = 0
+        'Pour savoir combien de tableaux stockant les Rt et Rm on va déclaré
+        Dim maxPrixAbsent As Integer = 0
+
+        For titre = 1 To tabPrixCentres.GetUpperBound(1)
+            For indDate = 0 To tabPrixCentres.GetUpperBound(0)
                 If prixPresent = 0 Then
                     'Si on est sur le premier prix
                     '(-2146826246 est la valeur obtenue lorsqu'un ".Value" est fait sur une cellule #N/A)
-                    If Not (Globals.ThisAddIn.Application.WorksheetFunction.IsNA(currentSheet.Cells(indDate, titre)) Or _
-                            currentSheet.Cells(indDate, titre).Value = -2146826246) Then
+                    If Not (tabPrixCentres(indDate, titre) = -2146826246) Then
                         prixPresent = prixPresent + 1
                         If prixPresent > maxPrixAbsent Then
                             maxPrixAbsent = prixPresent
                         End If
                     End If
-                ElseIf Globals.ThisAddIn.Application.WorksheetFunction.IsNA(currentSheet.Cells(indDate, titre)) Or _
-                            currentSheet.Cells(indDate, titre).Value = -2146826246 Then
+                ElseIf tabPrixCentres(indDate, titre) = -2146826246 Then
                     'Si il n'y a pas de prix à cette date
                     'On met un équivalent de #N/A dans les tableaux
-                    tabRenta(indDate - 3, titre - 2) = -2146826246
-                    tabRentaMarche(indDate - 3, titre - 2) = -2146826246
+                    tabRenta(indDate, titre) = -2146826246
+                    tabRentaMarche(indDate, titre) = -2146826246
                     prixPresent = prixPresent + 1
                     If prixPresent > maxPrixAbsent Then
                         maxPrixAbsent = prixPresent
                     End If
                 Else
                     'Sinon on fait le calcul en remontant au dernier prix disponible
-                    tabRenta(indDate - 3, titre - 2) = (currentSheet.Cells(indDate, titre).Value - currentSheet.Cells(indDate - prixPresent, titre).Value) / currentSheet.Cells(indDate - prixPresent, titre).Value
+                    tabRenta(indDate, titre) = (tabPrixCentres(indDate, titre) - tabPrixCentres(indDate - prixPresent, titre)) / _
+                        tabPrixCentres(indDate - prixPresent, titre)
                     'On fait de même pour les rentabilités de marché
-                    currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("marcheCentre"), Excel.Worksheet)
-                    tabRentaMarche(indDate - 3, titre - 2) = (currentSheet.Cells(indDate, titre).Value - currentSheet.Cells(indDate - prixPresent, titre).Value) / currentSheet.Cells(indDate - prixPresent, titre).Value
-                    'Puis on se replace sur la feuille des prix
-                    currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("prixCentres"), Excel.Worksheet)
+                    tabRentaMarche(indDate, titre) = (tabMarcheCentre(indDate, titre) - tabMarcheCentre(indDate - prixPresent, titre)) / _
+                        tabMarcheCentre(indDate - prixPresent, titre)
                     'Et on indique qu'un prix était présent
                     prixPresent = 1
                 End If
             Next indDate
             prixPresent = 0
         Next titre
+    End Sub
+
+    'Entrée : plages des rentabilités pour les entreprises pour les période d'événement et d'estimation, 
+    'tableaux des rentabilités du marché
+    'Sortie : tableaux des rentabilités du marché pour les période d'événement et d'estimation
+    Public Sub constructionTabRenta(plageEst As String, plageEv As String, ByRef tabRentaMarche(,) As Double, _
+                                    ByRef tabRentaMarcheEst(,) As Double, tabRentaMarcheEv(,) As Double)
+        'On parse les plages pour récupérer les indices de la fenêtre
+        Dim premiereCol As Integer, derniereCol As Integer
+        Dim debutEst As Integer, finEst As Integer, debutEv As Integer, finEv As Integer
+        parserPlageColonnes(plageEst, premiereCol, derniereCol)
+        parserPlageLignes(plageEst, debutEst, finEst)
+        parserPlageLignes(plageEv, debutEv, finEv)
+
+        'Pour chaque colonne
+        For colonne = premiereCol - 2 To derniereCol - 2
+            'On remplit le tableau d'estimation
+            For i = debutEst To finEst
+                tabRentaMarcheEst(i - debutEst, colonne - 2) = tabRentaMarche(i - 2, colonne - 2)
+            Next i
+            'Et celui d'événement
+            For i = debutEv To finEv
+                tabRentaMarcheEv(i - debutEv, colonne - 2) = tabRentaMarche(i - 2, colonne - 2)
+            Next i
+        Next colonne
+    End Sub
+
+    Private Sub parserPlageColonnes(plage As String, ByRef premiereCol As Integer, ByRef derniereCol As Integer)
+
+    End Sub
+
+    Private Sub parserPlageLignes(plage As String, ByRef debut As Integer, ByRef fin As Integer)
+        Dim test As Excel.Range = Globals.ThisAddIn.Application.Range(plage)
+        Dim numCol As Integer = test.Cells(1, 1).Column()
+        Dim numLigne As Integer = test.Cells(1, 1).Row()
     End Sub
 
 End Module
