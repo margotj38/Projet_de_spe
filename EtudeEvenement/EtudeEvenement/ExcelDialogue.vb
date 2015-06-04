@@ -52,9 +52,16 @@ Module ExcelDialogue
     Public Sub traitementAR(plageEst As String, plageEv As String)
         'Sélection de la feuille contenant les Rt
         Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("AR"), Excel.Worksheet)
-        'remplissage des tableaux
-        Dim tabEstAR(,) As Object = currentSheet.Range(plageEst).Value
-        Dim tabEvAR(,) As Object = currentSheet.Range(plageEv).Value
+
+        Dim tmpRange As Excel.Range
+        tmpRange = currentSheet.Range(plageEst)
+        'tableau des données pour l'estimation
+        Dim tabEstAR(,) As Object = currentSheet.Range(tmpRange.Cells(1, 2), tmpRange.Cells(tmpRange.Rows.Count, tmpRange.Columns.Count)).Value
+        'extraction de la première colonne correspondant aux dates
+        tmpRange = currentSheet.Range(plageEv)
+        Dim dates As Excel.Range = currentSheet.Range(tmpRange.Cells(1, 1), tmpRange.Cells(tmpRange.Rows.Count, 1))
+        'tableau des données pour l'estimation
+        Dim tabEvAR(,) As Object = currentSheet.Range(tmpRange.Cells(1, 2), tmpRange.Cells(tmpRange.Rows.Count, tmpRange.Columns.Count)).Value
         'taille fenêtre  d'événement
         Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
         Dim N As Integer = tabEvAR.GetLength(1)
@@ -80,11 +87,11 @@ Module ExcelDialogue
 
 
         Dim j As Integer
-        'j = 2
-        'For Each var_Rge In currentSheet.Range(plageEv)
-        'nomColonne(Globals.ThisAddIn.Application.Worksheets(nom).Range("A" & j), "AR(" & var_Rge.value & ")")
-        'j = j + 1
-        'Next var_Rge
+        j = 2
+        For Each var_Rge In dates
+            nomColonne(Globals.ThisAddIn.Application.Worksheets(nom).Range("A" & j), "AR(" & var_Rge.value & ")")
+            j = j + 1
+        Next var_Rge
 
 
         For i = 0 To tailleFenetreEv - 1
@@ -119,7 +126,7 @@ Module ExcelDialogue
         r.Value = Valeur
         r.Font.Bold = True
         r.Borders.Value = 1
-        r.Interior.ColorIndex = 4
+        r.Interior.ColorIndex = 27
     End Sub
 
 
@@ -140,5 +147,49 @@ Module ExcelDialogue
 
         signification = signifi
     End Function
+
+    Public Sub mainPreTraitementPrix(dateEv As String)
+        'On centre les cours des entreprises et du marché
+        Dim tabPrixCentres(,) As Double, tabMarcheCentre(,) As Double
+        'PretraitementPrix.prixCentres(dateEv, tabPrixCentres, tabMarcheCentre)
+
+        'On calcule les rentabilités
+        Dim tabRenta(tabPrixCentres.GetLength(0), tabPrixCentres.GetLength(1)) As Double
+        Dim tabRentaMarche(tabMarcheCentre.GetLength(0), tabMarcheCentre.GetLength(1)) As Double
+        PretraitementPrix.calculTabRenta(tabPrixCentres, tabMarcheCentre, tabRenta, tabRentaMarche)
+
+        'On affiche ces rentabilités centrées
+        affichageRentaCentrees(tabRenta)
+
+    End Sub
+
+    Public Sub affichageRentaCentrees(tabrenta(,) As Double)
+        'Création d'une nouvelle feuille
+        Dim nom As String
+        nom = InputBox("Entrer le nom de la feuille des rentabilités centrées : ")
+        'Si l'utilisateur n'entre pas un nom
+        If nom Is "" Then nom = "Rentabilités centrées"
+        Globals.ThisAddIn.Application.Sheets.Add()
+        Globals.ThisAddIn.Application.ActiveSheet.Name = nom
+
+        'Affichage des dates
+        Globals.ThisAddIn.Application.Worksheets(nom).Range("A1").Value = "Dates"
+        For i = 0 To tabrenta.GetLowerBound(0)
+            Globals.ThisAddIn.Application.Worksheets(nom).Range("A" & i + 2).Value = tabrenta(i, 0)
+            Globals.ThisAddIn.Application.Worksheets(nom).Range("A" & i + 2).Borders.Value = 1
+        Next i
+
+        'On écrit la première ligne
+        For colonne = 1 To tabrenta.GetUpperBound(1)
+            Globals.ThisAddIn.Application.Worksheets(nom).Cells(1, colonne + 1).Value = "R" & colonne
+        Next colonne
+
+        'Affichage des rentabilités
+        For colonne = 1 To tabrenta.GetUpperBound(1)
+            For i = 0 To tabrenta.GetUpperBound(0)
+                Globals.ThisAddIn.Application.Worksheets(nom).Cells(i + 2, colonne + 1).Value = tabrenta(i, colonne)
+            Next i
+        Next colonne
+    End Sub
 
 End Module
