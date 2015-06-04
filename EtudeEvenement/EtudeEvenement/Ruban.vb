@@ -36,7 +36,7 @@ Public Class Ruban
             .Visible = False
         End With
         'Initialisation du taskPane choixDatesEv
-        choixDatesEv = New ChoixDatesEv
+        choixDatesEv = New ChoixDatesEv()
         datesEvTaskPane = Globals.ThisAddIn.CustomTaskPanes.Add(choixDatesEv, "Choix des paramètres")
         With datesEvTaskPane
             .DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionFloating
