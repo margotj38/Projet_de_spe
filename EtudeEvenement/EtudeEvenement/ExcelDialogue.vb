@@ -52,9 +52,16 @@ Module ExcelDialogue
     Public Sub traitementAR(plageEst As String, plageEv As String)
         'Sélection de la feuille contenant les Rt
         Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("AR"), Excel.Worksheet)
-        'remplissage des tableaux
-        Dim tabEstAR(,) As Object = currentSheet.Range(plageEst).Value
-        Dim tabEvAR(,) As Object = currentSheet.Range(plageEv).Value
+
+        Dim tmpRange As Excel.Range
+        tmpRange = currentSheet.Range(plageEst)
+        'tableau des données pour l'estimation
+        Dim tabEstAR(,) As Object = tmpRange.Range(tmpRange.Cells(1, 2), tmpRange.Cells(tmpRange.Rows.Count, tmpRange.Columns.Count)).Value
+        'extraction de la première colonne correspondant aux dates
+        tmpRange = currentSheet.Range(plageEv)
+        Dim dates As Excel.Range = tmpRange.Range(tmpRange.Cells(1, 1), tmpRange.Cells(tmpRange.Rows.Count, 1))
+        'tableau des données pour l'estimation
+        Dim tabEvAR(,) As Object = tmpRange.Range(tmpRange.Cells(1, 2), tmpRange.Cells(tmpRange.Rows.Count, tmpRange.Columns.Count)).Value
         'taille fenêtre  d'événement
         Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
         Dim N As Integer = tabEvAR.GetLength(1)
@@ -81,10 +88,10 @@ Module ExcelDialogue
 
         Dim j As Integer
         j = 2
-        'For Each var_Rge In currentSheet.Range(plageEv)
-        '    nomColonne(Globals.ThisAddIn.Application.Worksheets(nom).Range("A" & j), "AR(" & var_Rge.value & ")")
-        '    j = j + 1
-        'Next var_Rge
+        For Each var_Rge In dates
+            nomColonne(Globals.ThisAddIn.Application.Worksheets(nom).Range("A" & j), "AR(" & var_Rge.value & ")")
+            j = j + 1
+        Next var_Rge
 
 
         For i = 0 To tailleFenetreEv - 1
