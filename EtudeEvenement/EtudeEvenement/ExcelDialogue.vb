@@ -52,9 +52,16 @@ Module ExcelDialogue
     Public Sub traitementAR(plageEst As String, plageEv As String)
         'Sélection de la feuille contenant les Rt
         Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("AR"), Excel.Worksheet)
-        'remplissage des tableaux
-        Dim tabEstAR(,) As Object = currentSheet.Range(plageEst).Value
-        Dim tabEvAR(,) As Object = currentSheet.Range(plageEv).Value
+
+        Dim tmpRange As Excel.Range
+        tmpRange = currentSheet.Range(plageEst)
+        'tableau des données pour l'estimation
+        Dim tabEstAR(,) As Object = tmpRange.Range(tmpRange.Cells(1, 2), tmpRange.Cells(tmpRange.Rows.Count, tmpRange.Columns.Count)).Value
+        'extraction de la première colonne correspondant aux dates
+        tmpRange = currentSheet.Range(plageEv)
+        Dim dates As Excel.Range = tmpRange.Range(tmpRange.Cells(1, 1), tmpRange.Cells(tmpRange.Rows.Count, 1))
+        'tableau des données pour l'estimation
+        Dim tabEvAR(,) As Object = tmpRange.Range(tmpRange.Cells(1, 2), tmpRange.Cells(tmpRange.Rows.Count, tmpRange.Columns.Count)).Value
         'taille fenêtre  d'événement
         Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
         Dim N As Integer = tabEvAR.GetLength(1)
@@ -79,18 +86,15 @@ Module ExcelDialogue
         nomColonne(Globals.ThisAddIn.Application.Worksheets(nom).Range("E1"), "P-valeur (%)")
 
 
-        'Nombre de les colonnes de la feuille des résultats
-        Dim nbColonnes As Integer = tabMoyAR.GetUpperBound(0) + 1
-
         Dim j As Integer
         j = 2
-        For Each var_Rge In currentSheet.Range(plageEv)
+        For Each var_Rge In dates
             nomColonne(Globals.ThisAddIn.Application.Worksheets(nom).Range("A" & j), "AR(" & var_Rge.value & ")")
             j = j + 1
         Next var_Rge
 
 
-        For i = 0 To nbColonnes - 1
+        For i = 0 To tailleFenetreEv - 1
             j = i + 2
             'La colonne des moyennes
             Globals.ThisAddIn.Application.Worksheets(nom).Range("B" & j).Value = tabMoyAR(i)
@@ -107,8 +111,8 @@ Module ExcelDialogue
 
             'La colonne des p-valeurs
             'A Décommenter après
-            'Dim pValeur As Double = Globals.ThisAddIn.Application.WorksheetFunction.T_Dist_2T(stat, N - 1) * 100
-            'Globals.ThisAddIn.Application.Worksheets(nom).Range("E" & j).Value = pValeur
+            Dim pValeur As Double = Globals.ThisAddIn.Application.WorksheetFunction.T_Dist_2T(stat, N - 1) * 100
+            Globals.ThisAddIn.Application.Worksheets(nom).Range("E" & j).Value = pValeur
             Globals.ThisAddIn.Application.Worksheets(nom).Range("E" & j).Borders.Value = 1
         Next i
 

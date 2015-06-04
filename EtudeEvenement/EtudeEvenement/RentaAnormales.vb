@@ -193,7 +193,7 @@
         'tableau des variances
         Dim tabVarAR() As Double = calcVarEstAR(tabEstAR)
         'remplissage du tableau
-        For i = 1 To tailleFenetreEv - 1
+        For i = 1 To tabEvAR.GetUpperBound(0)
             'tableau des ARi/si
             Dim tabNormAR(tabEvAR.GetLength(1) - 1) As Double
             For e = 1 To tabEvAR.GetUpperBound(1)
@@ -213,14 +213,14 @@
         'tableau des variances
         Dim tabVarAR() As Double = calcVarEstAR(tabEstAR)
         'remplissage du tableau
-        For i = 1 To tailleFenetreEv - 1
+        For i = 1 To tabEvAR.GetUpperBound(0)
             'tableau des ARi/si
             Dim tabNormAR(tabEvAR.GetLength(1) - 1) As Double
             For e = 1 To tabEvAR.GetUpperBound(1)
                 tabNormAR(e - 1) = tabEvAR(i, e) / Math.Sqrt(tabVarAR(e - 1))
             Next
             'moyenne sur les ARi/si
-            tabEcartNormAR(i - 1) = Math.Sqrt(TestsStatistiques.calcul_variance(tabNormAR, tabMoyNormAR(i)))
+            tabEcartNormAR(i - 1) = Math.Sqrt(TestsStatistiques.calcul_variance(tabNormAR, tabMoyNormAR(i - 1)))
         Next
         Return tabEcartNormAR
     End Function
