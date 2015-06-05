@@ -20,7 +20,7 @@ Module ExcelDialogue
 
             Dim pValeur As Double
 
-            Select Case Globals.Ribbons.Ruban.choixSeuilFenetre.test
+            Select Case Globals.Ribbons.Ruban.selFenetres.test
                 Case 0
                     'test simple
                     Dim tabCAR As Double()
@@ -148,6 +148,8 @@ Module ExcelDialogue
     End Function
 
     Public Sub affichageRentaCentrees(tabrenta(,) As Double)
+        'Perte du numéro des entreprises : pb ?
+
         'Création d'une nouvelle feuille
         Dim nom As String
         nom = InputBox("Entrer le nom de la feuille des rentabilités centrées : ")

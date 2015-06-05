@@ -25,14 +25,14 @@
                              fenetreEstFin As Integer, fenetreEvDebut As Integer, fenetreEvFin As Integer, premiereDate As Integer, Optional tabRenta(,) As Double = Nothing, Optional tabRentaMarche(,) As Double = Nothing) As Double(,)
         Dim tabAR(,) As Double
         'appelle une fonction pour chaque modèle
-        Select Case Globals.Ribbons.Ruban.choixSeuilFenetre.modele
+        Select Case Globals.Ribbons.Ruban.selFenetres.modele
             Case 0
                 tabAR = modeleMoyenne(tailleComplete, premiereDate, fenetreEstDebut, fenetreEstFin, tabRenta)
             Case 1
                 tabAR = modeleMarcheSimple()
             Case 2
                 'Création des tableaux pour pouvoir les X et Y de la régression
-                Dim tabRentaReg(,,)() = PretraitementPrix.constructionTableauxNA(maxPrixAbsent, fenetreEstDebut, fenetreEstFin, tabRenta, tabRentaMarche)
+                Dim tabRentaReg(,,)() = UtilitaireRentabilites.constructionTableauxNA(maxPrixAbsent, fenetreEstDebut, fenetreEstFin, tabRenta, tabRentaMarche)
                 tabAR = modeleMarche(tailleComplete, premiereDate, fenetreEstDebut, fenetreEstFin, tabRenta, tabRentaMarche, tabRentaReg)
             Case Else
                 MsgBox("Erreur interne : numero de modèle incorrect dans ChoixSeuilFenetre", 16)

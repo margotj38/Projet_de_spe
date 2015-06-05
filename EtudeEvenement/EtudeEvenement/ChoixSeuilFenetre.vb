@@ -46,28 +46,28 @@ Public Class ChoixSeuilFenetre
         End Set
     End Property
 
-    Private Sub FenetreEstDebBox_TextChanged(sender As Object, e As EventArgs) Handles FenetreEstDebBox.TextChanged
-        textFenetreEstDebut = FenetreEstDebBox.Text
+    Private Sub FenetreEstDebBox_TextChanged(sender As Object, e As EventArgs)
+        'textFenetreEstDebut = FenetreEstDebBox.Text
     End Sub
 
-    Private Sub FenetreEstFinBox_TextChanged(sender As Object, e As EventArgs) Handles FenetreEstFinBox.TextChanged
-        textFenetreEstFin = FenetreEstFinBox.Text
+    Private Sub FenetreEstFinBox_TextChanged(sender As Object, e As EventArgs)
+        'textFenetreEstFin = FenetreEstFinBox.Text
     End Sub
 
-    Private Sub FenetreDebBox_TextChanged(sender As Object, e As EventArgs) Handles FenetreDebBox.TextChanged
-        textFenetreEvDebut = FenetreDebBox.Text
+    Private Sub FenetreDebBox_TextChanged(sender As Object, e As EventArgs)
+        'textFenetreEvDebut = FenetreDebBox.Text
     End Sub
 
-    Private Sub FenetreFinBox_TextChanged(sender As Object, e As EventArgs) Handles FenetreFinBox.TextChanged
-        textFenetreEvFin = FenetreFinBox.Text
+    Private Sub FenetreFinBox_TextChanged(sender As Object, e As EventArgs)
+        'textFenetreEvFin = FenetreFinBox.Text
     End Sub
 
     Private Sub LancementEtEv_Click(sender As Object, e As EventArgs) Handles LancementEtEv.Click
         'Try
-        Dim fenetreEstDebut As Integer = CInt(textFenetreEstDebut)
-        Dim fenetreEstFin As Integer = CInt(textFenetreEstFin)
-        Dim fenetreEvDebut As Integer = CInt(textFenetreEvDebut)
-        Dim fenetreEvFin As Integer = CInt(textFenetreEvFin)
+        Dim fenetreEstDebut As Integer = 0 'CInt(textFenetreEstDebut)
+        Dim fenetreEstFin As Integer = 0 'CInt(textFenetreEstFin)
+        Dim fenetreEvDebut As Integer = 0 'CInt(textFenetreEvDebut)
+        Dim fenetreEvFin As Integer = 0 'CInt(textFenetreEvFin)
 
         'On effectue le centrage des prix autour des événements
         '''''Commenté pour debug 
@@ -105,7 +105,7 @@ Public Class ChoixSeuilFenetre
             End Select
 
             MsgBox("P-Valeur : " & pValeur.ToString("0.0000") & "%")
-            Globals.Ribbons.Ruban.seuilFenetreTaskPane.Visible = False
+            'Globals.Ribbons.Ruban.seuilFenetreTaskPane.Visible = False
         End If
         'Catch erreur As InvalidCastException
         'MsgBox("Erreur : Vous devez entrer des données correctes (utiliser la virgule pour les nombres décimaux)", 16)
@@ -120,7 +120,7 @@ Public Class ChoixSeuilFenetre
 
         'Calcul des pvaleurs et affichage de la courbe
         ExcelDialogue.tracerPValeur(tailleEchant, derniereDate)
-        Globals.Ribbons.Ruban.seuilFenetreTaskPane.Visible = False
+        'Globals.Ribbons.Ruban.seuilFenetreTaskPane.Visible = False
         Globals.Ribbons.Ruban.graphPVal.Visible = True
     End Sub
 
