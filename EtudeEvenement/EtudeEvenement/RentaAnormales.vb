@@ -237,10 +237,6 @@
         Return tabVarAR
     End Function
 
-
-
-
-
     '**********************************************Opérations sur les CAR
 
     'Fonction qui calcule les CAR sur la fenetre d'événements
@@ -269,7 +265,8 @@
         For i = 1 To tailleFenetreEv
             Dim tab(tabCAR.GetLength(1) - 1) As Double
             For e = 1 To tabCAR.GetUpperBound(1)
-                tab(e - 1) = tabCAR(i - 1, e - 1)
+                tab(e - 1) = tabCAR(
+                    i - 1, e - 1)
             Next
             tabMoyCar(i - 1) = TestsStatistiques.calcul_moyenne(tab)
         Next
