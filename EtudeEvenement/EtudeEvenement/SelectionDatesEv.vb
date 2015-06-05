@@ -57,7 +57,7 @@ Public Class SelectionDatesEv
                 'On centre les cours des entreprises et du marché
                 Dim tabPrixCentres(,) As Double = Nothing
                 Dim tabMarcheCentre(,) As Double = Nothing
-                PretraitementPrix.prixCentres(plage, feuille, tabPrixCentres, tabMarcheCentre)
+                UtilitaireRentabilites.donneesCentrees(plage, feuille, tabPrixCentres, tabMarcheCentre)
 
                 'On calcule les rentabilités
                 Dim tabRenta(tabPrixCentres.GetUpperBound(0) - 1, tabPrixCentres.GetUpperBound(1)) As Double
@@ -75,7 +75,7 @@ Public Class SelectionDatesEv
                 'On centre les rentabilités (2ème colonne : marché)
                 Dim tabRentaCentrees(,) As Double = Nothing
                 Dim tabMarcheCentre(,) As Double = Nothing
-                UtilitaireRentabilites.rentaCentrees(plage, feuille, tabRentaCentrees, tabMarcheCentre)
+                UtilitaireRentabilites.donneesCentrees(plage, feuille, tabRentaCentrees, tabMarcheCentre)
 
                 'On stocke le tableaux des rentabilités de marché dont on va avoir besoin
                 'PB : où ? Dans nouveau module rentabilité ?
@@ -85,7 +85,7 @@ Public Class SelectionDatesEv
                 ExcelDialogue.affichageRentaCentrees(tabRentaCentrees)
 
 
-                MsgBox("Fonctionnalité pas encore implémentée", 16)
+                'MsgBox("Fonctionnalité pas encore implémentée", 16)
         End Select
 
     End Sub
