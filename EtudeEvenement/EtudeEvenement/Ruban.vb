@@ -191,59 +191,17 @@ Public Class Ruban
         selDatesEv.TopMost = True
         selDatesEv.Visible = True
 
-        'choixDatesEv.donneesPreTraitement = 0
-        'datesEvTaskPane.Visible = True
-
-        'Dim excelApp As Excel.Application = Nothing
-
-        '' Create an Excel App
-        'Try
-        '    excelApp = Marshal.GetActiveObject("Excel.Application")
-        'Catch ex As COMException
-        '    ' An exception is thrown if there is not an open excel instance.                    
-        'Finally
-        '    If excelApp Is Nothing Then
-        '        'excelApp = New Application
-        '        excelApp.Workbooks.Add()
-        '    End If
-        '    excelApp.Visible = True
-
-        '    choixDatesEv.datesEv.ExcelConnector = excelApp
-        'End Try
-
-        'choixDatesEv.datesEv.Focus()
-        ''définition des options de refEdit
-        'choixDatesEv.datesEv.IncludeSheetName = True
-        'choixDatesEv.datesEv.ShowRowAbsoluteIndicator = False
-        'choixDatesEv.datesEv.ShowColumnAbsoluteIndicator = False
     End Sub
 
     Private Sub preTraitRenta_Click(sender As Object, e As RibbonControlEventArgs) Handles preTraitRenta.Click
-        'choixDatesEv.donneesPreTraitement = 1
-        'datesEvTaskPane.Visible = True
+        selDatesEv = New SelectionDatesEv(1)
 
-        'Dim excelApp As Excel.Application = Nothing
-
-        '' Create an Excel App
-        'Try
-        '    excelApp = Marshal.GetActiveObject("Excel.Application")
-        'Catch ex As COMException
-        '    ' An exception is thrown if there is not an open excel instance.                    
-        'Finally
-        '    If excelApp Is Nothing Then
-        '        'excelApp = New Application
-        '        excelApp.Workbooks.Add()
-        '    End If
-        '    excelApp.Visible = True
-
-        '    choixDatesEv.datesEv.ExcelConnector = excelApp
-        'End Try
-
-        'choixDatesEv.datesEv.Focus()
-        ''définition des options de refEdit
-        'choixDatesEv.datesEv.IncludeSheetName = True
-        'choixDatesEv.datesEv.ShowRowAbsoluteIndicator = False
-        'choixDatesEv.datesEv.ShowColumnAbsoluteIndicator = False
+        'Définition des options de refEdit
+        selDatesEv.datesEvRefEdit.IncludeSheetName = True
+        selDatesEv.datesEvRefEdit.ShowRowAbsoluteIndicator = False
+        selDatesEv.datesEvRefEdit.ShowColumnAbsoluteIndicator = False
+        selDatesEv.TopMost = True
+        selDatesEv.Visible = True
     End Sub
 
     Private Sub BoutonTest_Click(sender As Object, e As RibbonControlEventArgs) Handles BoutonTest.Click
