@@ -66,11 +66,15 @@ Public Class Ruban
     End Sub
 
     Private Sub initSelFenetres(selFenetres As SelectionFenetres)
-        'Définition des options de refEdit
-        selDatesEv.datesEvRefEdit.IncludeSheetName = True
-        selDatesEv.datesEvRefEdit.ShowRowAbsoluteIndicator = False
-        selDatesEv.datesEvRefEdit.ShowColumnAbsoluteIndicator = False
-        selDatesEv.TopMost = True
+        'Définition des options des refEdit
+        selFenetres.refEditEst.IncludeSheetName = True
+        selFenetres.refEditEst.ShowRowAbsoluteIndicator = False
+        selFenetres.refEditEst.ShowColumnAbsoluteIndicator = False
+        selFenetres.refEditEv.IncludeSheetName = True
+        selFenetres.refEditEv.ShowRowAbsoluteIndicator = False
+        selFenetres.refEditEv.ShowColumnAbsoluteIndicator = False
+
+        'selFenetres.TopMost = True
     End Sub
 
     Private Sub testSimpleR_Click(sender As Object, e As RibbonControlEventArgs) Handles testSimpleR.Click

@@ -79,13 +79,13 @@ Public Class SelectionFenetres
         Dim tabRentaEv(,) As Double
         Dim tabRentaMarcheEst(,) As Double
         Dim tabRentaMarcheEv(,) As Double
-        UtilitaireRentabilites.constructionTabRenta(plageEst, plageEv, feuille, UtilitaireRentabilites.tabRentaMarche, tabRentaMarcheEst, _
-                                               tabRentaMarcheEv, tabRentaEst, tabRentaEv)
+        UtilitaireRentabilites.constructionTabRenta(plageEst, plageEv, feuille, UtilitaireRentabilites.tabRentaMarche, _
+                                                    tabRentaMarcheEst, tabRentaMarcheEv, tabRentaEst, tabRentaEv)
 
         'Calcul des AR
         Dim tabAREst(,) As Double
         Dim tabAREv(,) As Double
-        RentaAnormales.calculAR(tabRentaMarcheEst, tabRentaMarcheEv, tabRentaEst, tabAREv, tabAREst, tabAREv)
+        RentaAnormales.calculAR(tabRentaMarcheEst, tabRentaMarcheEv, tabRentaEst, tabRentaEv, tabAREst, tabAREv)
 
         'Dim pValeur As Double
         'Select Case test

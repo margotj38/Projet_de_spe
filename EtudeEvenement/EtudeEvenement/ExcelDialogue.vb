@@ -218,4 +218,21 @@ Module ExcelDialogue
         Next colonne
     End Sub
 
+    Public Sub affichageAR(ByRef tabAREv(,) As Double)
+        'Création d'une nouvelle feuille
+        Dim nom As String
+        nom = InputBox("Entrer le nom de la feuille des rentabilités anormales : ")
+        'Si l'utilisateur n'entre pas un nom
+        If nom Is "" Then nom = "Rentabilités anormales"
+        Globals.ThisAddIn.Application.Sheets.Add(After:=Globals.ThisAddIn.Application.Worksheets(Globals.ThisAddIn.Application.Worksheets.Count))
+        Globals.ThisAddIn.Application.ActiveSheet.Name = nom
+
+        Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets(nom), Excel.Worksheet)
+        For colonne = 0 To tabAREv.GetUpperBound(1)
+            For i = 0 To tabAREv.GetUpperBound(0)
+                currentSheet.Cells(i + 1, colonne + 1).Value = tabAREv(i, colonne)
+            Next i
+        Next colonne
+    End Sub
+
 End Module
