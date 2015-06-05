@@ -126,46 +126,31 @@ Module ExcelDialogue
         r.Borders.Value = 1
     End Sub
 
-    Public Sub mainPreTraitementPrix(dateEv As String)
-        'On centre les cours des entreprises et du marché
-        Dim tabPrixCentres(,) As Double, tabMarcheCentre(,) As Double
-        'PretraitementPrix.prixCentres(dateEv, tabPrixCentres, tabMarcheCentre)
-
-        'On calcule les rentabilités
-        Dim tabRenta(tabPrixCentres.GetLength(0), tabPrixCentres.GetLength(1)) As Double
-        Dim tabRentaMarche(tabMarcheCentre.GetLength(0), tabMarcheCentre.GetLength(1)) As Double
-        PretraitementPrix.calculTabRenta(tabPrixCentres, tabMarcheCentre, tabRenta, tabRentaMarche)
-
-        'On affiche ces rentabilités centrées
-        affichageRentaCentrees(tabRenta)
-        
-    End Sub
-
-    Public Sub affichageRentaCentrees(tabrenta(,) As Double)
+    Public Sub affichageRentaCentrees(tabRenta(,) As Double)
         'Création d'une nouvelle feuille
         Dim nom As String
         nom = InputBox("Entrer le nom de la feuille des rentabilités centrées : ")
         'Si l'utilisateur n'entre pas un nom
         If nom Is "" Then nom = "Rentabilités centrées"
-        Globals.ThisAddIn.Application.Sheets.Add()
+        Globals.ThisAddIn.Application.Sheets.Add(After:=Globals.ThisAddIn.Application.Worksheets(Globals.ThisAddIn.Application.Worksheets.Count))
         Globals.ThisAddIn.Application.ActiveSheet.Name = nom
 
         'Affichage des dates
         Globals.ThisAddIn.Application.Worksheets(nom).Range("A1").Value = "Dates"
-        For i = 0 To tabrenta.GetLowerBound(0)
-            Globals.ThisAddIn.Application.Worksheets(nom).Range("A" & i + 2).Value = tabrenta(i, 0)
+        For i = 0 To tabRenta.GetUpperBound(0)
+            Globals.ThisAddIn.Application.Worksheets(nom).Range("A" & i + 2).Value = tabRenta(i, 0)
             Globals.ThisAddIn.Application.Worksheets(nom).Range("A" & i + 2).Borders.Value = 1
         Next i
 
         'On écrit la première ligne
-        For colonne = 1 To tabrenta.GetUpperBound(1)
+        For colonne = 1 To tabRenta.GetUpperBound(1)
             Globals.ThisAddIn.Application.Worksheets(nom).Cells(1, colonne + 1).Value = "R" & colonne
         Next colonne
 
         'Affichage des rentabilités
-        For colonne = 1 To tabrenta.GetUpperBound(1)
-            For i = 0 To tabrenta.GetUpperBound(0)
-                Globals.ThisAddIn.Application.Worksheets(nom).Cells(i + 2, colonne + 1).Value = tabrenta(i, colonne)
+        For colonne = 1 To tabRenta.GetUpperBound(1)
+            For i = 0 To tabRenta.GetUpperBound(0)
+                Globals.ThisAddIn.Application.Worksheets(nom).Cells(i + 2, colonne + 1).Value = tabRenta(i, colonne)
             Next i
         Next colonne
     End Sub

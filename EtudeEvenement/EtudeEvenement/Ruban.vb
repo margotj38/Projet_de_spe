@@ -139,7 +139,9 @@ Public Class Ruban
     End Sub
 
     Private Sub preTraitPrix_Click(sender As Object, e As RibbonControlEventArgs) Handles preTraitPrix.Click
+        choixDatesEv.donneesPreTraitement = 0
         datesEvTaskPane.Visible = True
+
         Dim excelApp As Excel.Application = Nothing
 
         ' Create an Excel App
@@ -165,7 +167,9 @@ Public Class Ruban
     End Sub
 
     Private Sub preTraitRenta_Click(sender As Object, e As RibbonControlEventArgs) Handles preTraitRenta.Click
+        choixDatesEv.donneesPreTraitement = 1
         datesEvTaskPane.Visible = True
+
         Dim excelApp As Excel.Application = Nothing
 
         ' Create an Excel App
