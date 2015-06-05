@@ -182,8 +182,6 @@
         Next colonne
         Return tabAR
     End Function
-
-
     '***************************** Opérations sur les AR *****************************
 
     Public Function moyNormAR(ByRef tabEstAR(,) As Object, ByRef tabEvAR(,) As Object) As Double()
@@ -204,7 +202,6 @@
         Next
         Return tabMoyNormAR
     End Function
-
 
     Public Function ecartNormAR(ByRef tabEstAR(,) As Object, ByRef tabEvAR(,) As Object, ByRef tabMoyNormAR As Double()) As Double()
         Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
@@ -240,4 +237,56 @@
         Return tabVarAR
     End Function
 
+
+
+
+
+    '**********************************************Opérations sur les CAR
+
+    'Fonction qui calcule les CAR sur la fenetre d'événements
+    Function CalculCar(ByRef tabEvAR(,) As Object) As Double(,)
+        Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
+        Dim N As Integer = tabEvAR.GetLength(1)
+
+        'tableau à retourner
+        Dim tabCAR(tailleFenetreEv - 1, N - 1) As Double
+
+        For i = 1 To tailleFenetreEv
+            Dim somme As Double = 0
+            For e = 1 To N
+                somme = somme + tabEvAR(i, e)
+                tabCAR(i - 1, e - 1) = somme
+            Next
+        Next
+
+        CalculCar = tabCAR
+    End Function
+
+    Function calculMoyenneCar(ByRef tabCAR(,) As Double) As Double()
+        Dim tailleFenetreEv As Integer = tabCAR.GetLength(0)
+        Dim tabMoyCar(tailleFenetreEv - 1) As Double
+
+        For i = 1 To tailleFenetreEv
+            Dim tab(tabCAR.GetLength(1) - 1) As Double
+            For e = 1 To tabCAR.GetUpperBound(1)
+                tab(e - 1) = tabCAR(i - 1, e - 1)
+            Next
+            tabMoyCar(i - 1) = TestsStatistiques.calcul_moyenne(tab)
+        Next
+        Return tabMoyCar
+    End Function
+
+    Function calculVarianceCar(tabCAR(,) As Double, tabMoy() As Double) As Double()
+        Dim tailleFenetreEv As Integer = tabCAR.GetLength(0)
+        Dim tabMoyCar(tailleFenetreEv - 1) As Double
+
+        For i = 1 To tailleFenetreEv
+            Dim tab(tabCAR.GetLength(1) - 1) As Double
+            For e = 1 To tabCAR.GetUpperBound(1)
+                tab(e - 1) = tabCAR(i - 1, e - 1)
+            Next
+            tabMoyCar(i - 1) = TestsStatistiques.calcul_variance(tab, tabMoy(i - 1))
+        Next
+        Return tabMoyCar
+    End Function
 End Module
