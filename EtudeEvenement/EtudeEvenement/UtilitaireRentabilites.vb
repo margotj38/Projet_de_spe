@@ -156,4 +156,69 @@
         Return tabRentaReg
     End Function
 
+
+    '***************************** Pour centrer les prix/rentabilités autour des dates d'événement *****************************
+
+    Sub donneesCentrees(plageDate As String, feuille As String, ByRef tabEntreprisesCentre(,) As Double, ByRef tabMarcheCentre(,) As Double)
+
+        Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets(feuille), Excel.Worksheet)
+
+        Dim datesEv(currentSheet.Range(plageDate).Rows.Count - 1) As Date
+        For i = 1 To currentSheet.Range(plageDate).Rows.Count
+            datesEv(i - 1) = currentSheet.Range(plageDate).Cells(i, 1).Value
+        Next i
+
+        'Deux tableaux 1 dimension à trier selon le premier tableau
+        Dim tabDate(datesEv.GetLength(0) - 1) As Date
+        Dim tabInd(datesEv.GetLength(0) - 1) As Integer
+        For i = 0 To datesEv.GetLength(0) - 1
+            tabDate(i) = datesEv(i)
+            tabInd(i) = i + 1
+        Next
+
+        'Tri des tableaux selon les dates
+        TriDoubleTab(tabDate, tabInd, tabDate.GetLowerBound(0), tabDate.GetUpperBound(0))
+
+        'on se positionne sur la feuille des prix
+        currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("Prix"), Excel.Worksheet)
+        Dim nbLignes As Integer = currentSheet.UsedRange.Rows.Count
+        Dim nbColonnes As Integer = currentSheet.UsedRange.Columns.Count
+
+        'calul taille fenetre globale
+        Dim minUp As Integer, minDown As Integer
+        'indice premiere date evenement - indice premiere date
+        minUp = currentSheet.Range("A:A").Find(Format(tabDate(0), "Short date").ToString).Row - 2
+        'indice derniere date - derniere date evenement
+        minDown = nbLignes - currentSheet.Columns("A:A").Find(Format(tabDate(tabDate.GetUpperBound(0)), "Short date").ToString).Row
+
+        'Redimensionnement des tableaux de retour
+        ReDim tabEntreprisesCentre(minDown + minUp, tabDate.GetUpperBound(0) + 1)
+        ReDim tabMarcheCentre(minDown + minUp, tabDate.GetUpperBound(0) + 1)
+
+        For i = -minUp To minDown
+            tabEntreprisesCentre(i + minUp, 0) = i
+            tabMarcheCentre(i + minUp, 0) = i
+        Next
+
+        For colonne = 1 To tabDate.GetLength(0)
+            'on se positionne sur la feuille contenant les prix
+            currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("Prix"), Excel.Worksheet)
+            Dim fenetreInf As Integer, fenetreSup As Integer
+            Dim dateCour As Excel.Range
+            Dim data As Excel.Range, marche As Excel.Range
+            dateCour = currentSheet.Columns("A:A").Find(Format(tabDate(colonne - 1), "Short date").ToString)
+            fenetreInf = dateCour.Row - minUp
+            fenetreSup = dateCour.Row + minDown
+            'récupération des prix centrés autour de l'évènement
+            data = currentSheet.Range(currentSheet.Cells(fenetreInf, tabInd(colonne - 1) + 2), currentSheet.Cells(fenetreSup, tabInd(colonne - 1) + 2))
+            'récupération des indices de marché correspondants
+            marche = currentSheet.Range(currentSheet.Cells(fenetreInf, 2), currentSheet.Cells(fenetreSup, 2))
+
+            For i = -minUp To minDown
+                tabEntreprisesCentre(i + minUp, tabInd(colonne - 1)) = data.Cells(i + minUp + 1, 1).Value
+                tabMarcheCentre(i + minUp, tabInd(colonne - 1)) = marche.Cells(i + minUp + 1, 1).Value
+            Next i
+        Next
+    End Sub
+
 End Module

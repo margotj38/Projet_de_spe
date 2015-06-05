@@ -37,7 +37,7 @@ Public Class ChoixDatesEv
                 'On centre les cours des entreprises et du marché
                 Dim tabPrixCentres(,) As Double = Nothing
                 Dim tabMarcheCentre(,) As Double = Nothing
-                PretraitementPrix.prixCentres(plage, feuille, tabPrixCentres, tabMarcheCentre)
+                UtilitaireRentabilites.donneesCentrees(plage, feuille, tabPrixCentres, tabMarcheCentre)
 
                 'On calcule les rentabilités
                 Dim tabRenta(tabPrixCentres.GetUpperBound(0) - 1, tabPrixCentres.GetUpperBound(1)) As Double
@@ -47,7 +47,15 @@ Public Class ChoixDatesEv
                 'On affiche ces rentabilités centrées
                 ExcelDialogue.affichageRentaCentrees(tabRenta)
             Case 1
-                MsgBox("Fonctionnalité pas encore implémentée", 16)
+                'Si on doit traiter des rentabilités
+                'On centre les cours des entreprises et du marché
+                Dim tabRentaCentres(,) As Double = Nothing
+                Dim tabMarcheCentre(,) As Double = Nothing
+                UtilitaireRentabilites.donneesCentrees(plage, feuille, tabRentaCentres, tabMarcheCentre)
+
+                'On affiche ces rentabilités centrées
+                ExcelDialogue.affichageRentaCentrees(tabRentaCentres)
+                'MsgBox("Fonctionnalité pas encore implémentée", 16)
         End Select
 
     End Sub
