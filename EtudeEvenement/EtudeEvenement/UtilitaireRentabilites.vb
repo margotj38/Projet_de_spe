@@ -151,9 +151,9 @@
 
     '***************************** Pour centrer les prix/rentabilités autour des dates d'événement *****************************
 
-    Sub donneesCentrees(plageDate As String, feuille As String, ByRef tabEntreprisesCentre(,) As Double, ByRef tabMarcheCentre(,) As Double)
+    Sub donneesCentrees(plageDate As String, feuilleDates As String, feuilleDonnees As String, ByRef tabEntreprisesCentre(,) As Double, ByRef tabMarcheCentre(,) As Double)
 
-        Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets(feuille), Excel.Worksheet)
+        Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets(feuilleDates), Excel.Worksheet)
 
         Dim datesEv(currentSheet.Range(plageDate).Rows.Count - 1) As Date
         For i = 1 To currentSheet.Range(plageDate).Rows.Count
@@ -172,7 +172,7 @@
         TriDoubleTab(tabDate, tabInd, tabDate.GetLowerBound(0), tabDate.GetUpperBound(0))
 
         'on se positionne sur la feuille des prix
-        currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("Prix"), Excel.Worksheet)
+        currentSheet = CType(Globals.ThisAddIn.Application.Worksheets(feuilleDonnees), Excel.Worksheet)
         Dim nbLignes As Integer = currentSheet.UsedRange.Rows.Count
         Dim nbColonnes As Integer = currentSheet.UsedRange.Columns.Count
 

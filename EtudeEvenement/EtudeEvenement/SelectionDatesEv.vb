@@ -4,6 +4,7 @@ Imports System.Runtime.InteropServices
 Public Class SelectionDatesEv
 
     Private donneesPreT As Integer ' 0 => prix; 1 => rentabilités 
+    Private nomFeuille As String
 
     'accesseur sur donneesPreTraitement
     Public Property donneesPreTraitement As Integer
@@ -48,8 +49,9 @@ Public Class SelectionDatesEv
     Private Sub lancementPreT_Click(sender As Object, e As EventArgs) Handles lancementPreT.Click
         'On récupère la plage des dates et la feuille sur laquelle elle est
         Dim plage As String = ""
-        Dim feuille As String = ""
-        Utilitaires.recupererFeuillePlage(Me.datesEvRefEdit.Address, feuille, plage)
+        Dim feuilleDonnees As String = Me.nomFeuille
+        Dim feuilleDates As String = ""
+        Utilitaires.recupererFeuillePlage(Me.datesEvRefEdit.Address, feuilleDates, plage)
 
         Select Case donneesPreTraitement
             Case 0
@@ -57,7 +59,7 @@ Public Class SelectionDatesEv
                 'On centre les cours des entreprises et du marché
                 Dim tabPrixCentres(,) As Double = Nothing
                 Dim tabMarcheCentre(,) As Double = Nothing
-                UtilitaireRentabilites.donneesCentrees(plage, feuille, tabPrixCentres, tabMarcheCentre)
+                UtilitaireRentabilites.donneesCentrees(plage, feuilleDates, feuilleDonnees, tabPrixCentres, tabMarcheCentre)
 
                 'On calcule les rentabilités
                 Dim tabRenta(tabPrixCentres.GetUpperBound(0) - 1, tabPrixCentres.GetUpperBound(1)) As Double
@@ -80,7 +82,7 @@ Public Class SelectionDatesEv
                 Dim tabRentaCentrees(,) As Double = Nothing
                 Dim tabMarcheCentre(,) As Double = Nothing
 
-                UtilitaireRentabilites.donneesCentrees(plage, feuille, tabRentaCentrees, tabMarcheCentre)
+                UtilitaireRentabilites.donneesCentrees(plage, feuilleDates, feuilleDonnees, tabRentaCentrees, tabMarcheCentre)
 
                 'On stocke le tableaux des rentabilités de marché dont on va avoir besoin
                 'PB : où ? Dans nouveau module rentabilité ?
@@ -98,4 +100,7 @@ Public Class SelectionDatesEv
 
     End Sub
 
+    Private Sub nomFeuilleBox_TextChanged(sender As Object, e As EventArgs) Handles nomFeuilleBox.TextChanged
+        nomFeuille = nomFeuilleBox.Text
+    End Sub
 End Class
