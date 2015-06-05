@@ -240,9 +240,9 @@
         'tableau à retourner
         Dim tabCAR(tailleFenetreEv - 1, N - 1) As Double
 
-        For i = 1 To tailleFenetreEv
+        For e = 1 To N
             Dim somme As Double = 0
-            For e = 1 To N
+            For i = 1 To tailleFenetreEv
                 somme = somme + tabEvAR(i, e)
                 tabCAR(i - 1, e - 1) = somme
             Next
