@@ -194,7 +194,7 @@
 
         For colonne = 1 To tabDate.GetLength(0)
             'on se positionne sur la feuille contenant les prix
-            currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("Prix"), Excel.Worksheet)
+            currentSheet = CType(Globals.ThisAddIn.Application.Worksheets(feuilleDonnees), Excel.Worksheet)
             Dim fenetreInf As Integer, fenetreSup As Integer
             Dim dateCour As Excel.Range
             Dim data As Excel.Range, marche As Excel.Range
