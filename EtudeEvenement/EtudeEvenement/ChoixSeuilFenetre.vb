@@ -83,7 +83,7 @@ Public Class ChoixSeuilFenetre
         Else
             'Calcul des AR
             Dim tabAR As Double(,)
-            tabAR = RentaAnormales.calculARAvecNA(fenetreEstDebut, fenetreEstFin, fenetreEvDebut, fenetreEvFin)
+            'tabAR = RentaAnormales.calculARAvecNA(fenetreEstDebut, fenetreEstFin, fenetreEvDebut, fenetreEvFin)
             'tabAR = Globals.ThisAddIn.calculAR(fenetreEstDebut, fenetreEstFin)
             'Calcul de la pValeur
             Dim pValeur As Double
