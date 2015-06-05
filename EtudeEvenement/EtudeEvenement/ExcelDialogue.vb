@@ -47,8 +47,30 @@ Module ExcelDialogue
         Next i
     End Sub
 
-    '***************************** traitement fichier AR *****************************
+    'Traitement des ARs à partir des deux tableaux d'estimation et de 
+    Public Sub traitementTabAR(tabEvAR(,) As Object, tabEstAR(,) As Object)
 
+        'tableau des AR moyen normalisés
+        Dim tabMoyAR() As Double = RentaAnormales.moyNormAR(tabEstAR, tabEvAR)
+        'tableau des écart-types des AR normalisés
+        Dim tabEcartAR() As Double = RentaAnormales.ecartNormAR(tabEstAR, tabEvAR, tabMoyAR)
+
+        Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
+        Dim N As Integer = tabEvAR.GetLength(1)
+
+        'tableau des CAR
+        Dim tabCAR(tailleFenetreEv - 1, N - 1) As Double
+
+        For e = 1 To N
+            Dim somme As Double = 0
+            For i = 1 To tailleFenetreEv
+                somme = somme + tabEvAR(i, e)
+                tabCAR(i - 1, e - 1) = somme
+            Next
+        Next
+    End Sub
+
+    '***************************** traitement fichier AR *****************************
     Public Sub traitementAR(plageEst As String, plageEv As String)
         'Sélection de la feuille contenant les Rt
         Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("AR"), Excel.Worksheet)
@@ -72,7 +94,7 @@ Module ExcelDialogue
         Dim tabEcartAR() As Double = RentaAnormales.ecartNormAR(tabEstAR, tabEvAR, tabMoyAR)
 
 
-        'A FAIRE : affichage résultats
+        '-----------------------------------A FAIRE : affichage résultats
 
         'La création d'une nouvelle feuille
         Dim nom As String

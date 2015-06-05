@@ -85,8 +85,10 @@ Public Class SelectionFenetres
                                                     tabRentaMarcheEst, tabRentaMarcheEv, tabRentaEst, tabRentaEv)
 
         'Calcul des AR
-        Dim tabAREst(,) As Double = Nothing
-        Dim tabAREv(,) As Double = Nothing
+        Dim tabAREst(,) As Double
+        Dim tabAREv(,) As Double
+
+        'RentaAnormales.calculAR(tabRentaMarcheEst, tabRentaMarcheEv, tabRentaEst, tabRentaEv, tabAREst, tabAREv)
         Dim tabDateEst() As Integer = Nothing
         Dim tabDateEv() As Integer = Nothing
         RentaAnormales.calculAR(tabRentaMarcheEst, tabRentaMarcheEv, tabRentaEst, tabRentaEv, _

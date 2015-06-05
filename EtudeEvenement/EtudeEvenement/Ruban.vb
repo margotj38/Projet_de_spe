@@ -177,6 +177,37 @@ Public Class Ruban
     End Sub
 
     Private Sub ARparam_Click(sender As Object, e As RibbonControlEventArgs) Handles ARparam.Click
+
+        'Définition des options de refEdit
+        paramAR.estimation.IncludeSheetName = False
+        paramAR.estimation.ShowRowAbsoluteIndicator = False
+        paramAR.estimation.ShowColumnAbsoluteIndicator = False
+        paramAR.evenement.IncludeSheetName = False
+        paramAR.evenement.ShowRowAbsoluteIndicator = False
+        paramAR.evenement.ShowColumnAbsoluteIndicator = False
+
+        Dim excelApp As Excel.Application = Nothing
+
+        ' Create an Excel App
+        Try
+            excelApp = Marshal.GetActiveObject("Excel.Application")
+        Catch ex As COMException
+            ' An exception is thrown if there is not an open excel instance.                    
+        Finally
+            If excelApp Is Nothing Then
+                'excelApp = New Application
+                excelApp.Workbooks.Add()
+            End If
+            excelApp.Visible = True
+
+            paramAR.estimation.ExcelConnector = excelApp
+            paramAR.evenement.ExcelConnector = excelApp
+
+        End Try
+
+        paramAR.estimation.Focus()
+        paramAR.evenement.Focus()
+
         paramARTaskPane.Visible = True
     End Sub
 
