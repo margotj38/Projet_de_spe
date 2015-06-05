@@ -111,9 +111,11 @@ Module ExcelDialogue
 
             'La colonne des p-valeurs
             'A Décommenter après
-            Dim pValeur As Double = Globals.ThisAddIn.Application.WorksheetFunction.T_Dist_2T(stat, N - 1) * 100
-            Globals.ThisAddIn.Application.Worksheets(nom).Range("E" & j).Value = pValeur
+            Dim pValeur As Double = Globals.ThisAddIn.Application.WorksheetFunction.T_Dist_2T(stat, N - 1)
+            Globals.ThisAddIn.Application.Worksheets(nom).Range("E" & j).Value = pValeur * 100
             Globals.ThisAddIn.Application.Worksheets(nom).Range("E" & j).Borders.Value = 1
+            'La signification du test
+            Globals.ThisAddIn.Application.Worksheets(nom).Range("F" & j).Value = signification(pValeur)
         Next i
 
 
@@ -124,9 +126,28 @@ Module ExcelDialogue
         r.Value = Valeur
         r.Font.Bold = True
         r.Borders.Value = 1
+        r.Interior.ColorIndex = 27
     End Sub
 
-    Public Sub affichageRentaCentrees(tabRenta(,) As Double)
+    Function signification(seuil As Double) As String
+        Dim signifi As String
+        Select Case seuil
+            Case Is < 0.001
+                signifi = "***"
+            Case Is < 0.01
+                signifi = "**"
+            Case Is < 0.05
+                signifi = "*"
+            Case Is < 0.1
+                signifi = "."
+            Case Else
+                signifi = ""
+        End Select
+
+        signification = signifi
+    End Function
+
+    Public Sub affichageRentaCentrees(tabrenta(,) As Double)
         'Création d'une nouvelle feuille
         Dim nom As String
         nom = InputBox("Entrer le nom de la feuille des rentabilités centrées : ")
@@ -137,20 +158,20 @@ Module ExcelDialogue
 
         'Affichage des dates
         Globals.ThisAddIn.Application.Worksheets(nom).Range("A1").Value = "Dates"
-        For i = 0 To tabRenta.GetUpperBound(0)
-            Globals.ThisAddIn.Application.Worksheets(nom).Range("A" & i + 2).Value = tabRenta(i, 0)
+        For i = 0 To tabrenta.GetUpperBound(0)
+            Globals.ThisAddIn.Application.Worksheets(nom).Range("A" & i + 2).Value = tabrenta(i, 0)
             Globals.ThisAddIn.Application.Worksheets(nom).Range("A" & i + 2).Borders.Value = 1
         Next i
 
         'On écrit la première ligne
-        For colonne = 1 To tabRenta.GetUpperBound(1)
+        For colonne = 1 To tabrenta.GetUpperBound(1)
             Globals.ThisAddIn.Application.Worksheets(nom).Cells(1, colonne + 1).Value = "R" & colonne
         Next colonne
 
         'Affichage des rentabilités
-        For colonne = 1 To tabRenta.GetUpperBound(1)
-            For i = 0 To tabRenta.GetUpperBound(0)
-                Globals.ThisAddIn.Application.Worksheets(nom).Cells(i + 2, colonne + 1).Value = tabRenta(i, colonne)
+        For colonne = 1 To tabrenta.GetUpperBound(1)
+            For i = 0 To tabrenta.GetUpperBound(0)
+                Globals.ThisAddIn.Application.Worksheets(nom).Cells(i + 2, colonne + 1).Value = tabrenta(i, colonne)
             Next i
         Next colonne
     End Sub
