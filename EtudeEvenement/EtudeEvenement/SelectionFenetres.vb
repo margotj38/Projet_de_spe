@@ -67,6 +67,7 @@ Public Class SelectionFenetres
     Private Sub LancementEtEv_Click(sender As Object, e As EventArgs) Handles LancementEtEv.Click
 
         'On récupère les plages des périodes d'estimation et d'événement + la feuille sur laquelle elles sont
+        'Les plages ont pour premiere colonne les dates
         Dim plageEst As String = ""
         Dim plageEv As String = ""
         Dim feuille As String = ""
@@ -75,16 +76,17 @@ Public Class SelectionFenetres
 
         'On construit les 4 tableaux des rentabilités (entreprises et marché, période d'estimation et d'événement)
         Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets(feuille), Excel.Worksheet)
-        Dim tabRentaEst(,) As Double
-        Dim tabRentaEv(,) As Double
-        Dim tabRentaMarcheEst(,) As Double
-        Dim tabRentaMarcheEv(,) As Double
-        UtilitaireRentabilites.constructionTabRenta(plageEst, plageEv, feuille, UtilitaireRentabilites.tabRentaMarche, _
+        Dim tabRentaEst(,) As Double = Nothing
+        Dim tabRentaEv(,) As Double = Nothing
+        Dim tabRentaMarcheEst(,) As Double = Nothing
+        Dim tabRentaMarcheEv(,) As Double = Nothing
+        UtilitaireRentabilites.constructionTabRenta(plageEst, plageEv, _
+                                                    UtilitaireRentabilites.tabRentaMarche, UtilitaireRentabilites.tabRenta, _
                                                     tabRentaMarcheEst, tabRentaMarcheEv, tabRentaEst, tabRentaEv)
 
         'Calcul des AR
-        Dim tabAREst(,) As Double
-        Dim tabAREv(,) As Double
+        Dim tabAREst(,) As Double = Nothing
+        Dim tabAREv(,) As Double = Nothing
         RentaAnormales.calculAR(tabRentaMarcheEst, tabRentaMarcheEv, tabRentaEst, tabRentaEv, tabAREst, tabAREv)
 
         'Dim pValeur As Double

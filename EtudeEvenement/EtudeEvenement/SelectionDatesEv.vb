@@ -62,11 +62,15 @@ Public Class SelectionDatesEv
                 'On calcule les rentabilités
                 Dim tabRenta(tabPrixCentres.GetUpperBound(0) - 1, tabPrixCentres.GetUpperBound(1)) As Double
                 Dim tabRentaMarche(tabMarcheCentre.GetUpperBound(0) - 1, tabMarcheCentre.GetUpperBound(1)) As Double
-                UtilitaireRentabilites.calculTabRenta(tabPrixCentres, tabMarcheCentre, tabRenta, tabRentaMarche)
+                Dim maxPrixAbsent As Integer
+                UtilitaireRentabilites.calculTabRenta(tabPrixCentres, tabMarcheCentre, tabRenta, tabRentaMarche, maxPrixAbsent)
 
-                'On stocke le tableaux des rentabilités de marché dont on va avoir besoin
+                'On stocke le tableaux des rentabilités de marché et des entreprises dont on va avoir besoin
                 'PB : où ? Dans nouveau module rentabilité ?
                 UtilitaireRentabilites.tabRentaMarche = tabRentaMarche
+                UtilitaireRentabilites.tabRenta = tabRenta
+                'Idem pour maxPrixAbsent
+                UtilitaireRentabilites.maxPrixAbs = maxPrixAbsent
 
                 'On affiche ces rentabilités centrées
                 ExcelDialogue.affichageRentaCentrees(tabRenta)
@@ -75,11 +79,14 @@ Public Class SelectionDatesEv
                 'On centre les rentabilités (2ème colonne : marché)
                 Dim tabRentaCentrees(,) As Double = Nothing
                 Dim tabMarcheCentre(,) As Double = Nothing
-                UtilitaireRentabilites.rentaCentrees(plage, feuille, tabRentaCentrees, tabMarcheCentre)
+
 
                 'On stocke le tableaux des rentabilités de marché dont on va avoir besoin
                 'PB : où ? Dans nouveau module rentabilité ?
                 UtilitaireRentabilites.tabRentaMarche = tabRentaMarche
+                'A calculer avant ?
+                'Idem pour maxPrixAbsent
+                'UtilitaireRentabilites.maxPrixAbs = maxPrixAbsent
 
                 'On affiche les rentabilités centrées
                 ExcelDialogue.affichageRentaCentrees(tabRentaCentrees)
