@@ -118,6 +118,17 @@ Module ExcelDialogue
             Globals.ThisAddIn.Application.Worksheets(nom).Range("F" & j).Value = signification(pValeur)
         Next i
 
+        '************************ Tableau de résultats des CAR
+        nomColonne(Globals.ThisAddIn.Application.Worksheets(nom).Range("B" & tailleFenetreEv + 4), "Moyenne")
+        nomColonne(Globals.ThisAddIn.Application.Worksheets(nom).Range("C" & tailleFenetreEv + 4), "Ecart-type")
+        nomColonne(Globals.ThisAddIn.Application.Worksheets(nom).Range("D" & tailleFenetreEv + 4), "T-test")
+        nomColonne(Globals.ThisAddIn.Application.Worksheets(nom).Range("E" & tailleFenetreEv + 4), "P-valeur (%)")
+
+        j = tailleFenetreEv + 5
+        For Each var_Rge In dates
+            nomColonne(Globals.ThisAddIn.Application.Worksheets(nom).Range("A" & j), "CAR(" & var_Rge.value & ")")
+            j = j + 1
+        Next var_Rge
 
     End Sub
 
@@ -191,5 +202,7 @@ Module ExcelDialogue
             Next i
         Next colonne
     End Sub
+
+
 
 End Module
