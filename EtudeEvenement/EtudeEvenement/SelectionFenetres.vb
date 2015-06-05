@@ -87,7 +87,10 @@ Public Class SelectionFenetres
         'Calcul des AR
         Dim tabAREst(,) As Double = Nothing
         Dim tabAREv(,) As Double = Nothing
-        RentaAnormales.calculAR(tabRentaMarcheEst, tabRentaMarcheEv, tabRentaEst, tabRentaEv, tabAREst, tabAREv)
+        Dim tabDateEst() As Integer = Nothing
+        Dim tabDateEv() As Integer = Nothing
+        RentaAnormales.calculAR(tabRentaMarcheEst, tabRentaMarcheEv, tabRentaEst, tabRentaEv, _
+                                tabAREst, tabAREv, tabDateEst, tabDateEv)
 
         'Dim pValeur As Double
         'Select Case test
