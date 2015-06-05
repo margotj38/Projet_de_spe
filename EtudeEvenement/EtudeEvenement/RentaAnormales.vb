@@ -19,8 +19,6 @@
                 MsgBox("Erreur interne : numero de modèle incorrect dans ChoixSeuilFenetre", 16)
         End Select
 
-        'Affichage des AR dans une nouvelle feuille excel
-        ExcelDialogue.affichageAR(tabAREv)
     End Sub
 
 

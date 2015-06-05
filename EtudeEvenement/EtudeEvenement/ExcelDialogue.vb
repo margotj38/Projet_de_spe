@@ -218,7 +218,8 @@ Module ExcelDialogue
         Next colonne
     End Sub
 
-    Public Sub affichageAR(ByRef tabAREv(,) As Double)
+    Public Sub affichageAR(ByRef tabAREst(,) As Double, ByRef tabAREv(,) As Double, _
+                           ByRef tabDateEst() As Integer, ByRef tabDateEv() As Integer)
         'Création d'une nouvelle feuille
         Dim nom As String
         nom = InputBox("Entrer le nom de la feuille des rentabilités anormales : ")
@@ -228,6 +229,10 @@ Module ExcelDialogue
         Globals.ThisAddIn.Application.ActiveSheet.Name = nom
 
         Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets(nom), Excel.Worksheet)
+
+        'Affichage des dates pour la période d'estimation
+
+
         For colonne = 0 To tabAREv.GetUpperBound(1)
             For i = 0 To tabAREv.GetUpperBound(0)
                 currentSheet.Cells(i + 1, colonne + 1).Value = tabAREv(i, colonne)

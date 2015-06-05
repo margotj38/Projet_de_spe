@@ -92,6 +92,9 @@ Public Class SelectionFenetres
         RentaAnormales.calculAR(tabRentaMarcheEst, tabRentaMarcheEv, tabRentaEst, tabRentaEv, _
                                 tabAREst, tabAREv, tabDateEst, tabDateEv)
 
+        'Affichage des AR dans une nouvelle feuille excel
+        ExcelDialogue.affichageAR(tabAREst, tabAREv, tabDateEst, tabDateEv)
+
         'Dim pValeur As Double
         'Select Case test
         '    Case 0
