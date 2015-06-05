@@ -2,24 +2,23 @@
 
     'Calcule les AR avec le modèle considéré
     Public Sub calculAR(ByRef tabRentaMarcheEst(,) As Double, ByRef tabRentaMarcheEv(,) As Double, ByRef tabRentaEst(,) As Double, _
-                             ByRef tabRentaEv(,) As Double, ByRef tabAREst(,) As Double, ByRef tabAREv(,) As Double)
+                             ByRef tabRentaEv(,) As Double, ByRef tabAREst(,) As Double, ByRef tabAREv(,) As Double, _
+                             ByRef tabDateEst() As Integer, ByRef tabDateEv() As Integer)
 
         'appelle une fonction pour chaque modèle
         Select Case Globals.Ribbons.Ruban.selFenetres.modele
             Case 0
-                modeleMoyenne(tabRentaEst, tabRentaEv, tabAREst, tabAREv)
+                modeleMoyenne(tabRentaEst, tabRentaEv, tabAREst, tabAREv, tabDateEst, tabDateEv)
             Case 1
                 'tabAR = modeleMarcheSimple()
             Case 2
                 'Création des tableaux pour pouvoir les X et Y de la régression
-                'Dim tabRentaReg(,,)() = UtilitaireRentabilites.constructionTableauxNA(maxPrixAbsent, fenetreEstDebut, fenetreEstFin, tabRenta, tabRentaMarche)
+                Dim tabRentaReg(,,)() = UtilitaireRentabilites.constructionTableauxReg(UtilitaireRentabilites.maxPrixAbs, tabRentaEst, tabRentaMarcheEst)
                 'tabAR = modeleMarche(tailleComplete, premiereDate, fenetreEstDebut, fenetreEstFin, tabRenta, tabRentaMarche, tabRentaReg)
             Case Else
                 MsgBox("Erreur interne : numero de modèle incorrect dans ChoixSeuilFenetre", 16)
         End Select
 
-        'Affichage des AR dans une nouvelle feuille excel
-        ExcelDialogue.affichageAR(tabAREv)
     End Sub
 
 
@@ -115,39 +114,56 @@
     '***************************** Modèle des rentabilités moyennes *****************************
 
     'Estimation des AR à partir du modèle de la moyenne : K = R
+    'Premiere colonne de tabRentaEst et tabRentaEv : dates
     Public Sub modeleMoyenne(ByRef tabRentaEst(,) As Double, ByRef tabRentaEv(,) As Double, _
-                             ByRef tabAREst(,) As Double, ByRef tabAREv(,) As Double)
+                             ByRef tabAREst(,) As Double, ByRef tabAREv(,) As Double, _
+                             ByRef tabDateEst() As Integer, ByRef tabDateEv() As Integer)
 
         'On dimensionne les tableaux de AR
-        ReDim tabAREst(tabRentaEst.GetUpperBound(0), tabRentaEst.GetUpperBound(1))
-        ReDim tabAREv(tabRentaEv.GetUpperBound(0), tabRentaEv.GetUpperBound(1))
+        'On ne range pas les dates d'événement dans les tableaux de AR
+        ReDim tabAREst(tabRentaEst.GetUpperBound(0), tabRentaEst.GetUpperBound(1) - 1)
+        ReDim tabAREv(tabRentaEv.GetUpperBound(0), tabRentaEv.GetUpperBound(1) - 1)
+
+        'Et ceux de dates
+        ReDim tabDateEst(tabRentaEst.GetUpperBound(0))
+        ReDim tabDateEv(tabRentaEv.GetUpperBound(0))
+
+        'On range les dates dans les tableaux de dates
+        'Pour la période d'estimation
+        For indDate = 0 To tabRentaEst.GetUpperBound(0)
+            tabDateEst(indDate) = tabRentaEst(indDate, 0)
+        Next indDate
+        'Puis pour la période d'événement
+        For indDate = 0 To tabRentaEv.GetUpperBound(0)
+            tabDateEv(indDate) = tabRentaEv(indDate, 0)
+        Next indDate
 
         'Tableau des moyennes de chaque titre
-        Dim tabMoy(tabRentaEst.GetUpperBound(1)) As Double
+        Dim tabMoy(tabRentaEst.GetUpperBound(1) - 1) As Double
 
         'Calcul des moyennes sur la fenêtre d'estimation
-        For colonne = 0 To tabRentaEst.GetUpperBound(1)
+        For colonne = 1 To tabRentaEst.GetUpperBound(1)
             For i = 0 To tabRentaEst.GetUpperBound(0)
                 'S'il n'y avait pas de NA, on somme
                 If Not tabRentaEst(i, colonne) = -2146826246 Then
-                    tabMoy(colonne) = tabMoy(colonne) + tabRentaEst(i, colonne)
+                    tabMoy(colonne - 1) = tabMoy(colonne - 1) + tabRentaEst(i, colonne)
                 End If
             Next i
-            tabMoy(colonne) = tabMoy(colonne) / tabRentaEst.GetLength(0)
+            tabMoy(colonne - 1) = tabMoy(colonne - 1) / tabRentaEst.GetLength(0)
         Next colonne
 
         'Calcul des AR sur la fenêtre sur la fenêtre d'estimation
         'Variable pour savoir si des AR précédents sont manquants
         Dim prixPresent As Integer = 1
-        For colonne = 0 To tabRentaEst.GetUpperBound(1)
+        For colonne = 1 To tabRentaEst.GetUpperBound(1)
             For i = 0 To tabRentaEst.GetUpperBound(0)
                 If tabRentaEst(i, colonne) = -2146826246 Then
-                    tabAREst(i, colonne) = -2146826246
+                    tabAREst(i, colonne - 1) = -2146826246
                     prixPresent = prixPresent + 1
                 Else
                     'On divise la rentabilité par prixPresent pour se ramenner à un équivalent sur une période
                     'Puis on multiplie par cette même valeur pour avoir un AR correspondant au bon nombre de périodes
-                    tabAREst(i, colonne) = (tabRentaEst(i, colonne) / prixPresent - tabMoy(colonne)) * prixPresent
+                    tabAREst(i, colonne - 1) = (tabRentaEst(i, colonne) / prixPresent - tabMoy(colonne - 1)) * prixPresent
                     prixPresent = 1
                 End If
             Next i
@@ -156,15 +172,15 @@
         'Calcul des AR sur la fenêtre sur la fenêtre d'événement
         'Variable pour savoir si des AR précédents sont manquants
         prixPresent = 1
-        For colonne = 0 To tabRentaEv.GetUpperBound(1)
+        For colonne = 1 To tabRentaEv.GetUpperBound(1)
             For i = 0 To tabRentaEv.GetUpperBound(0)
                 If tabRentaEv(i, colonne) = -2146826246 Then
-                    tabAREv(i, colonne) = -2146826246
+                    tabAREv(i, colonne - 1) = -2146826246
                     prixPresent = prixPresent + 1
                 Else
                     'On divise la rentabilité par prixPresent pour se ramenner à un équivalent sur une période
                     'Puis on multiplie par cette même valeur pour avoir un AR correspondant au bon nombre de périodes
-                    tabAREv(i, colonne) = (tabRentaEv(i, colonne) / prixPresent - tabMoy(colonne)) * prixPresent
+                    tabAREv(i, colonne - 1) = (tabRentaEv(i, colonne) / prixPresent - tabMoy(colonne - 1)) * prixPresent
                     prixPresent = 1
                 End If
             Next i
