@@ -6,12 +6,14 @@ Imports Microsoft.Office.Interop
 
 Public Class Ruban
 
-    Public choixSeuilFenetre As ChoixSeuilFenetre
+    'Public choixSeuilFenetre As ChoixSeuilFenetre
+    Public selFenetres As SelectionFenetres
     Public paramAR As ParamAR
-    Public choixDatesEv As ChoixDatesEv
-    Public WithEvents seuilFenetreTaskPane As Microsoft.Office.Tools.CustomTaskPane
+    'Public choixDatesEv As ChoixDatesEv
+    Public selDatesEv As SelectionDatesEv
+    'Public WithEvents seuilFenetreTaskPane As Microsoft.Office.Tools.CustomTaskPane
     Public WithEvents paramARTaskPane As Microsoft.Office.Tools.CustomTaskPane
-    Public WithEvents datesEvTaskPane As Microsoft.Office.Tools.CustomTaskPane
+    'Public WithEvents datesEvTaskPane As Microsoft.Office.Tools.CustomTaskPane
 
 
     Public graphPVal As GraphiquePValeur
@@ -19,15 +21,16 @@ Public Class Ruban
     Private Sub Ruban_Load(ByVal sender As System.Object, ByVal e As RibbonUIEventArgs) Handles MyBase.Load
 
         'Initialisation du taskPane choixSeuilFenetre
-        choixSeuilFenetre = New ChoixSeuilFenetre(0, 0)
-        seuilFenetreTaskPane = Globals.ThisAddIn.CustomTaskPanes.Add(choixSeuilFenetre, "Choix des paramètres")
-        With seuilFenetreTaskPane
-            .DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionFloating
-            .Height = 500
-            .DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionRight
-            .Width = 300
-            .Visible = False
-        End With
+        'choixSeuilFenetre = New ChoixSeuilFenetre(0, 0)
+        'seuilFenetreTaskPane = Globals.ThisAddIn.CustomTaskPanes.Add(choixSeuilFenetre, "Choix des paramètres")
+        'With seuilFenetreTaskPane
+        '    .DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionFloating
+        '    .Height = 500
+        '    .DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionRight
+        '    .Width = 300
+        '    .Visible = False
+        'End With
+
         'Initialisation du taskPane paramAR
         paramAR = New ParamAR()
         paramARTaskPane = Globals.ThisAddIn.CustomTaskPanes.Add(paramAR, "Choix des paramètres")
@@ -39,15 +42,15 @@ Public Class Ruban
             .Visible = False
         End With
         'Initialisation du taskPane choixDatesEv
-        choixDatesEv = New ChoixDatesEv()
-        datesEvTaskPane = Globals.ThisAddIn.CustomTaskPanes.Add(choixDatesEv, "Choix des paramètres")
-        With datesEvTaskPane
-            .DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionFloating
-            .Height = 500
-            .DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionRight
-            .Width = 300
-            .Visible = False
-        End With
+        'choixDatesEv = New ChoixDatesEv()
+        'datesEvTaskPane = Globals.ThisAddIn.CustomTaskPanes.Add(choixDatesEv, "Choix des paramètres")
+        'With datesEvTaskPane
+        '    .DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionFloating
+        '    .Height = 500
+        '    .DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionRight
+        '    .Width = 300
+        '    .Visible = False
+        'End With
     End Sub
 
     Private Sub initialisationGraphPVal()
@@ -62,76 +65,111 @@ Public Class Ruban
         graphPVal.GraphiqueChart.ChartAreas(0).AxisY.MajorGrid.Enabled = False
     End Sub
 
+    Private Sub initSelFenetres(selFenetres As SelectionFenetres)
+        'Définition des options de refEdit
+        selDatesEv.datesEvRefEdit.IncludeSheetName = True
+        selDatesEv.datesEvRefEdit.ShowRowAbsoluteIndicator = False
+        selDatesEv.datesEvRefEdit.ShowColumnAbsoluteIndicator = False
+        selDatesEv.TopMost = True
+    End Sub
+
     Private Sub testSimpleR_Click(sender As Object, e As RibbonControlEventArgs) Handles testSimpleR.Click
         initialisationGraphPVal()
-        choixSeuilFenetre.modele = 0
-        choixSeuilFenetre.test = 0
-        choixSeuilFenetre.nomModel.Text = "Test simple - Modèle moyenne des rentabilités"
-        seuilFenetreTaskPane.Visible = True
+        selFenetres = New SelectionFenetres(0, 0)
+        initSelFenetres(selFenetres)
+        'selFenetres.modele = 0
+        'selFenetres.test = 0
+        selFenetres.nomModele.Text = "Test simple - Modèle moyenne des rentabilités"
+        'seuilFenetreTaskPane.Visible = True
+        selFenetres.Visible = True
     End Sub
 
     Private Sub TestPatellR_Click(sender As Object, e As RibbonControlEventArgs) Handles TestPatellR.Click
         initialisationGraphPVal()
-        choixSeuilFenetre.modele = 0
-        choixSeuilFenetre.test = 1
-        choixSeuilFenetre.nomModel.Text = "Test de Patell - Modèle moyenne des rentabilités"
-        seuilFenetreTaskPane.Visible = True
+        selFenetres = New SelectionFenetres(0, 1)
+        initSelFenetres(selFenetres)
+        'selFenetres.modele = 0
+        'selFenetres.test = 1
+        selFenetres.nomModele.Text = "Test de Patell - Modèle moyenne des rentabilités"
+        'seuilFenetreTaskPane.Visible = True
+        selFenetres.Visible = True
     End Sub
 
     Private Sub testSigneR_Click(sender As Object, e As RibbonControlEventArgs) Handles testSigneR.Click
         initialisationGraphPVal()
-        choixSeuilFenetre.modele = 0
-        choixSeuilFenetre.test = 2
-        choixSeuilFenetre.nomModel.Text = "Test de signe - Modèle moyenne des rentabilités"
-        seuilFenetreTaskPane.Visible = True
+        selFenetres = New SelectionFenetres(0, 2)
+        initSelFenetres(selFenetres)
+        'selFenetres.modele = 0
+        'selFenetres.test = 2
+        selFenetres.nomModele.Text = "Test de signe - Modèle moyenne des rentabilités"
+        'seuilFenetreTaskPane.Visible = True
+        selFenetres.Visible = True
     End Sub
 
     Private Sub testSimpleMS_Click(sender As Object, e As RibbonControlEventArgs) Handles testSimpleMS.Click
         initialisationGraphPVal()
-        choixSeuilFenetre.modele = 1
-        choixSeuilFenetre.test = 0
-        choixSeuilFenetre.nomModel.Text = "Test simple - Modèle de marché simplifié"
-        seuilFenetreTaskPane.Visible = True
+        selFenetres = New SelectionFenetres(1, 0)
+        initSelFenetres(selFenetres)
+        'selFenetres.modele = 1
+        'selFenetres.test = 0
+        selFenetres.nomModele.Text = "Test simple - Modèle de marché simplifié"
+        'seuilFenetreTaskPane.Visible = True
+        selFenetres.Visible = True
     End Sub
 
     Private Sub testPatellMS_Click(sender As Object, e As RibbonControlEventArgs) Handles testPatellMS.Click
         initialisationGraphPVal()
-        choixSeuilFenetre.modele = 1
-        choixSeuilFenetre.test = 1
-        choixSeuilFenetre.nomModel.Text = "Test de Patell - Modèle de marché simplifié"
-        seuilFenetreTaskPane.Visible = True
+        selFenetres = New SelectionFenetres(1, 1)
+        initSelFenetres(selFenetres)
+        'selFenetres.modele = 1
+        'selFenetres.test = 1
+        selFenetres.nomModele.Text = "Test de Patell - Modèle de marché simplifié"
+        'seuilFenetreTaskPane.Visible = True
+        selFenetres.Visible = True
     End Sub
 
     Private Sub testSigneMS_Click(sender As Object, e As RibbonControlEventArgs) Handles testSigneMS.Click
         initialisationGraphPVal()
-        choixSeuilFenetre.modele = 1
-        choixSeuilFenetre.test = 2
-        choixSeuilFenetre.nomModel.Text = "Test de signe - Modèle de marché simplifié"
-        seuilFenetreTaskPane.Visible = True
+        selFenetres = New SelectionFenetres(1, 2)
+        initSelFenetres(selFenetres)
+        'selFenetres.modele = 1
+        'selFenetres.test = 2
+        selFenetres.nomModele.Text = "Test de signe - Modèle de marché simplifié"
+        'seuilFenetreTaskPane.Visible = True
+        selFenetres.Visible = True
     End Sub
 
     Private Sub testSimpleM_Click(sender As Object, e As RibbonControlEventArgs) Handles testSimpleM.Click
         initialisationGraphPVal()
-        choixSeuilFenetre.modele = 2
-        choixSeuilFenetre.test = 0
-        choixSeuilFenetre.nomModel.Text = "Test simple - Modèle de marché classique"
-        seuilFenetreTaskPane.Visible = True
+        selFenetres = New SelectionFenetres(2, 0)
+        initSelFenetres(selFenetres)
+        'selFenetres.modele = 2
+        'selFenetres.test = 0
+        selFenetres.nomModele.Text = "Test simple - Modèle de marché classique"
+        'seuilFenetreTaskPane.Visible = True
+        selFenetres.Visible = True
     End Sub
 
     Private Sub testPatellM_Click(sender As Object, e As RibbonControlEventArgs) Handles testPatellM.Click
         initialisationGraphPVal()
-        choixSeuilFenetre.modele = 2
-        choixSeuilFenetre.test = 1
-        choixSeuilFenetre.nomModel.Text = "Test de Patell - Modèle de marché classique"
-        seuilFenetreTaskPane.Visible = True
+        selFenetres = New SelectionFenetres(2, 1)
+        initSelFenetres(selFenetres)
+        'selFenetres.modele = 2
+        'selFenetres.test = 1
+        selFenetres.nomModele.Text = "Test de Patell - Modèle de marché classique"
+        'seuilFenetreTaskPane.Visible = True
+        selFenetres.Visible = True
     End Sub
 
     Private Sub testSigneM_Click(sender As Object, e As RibbonControlEventArgs) Handles testSigneM.Click
         initialisationGraphPVal()
-        choixSeuilFenetre.modele = 2
-        choixSeuilFenetre.test = 2
-        choixSeuilFenetre.nomModel.Text = "Test de signe - Modèle de marché classique"
-        seuilFenetreTaskPane.Visible = True
+        selFenetres = New SelectionFenetres(2, 2)
+        initSelFenetres(selFenetres)
+        'selFenetres.modele = 2
+        'selFenetres.test = 2
+        selFenetres.nomModele.Text = "Test de signe - Modèle de marché classique"
+        'seuilFenetreTaskPane.Visible = True
+        selFenetres.Visible = True
     End Sub
 
     Private Sub ARparam_Click(sender As Object, e As RibbonControlEventArgs) Handles ARparam.Click
@@ -139,59 +177,69 @@ Public Class Ruban
     End Sub
 
     Private Sub preTraitPrix_Click(sender As Object, e As RibbonControlEventArgs) Handles preTraitPrix.Click
-        choixDatesEv.donneesPreTraitement = 0
-        datesEvTaskPane.Visible = True
 
-        Dim excelApp As Excel.Application = Nothing
+        selDatesEv = New SelectionDatesEv(0)
 
-        ' Create an Excel App
-        Try
-            excelApp = Marshal.GetActiveObject("Excel.Application")
-        Catch ex As COMException
-            ' An exception is thrown if there is not an open excel instance.                    
-        Finally
-            If excelApp Is Nothing Then
-                'excelApp = New Application
-                excelApp.Workbooks.Add()
-            End If
-            excelApp.Visible = True
+        'Définition des options de refEdit
+        selDatesEv.datesEvRefEdit.IncludeSheetName = True
+        selDatesEv.datesEvRefEdit.ShowRowAbsoluteIndicator = False
+        selDatesEv.datesEvRefEdit.ShowColumnAbsoluteIndicator = False
+        selDatesEv.TopMost = True
+        selDatesEv.Visible = True
 
-            choixDatesEv.datesEv.ExcelConnector = excelApp
-        End Try
+        'choixDatesEv.donneesPreTraitement = 0
+        'datesEvTaskPane.Visible = True
 
-        choixDatesEv.datesEv.Focus()
-        'définition des options de refEdit
-        choixDatesEv.datesEv.IncludeSheetName = True
-        choixDatesEv.datesEv.ShowRowAbsoluteIndicator = False
-        choixDatesEv.datesEv.ShowColumnAbsoluteIndicator = False
+        'Dim excelApp As Excel.Application = Nothing
+
+        '' Create an Excel App
+        'Try
+        '    excelApp = Marshal.GetActiveObject("Excel.Application")
+        'Catch ex As COMException
+        '    ' An exception is thrown if there is not an open excel instance.                    
+        'Finally
+        '    If excelApp Is Nothing Then
+        '        'excelApp = New Application
+        '        excelApp.Workbooks.Add()
+        '    End If
+        '    excelApp.Visible = True
+
+        '    choixDatesEv.datesEv.ExcelConnector = excelApp
+        'End Try
+
+        'choixDatesEv.datesEv.Focus()
+        ''définition des options de refEdit
+        'choixDatesEv.datesEv.IncludeSheetName = True
+        'choixDatesEv.datesEv.ShowRowAbsoluteIndicator = False
+        'choixDatesEv.datesEv.ShowColumnAbsoluteIndicator = False
     End Sub
 
     Private Sub preTraitRenta_Click(sender As Object, e As RibbonControlEventArgs) Handles preTraitRenta.Click
-        choixDatesEv.donneesPreTraitement = 1
-        datesEvTaskPane.Visible = True
+        'choixDatesEv.donneesPreTraitement = 1
+        'datesEvTaskPane.Visible = True
 
-        Dim excelApp As Excel.Application = Nothing
+        'Dim excelApp As Excel.Application = Nothing
 
-        ' Create an Excel App
-        Try
-            excelApp = Marshal.GetActiveObject("Excel.Application")
-        Catch ex As COMException
-            ' An exception is thrown if there is not an open excel instance.                    
-        Finally
-            If excelApp Is Nothing Then
-                'excelApp = New Application
-                excelApp.Workbooks.Add()
-            End If
-            excelApp.Visible = True
+        '' Create an Excel App
+        'Try
+        '    excelApp = Marshal.GetActiveObject("Excel.Application")
+        'Catch ex As COMException
+        '    ' An exception is thrown if there is not an open excel instance.                    
+        'Finally
+        '    If excelApp Is Nothing Then
+        '        'excelApp = New Application
+        '        excelApp.Workbooks.Add()
+        '    End If
+        '    excelApp.Visible = True
 
-            choixDatesEv.datesEv.ExcelConnector = excelApp
-        End Try
+        '    choixDatesEv.datesEv.ExcelConnector = excelApp
+        'End Try
 
-        choixDatesEv.datesEv.Focus()
-        'définition des options de refEdit
-        choixDatesEv.datesEv.IncludeSheetName = True
-        choixDatesEv.datesEv.ShowRowAbsoluteIndicator = False
-        choixDatesEv.datesEv.ShowColumnAbsoluteIndicator = False
+        'choixDatesEv.datesEv.Focus()
+        ''définition des options de refEdit
+        'choixDatesEv.datesEv.IncludeSheetName = True
+        'choixDatesEv.datesEv.ShowRowAbsoluteIndicator = False
+        'choixDatesEv.datesEv.ShowColumnAbsoluteIndicator = False
     End Sub
 
     Private Sub BoutonTest_Click(sender As Object, e As RibbonControlEventArgs) Handles BoutonTest.Click

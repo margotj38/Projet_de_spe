@@ -29,7 +29,7 @@ Public Class ChoixDatesEv
         'On récupère la plage des dates et la feuille sur laquelle elle est
         Dim plage As String = ""
         Dim feuille As String = ""
-        PretraitementPrix.recupererFeuillePlage(Me.datesEv.Address, feuille, plage)
+        Utilitaires.recupererFeuillePlage(Me.datesEv.Address, feuille, plage)
 
         Select Case donneesPreTraitement
             Case 0
@@ -42,7 +42,7 @@ Public Class ChoixDatesEv
                 'On calcule les rentabilités
                 Dim tabRenta(tabPrixCentres.GetUpperBound(0) - 1, tabPrixCentres.GetUpperBound(1)) As Double
                 Dim tabRentaMarche(tabMarcheCentre.GetUpperBound(0) - 1, tabMarcheCentre.GetUpperBound(1)) As Double
-                PretraitementPrix.calculTabRenta(tabPrixCentres, tabMarcheCentre, tabRenta, tabRentaMarche)
+                UtilitaireRentabilites.calculTabRenta(tabPrixCentres, tabMarcheCentre, tabRenta, tabRentaMarche)
 
                 'On affiche ces rentabilités centrées
                 ExcelDialogue.affichageRentaCentrees(tabRenta)

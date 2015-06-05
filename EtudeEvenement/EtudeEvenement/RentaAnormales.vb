@@ -1,38 +1,18 @@
 ﻿Module RentaAnormales
 
-    Public Function calculARAvecNA(fenetreEstDebut As Integer, fenetreEstFin As Integer, _
-                                       fenetreEvDebut As Integer, fenetreEvFin As Integer) As Double(,)
-        'On sélectionne la feuille contenant les cours
-        Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("prixCentres"), Excel.Worksheet)
-        Dim nbLignes As Integer = currentSheet.UsedRange.Rows.Count
-        Dim nbColonnes As Integer = currentSheet.UsedRange.Columns.Count
-
-        'Premier passage : on range les rentabilités dans deux tableaux (tabRenta et tabRentaMarche)
-        Dim tabRenta(nbLignes - 3, nbColonnes - 2) As Double
-        Dim tabRentaMarche(nbLignes - 3, nbColonnes - 2) As Double
-        Dim maxPrixAbsent As Integer
-        '''''''''''''''Comenté pour debug
-        'PretraitementPrix.constructionTableauRenta(nbLignes, nbColonnes, maxPrixAbsent, tabRenta, tabRentaMarche)
-
-        'On calcule maintenant les AR
-        Dim tailleComplete As Integer = fenetreEstFin - fenetreEstDebut + 1 + fenetreEvFin - fenetreEvDebut + 1
-        calculARAvecNA = calculAR(tailleComplete, maxPrixAbsent, fenetreEstDebut, fenetreEstFin, fenetreEvDebut, fenetreEvFin, _
-                                  currentSheet.Cells(2, 1).Value + 1, tabRenta, tabRentaMarche)
-    End Function
-
     'Calcule les AR avec le modèle considéré
     Public Function calculAR(tailleComplete As Integer, maxPrixAbsent As Integer, fenetreEstDebut As Integer, _
                              fenetreEstFin As Integer, fenetreEvDebut As Integer, fenetreEvFin As Integer, premiereDate As Integer, Optional tabRenta(,) As Double = Nothing, Optional tabRentaMarche(,) As Double = Nothing) As Double(,)
         Dim tabAR(,) As Double
         'appelle une fonction pour chaque modèle
-        Select Case Globals.Ribbons.Ruban.choixSeuilFenetre.modele
+        Select Case Globals.Ribbons.Ruban.selFenetres.modele
             Case 0
                 tabAR = modeleMoyenne(tailleComplete, premiereDate, fenetreEstDebut, fenetreEstFin, tabRenta)
             Case 1
                 tabAR = modeleMarcheSimple()
             Case 2
                 'Création des tableaux pour pouvoir les X et Y de la régression
-                Dim tabRentaReg(,,)() = PretraitementPrix.constructionTableauxNA(maxPrixAbsent, fenetreEstDebut, fenetreEstFin, tabRenta, tabRentaMarche)
+                Dim tabRentaReg(,,)() = UtilitaireRentabilites.constructionTableauxNA(maxPrixAbsent, fenetreEstDebut, fenetreEstFin, tabRenta, tabRentaMarche)
                 tabAR = modeleMarche(tailleComplete, premiereDate, fenetreEstDebut, fenetreEstFin, tabRenta, tabRentaMarche, tabRentaReg)
             Case Else
                 MsgBox("Erreur interne : numero de modèle incorrect dans ChoixSeuilFenetre", 16)
