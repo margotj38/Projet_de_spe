@@ -73,6 +73,8 @@ Module ExcelDialogue
 
 
         'A FAIRE : affichage résultats
+
+        'La création d'une nouvelle feuille
         Dim nom As String
         nom = InputBox("Entrer Le nom de la feuille des résultats de l'étude d'événements: ")
         'Si l'utilisateur n'entre pas un nom
@@ -80,16 +82,16 @@ Module ExcelDialogue
         Globals.ThisAddIn.Application.Sheets.Add(After:=Globals.ThisAddIn.Application.Worksheets(Globals.ThisAddIn.Application.Worksheets.Count))
         Globals.ThisAddIn.Application.ActiveSheet.Name = nom
 
-        nomColonne(Globals.ThisAddIn.Application.Worksheets(nom).Range("B1"), "Moyenne")
-        nomColonne(Globals.ThisAddIn.Application.Worksheets(nom).Range("C1"), "Ecart-type")
-        nomColonne(Globals.ThisAddIn.Application.Worksheets(nom).Range("D1"), "T-test")
-        nomColonne(Globals.ThisAddIn.Application.Worksheets(nom).Range("E1"), "P-valeur (%)")
-
+        'Le nom de chaque colonne
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("B1"), "Moyenne")
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("C1"), "Ecart-type")
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("D1"), "T-test")
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("E1"), "P-valeur (%)")
 
         Dim j As Integer
         j = 2
         For Each var_Rge In dates
-            nomColonne(Globals.ThisAddIn.Application.Worksheets(nom).Range("A" & j), "AR(" & var_Rge.value & ")")
+            nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("A" & j), "AR(" & var_Rge.value & ")")
             j = j + 1
         Next var_Rge
 
@@ -97,49 +99,76 @@ Module ExcelDialogue
         For i = 0 To tailleFenetreEv - 1
             j = i + 2
             'La colonne des moyennes
-            Globals.ThisAddIn.Application.Worksheets(nom).Range("B" & j).Value = tabMoyAR(i)
-            Globals.ThisAddIn.Application.Worksheets(nom).Range("B" & j).Borders.Value = 1
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("B" & j), tabMoyAR(i))
 
             'La colonne des écart-types
-            Globals.ThisAddIn.Application.Worksheets(nom).Range("C" & j).Value = tabEcartAR(i)
-            Globals.ThisAddIn.Application.Worksheets(nom).Range("C" & j).Borders.Value = 1
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("C" & j), tabEcartAR(i))
 
             'La statistique du test
             Dim stat As Double = Math.Abs(Math.Sqrt(N) * tabMoyAR(i) / tabEcartAR(i))
-            Globals.ThisAddIn.Application.Worksheets(nom).Range("D" & j).Value = stat
-            Globals.ThisAddIn.Application.Worksheets(nom).Range("D" & j).Borders.Value = 1
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("D" & j), stat)
 
             'La colonne des p-valeurs
             'A Décommenter après
             Dim pValeur As Double = Globals.ThisAddIn.Application.WorksheetFunction.T_Dist_2T(stat, N - 1)
-            Globals.ThisAddIn.Application.Worksheets(nom).Range("E" & j).Value = pValeur * 100
-            Globals.ThisAddIn.Application.Worksheets(nom).Range("E" & j).Borders.Value = 1
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("E" & j), pValeur * 100)
             'La signification du test
             Globals.ThisAddIn.Application.Worksheets(nom).Range("F" & j).Value = signification(pValeur)
         Next i
 
         '************************ Tableau de résultats des CAR
-        nomColonne(Globals.ThisAddIn.Application.Worksheets(nom).Range("B" & tailleFenetreEv + 4), "Moyenne")
-        nomColonne(Globals.ThisAddIn.Application.Worksheets(nom).Range("C" & tailleFenetreEv + 4), "Ecart-type")
-        nomColonne(Globals.ThisAddIn.Application.Worksheets(nom).Range("D" & tailleFenetreEv + 4), "T-test")
-        nomColonne(Globals.ThisAddIn.Application.Worksheets(nom).Range("E" & tailleFenetreEv + 4), "P-valeur (%)")
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("B" & tailleFenetreEv + 4), "Moyenne")
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("C" & tailleFenetreEv + 4), "Ecart-type")
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("D" & tailleFenetreEv + 4), "T-test")
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("E" & tailleFenetreEv + 4), "P-valeur (%)")
 
         j = tailleFenetreEv + 5
         For Each var_Rge In dates
-            nomColonne(Globals.ThisAddIn.Application.Worksheets(nom).Range("A" & j), "CAR(" & var_Rge.value & ")")
+            nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("A" & j), "CAR(" & var_Rge.value & ")")
             j = j + 1
         Next var_Rge
 
+
+        'Remplissage des tableaux :moyenne, variance
+        Dim tabCAR(,) As Double = RentaAnormales.CalculCar(tabEvAR)
+        Dim tabMoyCar() As Double = RentaAnormales.calculMoyenneCar(tabCAR)
+        Dim tabVarCar() As Double = RentaAnormales.calculVarianceCar(tabCAR, tabMoyCar)
+
+        For i = 0 To tailleFenetreEv - 1
+            j = i + tailleFenetreEv + 5
+            'La colonne des moyennes
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("B" & j), tabMoyCar(i))
+
+            'La colonne des écart-types
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("C" & j), Math.Sqrt(tabVarCar(i)))
+
+            'La statistique du test
+            Dim stat As Double = Math.Abs(Math.Sqrt(N) * tabMoyCar(i) / Math.Sqrt(tabVarCar(i)))
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("D" & j), stat)
+
+            'La colonne des p-valeurs
+            Dim pValeur As Double = Globals.ThisAddIn.Application.WorksheetFunction.T_Dist_2T(stat, N - 1)
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("E" & j), pValeur * 100)
+            'La signification du test
+            Globals.ThisAddIn.Application.Worksheets(nom).Range("F" & j).Value = signification(pValeur)
+        Next i
     End Sub
 
-
-    Private Sub nomColonne(r As Excel.Range, Valeur As String)
+    'Associe un nom à une cellule avec une mise en forme
+    Private Sub nomCellule(r As Excel.Range, Valeur As String)
         r.Value = Valeur
         r.Font.Bold = True
         r.Borders.Value = 1
         r.Interior.ColorIndex = 27
     End Sub
 
+    'Associe une valeur à une cellule avec des bordures sur le tableau
+    Private Sub valeurCellule(r As Excel.Range, valeur As Double)
+        r.Value = valeur
+        r.Borders.Value = 1
+    End Sub
+
+    'Renvoie une chaine de caractère qui indique la signification d'un test
     Function signification(seuil As Double) As String
         Dim signifi As String
         Select Case seuil
@@ -186,7 +215,5 @@ Module ExcelDialogue
             Next i
         Next colonne
     End Sub
-
-
 
 End Module
