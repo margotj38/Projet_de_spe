@@ -190,7 +190,7 @@ Public Class Ruban
         selDatesEv.datesEvRefEdit.ShowColumnAbsoluteIndicator = False
         selDatesEv.TopMost = True
         selDatesEv.Visible = True
-
+        selDatesEv.nomFeuilleBox.Text = "Prix"
     End Sub
 
     Private Sub preTraitRenta_Click(sender As Object, e As RibbonControlEventArgs) Handles preTraitRenta.Click
@@ -202,6 +202,7 @@ Public Class Ruban
         selDatesEv.datesEvRefEdit.ShowColumnAbsoluteIndicator = False
         selDatesEv.TopMost = True
         selDatesEv.Visible = True
+        selDatesEv.nomFeuilleBox.Text = "Rent"
     End Sub
 
     Private Sub BoutonTest_Click(sender As Object, e As RibbonControlEventArgs) Handles BoutonTest.Click

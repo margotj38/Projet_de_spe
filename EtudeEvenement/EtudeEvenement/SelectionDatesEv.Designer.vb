@@ -26,12 +26,14 @@ Partial Class SelectionDatesEv
         Me.LabelDatesEv = New System.Windows.Forms.Label()
         Me.lancementPreT = New System.Windows.Forms.Button()
         Me.datesEvRefEdit = New LeafCreations.Excel2007RefEdit()
+        Me.nomFeuilleBox = New System.Windows.Forms.TextBox()
+        Me.LabelFeuille = New System.Windows.Forms.Label()
         Me.SuspendLayout()
         '
         'LabelDatesEv
         '
         Me.LabelDatesEv.AutoSize = True
-        Me.LabelDatesEv.Location = New System.Drawing.Point(12, 40)
+        Me.LabelDatesEv.Location = New System.Drawing.Point(23, 28)
         Me.LabelDatesEv.Name = "LabelDatesEv"
         Me.LabelDatesEv.Size = New System.Drawing.Size(211, 13)
         Me.LabelDatesEv.TabIndex = 1
@@ -39,7 +41,7 @@ Partial Class SelectionDatesEv
         '
         'lancementPreT
         '
-        Me.lancementPreT.Location = New System.Drawing.Point(95, 134)
+        Me.lancementPreT.Location = New System.Drawing.Point(107, 216)
         Me.lancementPreT.Name = "lancementPreT"
         Me.lancementPreT.Size = New System.Drawing.Size(88, 58)
         Me.lancementPreT.TabIndex = 3
@@ -53,17 +55,35 @@ Partial Class SelectionDatesEv
         Me.datesEvRefEdit.ExcelConnector = Nothing
         Me.datesEvRefEdit.ImageMaximized = CType(resources.GetObject("datesEvRefEdit.ImageMaximized"), System.Drawing.Image)
         Me.datesEvRefEdit.ImageMinimized = CType(resources.GetObject("datesEvRefEdit.ImageMinimized"), System.Drawing.Image)
-        Me.datesEvRefEdit.Location = New System.Drawing.Point(49, 81)
+        Me.datesEvRefEdit.Location = New System.Drawing.Point(39, 64)
         Me.datesEvRefEdit.Name = "datesEvRefEdit"
         Me.datesEvRefEdit.RefEditFont = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.datesEvRefEdit.Size = New System.Drawing.Size(195, 26)
         Me.datesEvRefEdit.TabIndex = 0
         '
+        'nomFeuilleBox
+        '
+        Me.nomFeuilleBox.Location = New System.Drawing.Point(39, 162)
+        Me.nomFeuilleBox.Name = "nomFeuilleBox"
+        Me.nomFeuilleBox.Size = New System.Drawing.Size(137, 20)
+        Me.nomFeuilleBox.TabIndex = 4
+        '
+        'LabelFeuille
+        '
+        Me.LabelFeuille.AutoSize = True
+        Me.LabelFeuille.Location = New System.Drawing.Point(23, 123)
+        Me.LabelFeuille.Name = "LabelFeuille"
+        Me.LabelFeuille.Size = New System.Drawing.Size(196, 13)
+        Me.LabelFeuille.TabIndex = 5
+        Me.LabelFeuille.Text = "Nom de la feuille où trouver les données"
+        '
         'SelectionDatesEv
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(286, 229)
+        Me.ClientSize = New System.Drawing.Size(308, 295)
+        Me.Controls.Add(Me.LabelFeuille)
+        Me.Controls.Add(Me.nomFeuilleBox)
         Me.Controls.Add(Me.lancementPreT)
         Me.Controls.Add(Me.LabelDatesEv)
         Me.Controls.Add(Me.datesEvRefEdit)
@@ -76,4 +96,6 @@ Partial Class SelectionDatesEv
     Friend WithEvents datesEvRefEdit As LeafCreations.Excel2007RefEdit
     Friend WithEvents LabelDatesEv As System.Windows.Forms.Label
     Friend WithEvents lancementPreT As System.Windows.Forms.Button
+    Friend WithEvents nomFeuilleBox As System.Windows.Forms.TextBox
+    Friend WithEvents LabelFeuille As System.Windows.Forms.Label
 End Class
