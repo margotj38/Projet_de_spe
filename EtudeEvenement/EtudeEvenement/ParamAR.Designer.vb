@@ -22,20 +22,14 @@ Partial Class ParamAR
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Me.plageEstBox = New System.Windows.Forms.TextBox()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(ParamAR))
         Me.Label1 = New System.Windows.Forms.Label()
         Me.nomModel = New System.Windows.Forms.Label()
         Me.LancementEtEv = New System.Windows.Forms.Button()
-        Me.plageEvBox = New System.Windows.Forms.TextBox()
         Me.FenetreText = New System.Windows.Forms.Label()
+        Me.estimation = New LeafCreations.Excel2007RefEdit()
+        Me.evenement = New LeafCreations.Excel2007RefEdit()
         Me.SuspendLayout()
-        '
-        'plageEstBox
-        '
-        Me.plageEstBox.Location = New System.Drawing.Point(26, 108)
-        Me.plageEstBox.Name = "plageEstBox"
-        Me.plageEstBox.Size = New System.Drawing.Size(100, 20)
-        Me.plageEstBox.TabIndex = 23
         '
         'Label1
         '
@@ -58,50 +52,69 @@ Partial Class ParamAR
         '
         'LancementEtEv
         '
-        Me.LancementEtEv.Location = New System.Drawing.Point(96, 168)
+        Me.LancementEtEv.Location = New System.Drawing.Point(63, 227)
         Me.LancementEtEv.Name = "LancementEtEv"
         Me.LancementEtEv.Size = New System.Drawing.Size(111, 23)
         Me.LancementEtEv.TabIndex = 20
         Me.LancementEtEv.Text = "Lancement"
         Me.LancementEtEv.UseVisualStyleBackColor = True
         '
-        'plageEvBox
-        '
-        Me.plageEvBox.Location = New System.Drawing.Point(177, 111)
-        Me.plageEvBox.Name = "plageEvBox"
-        Me.plageEvBox.Size = New System.Drawing.Size(100, 20)
-        Me.plageEvBox.TabIndex = 19
-        '
         'FenetreText
         '
         Me.FenetreText.AutoSize = True
-        Me.FenetreText.Location = New System.Drawing.Point(174, 79)
+        Me.FenetreText.Location = New System.Drawing.Point(25, 147)
         Me.FenetreText.Name = "FenetreText"
         Me.FenetreText.Size = New System.Drawing.Size(98, 13)
         Me.FenetreText.TabIndex = 17
         Me.FenetreText.Text = "Plage d'événement"
         '
+        'estimation
+        '
+        Me.estimation.Address = Nothing
+        Me.estimation.BackColor = System.Drawing.Color.Transparent
+        Me.estimation.ExcelConnector = Nothing
+        Me.estimation.ImageMaximized = CType(resources.GetObject("estimation.ImageMaximized"), System.Drawing.Image)
+        Me.estimation.ImageMinimized = CType(resources.GetObject("estimation.ImageMinimized"), System.Drawing.Image)
+        Me.estimation.Location = New System.Drawing.Point(26, 95)
+        Me.estimation.Name = "estimation"
+        Me.estimation.RefEditFont = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.estimation.Size = New System.Drawing.Size(195, 26)
+        Me.estimation.TabIndex = 24
+        '
+        'evenement
+        '
+        Me.evenement.Address = Nothing
+        Me.evenement.BackColor = System.Drawing.Color.Transparent
+        Me.evenement.ExcelConnector = Nothing
+        Me.evenement.ImageMaximized = CType(resources.GetObject("evenement.ImageMaximized"), System.Drawing.Image)
+        Me.evenement.ImageMinimized = CType(resources.GetObject("evenement.ImageMinimized"), System.Drawing.Image)
+        Me.evenement.Location = New System.Drawing.Point(26, 163)
+        Me.evenement.Name = "evenement"
+        Me.evenement.RefEditFont = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.evenement.Size = New System.Drawing.Size(195, 26)
+        Me.evenement.TabIndex = 25
+        '
         'ParamAR
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.Controls.Add(Me.plageEstBox)
+        Me.Controls.Add(Me.evenement)
+        Me.Controls.Add(Me.estimation)
         Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.nomModel)
         Me.Controls.Add(Me.LancementEtEv)
-        Me.Controls.Add(Me.plageEvBox)
         Me.Controls.Add(Me.FenetreText)
         Me.Name = "ParamAR"
-        Me.Size = New System.Drawing.Size(322, 341)
+        Me.Size = New System.Drawing.Size(309, 341)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
     End Sub
-    Friend WithEvents plageEstBox As System.Windows.Forms.TextBox
     Friend WithEvents Label1 As System.Windows.Forms.Label
     Friend WithEvents nomModel As System.Windows.Forms.Label
     Friend WithEvents LancementEtEv As System.Windows.Forms.Button
-    Friend WithEvents plageEvBox As System.Windows.Forms.TextBox
     Friend WithEvents FenetreText As System.Windows.Forms.Label
+    Friend WithEvents estimation As LeafCreations.Excel2007RefEdit
+    Friend WithEvents evenement As LeafCreations.Excel2007RefEdit
 
 End Class
