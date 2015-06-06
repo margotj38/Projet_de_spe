@@ -14,6 +14,7 @@
             Case 2
                 'Création des tableaux pour pouvoir les X et Y de la régression
                 Dim tabRentaReg(,,)() = UtilitaireRentabilites.constructionTableauxReg(UtilitaireRentabilites.maxPrixAbs, tabRentaEst, tabRentaMarcheEst)
+                MsgBox("ok1")
                 modeleMarche(tabRentaEst, tabRentaEv, tabRentaReg, tabRentaMarcheEst, tabRentaMarcheEv, tabAREst, tabAREv, tabDateEst, tabDateEv)
             Case Else
                 MsgBox("Erreur interne : numero de modèle incorrect dans ChoixSeuilFenetre", 16)
@@ -58,17 +59,17 @@
         Dim alpha As Double = 0
         Dim beta As Double = 0
         'tableau des AR
-
+        MsgBox("ok2")
         'pour chaque entreprise...
-        For colonne = 0 To tabRentaReg.GetUpperBound(0)
+        For colonne = 1 To tabRentaReg.GetUpperBound(0)
             'nombre de rentabilités totale (sans NA)
             Dim nbRent As Integer = 0
             'pour chaque tableau
             For reg = 0 To nbReg - 1
-                If Not tabRentaReg(colonne, reg, 0).GetLength(0) = 0 Then
+                If Not tabRentaReg(colonne - 1, reg, 0).GetLength(0) = 0 Then
                     'extraction des Rt
-                    Dim Y() As Double = tabRentaReg(colonne, reg, 0)
-                    Dim X() As Double = tabRentaReg(colonne, reg, 1)
+                    Dim Y() As Double = tabRentaReg(colonne - 1, reg, 0)
+                    Dim X() As Double = tabRentaReg(colonne - 1, reg, 1)
                     'Dim Y(rentaEst(reg, colonne).GetUpperBound(1)) As Double
                     'Dim X(rentaEst(reg, colonne).GetUpperBound(1)) As Double
                     'For t = 0 To rentaEst(reg, colonne).GetUpperBound(1)
@@ -80,9 +81,9 @@
                     a(reg) = Globals.ThisAddIn.Application.WorksheetFunction.Index(Globals.ThisAddIn.Application.WorksheetFunction.LinEst(Y, X), 2) / (reg + 1)
                     b(reg) = Globals.ThisAddIn.Application.WorksheetFunction.Index(Globals.ThisAddIn.Application.WorksheetFunction.LinEst(Y, X), 1) / (reg + 1)
                     'somme pondérée
-                    alpha = alpha + a(reg) * tabRentaReg(colonne, reg, 1).GetLength(0)
-                    beta = beta + b(reg) * tabRentaReg(colonne, reg, 1).GetLength(0)
-                    nbRent = nbRent + tabRentaReg(colonne, reg, 1).GetLength(0)
+                    alpha = alpha + a(reg) * tabRentaReg(colonne - 1, reg, 1).GetLength(0)
+                    beta = beta + b(reg) * tabRentaReg(colonne - 1, reg, 1).GetLength(0)
+                    nbRent = nbRent + tabRentaReg(colonne - 1, reg, 1).GetLength(0)
                 End If
             Next
             'moyenne pondérée
@@ -94,10 +95,10 @@
             'Dim prixPresent As Integer = 1
             For i = 0 To tabRentaEst.GetUpperBound(0)
                 If tabRentaEst(i, colonne) = -2146826246 Then
-                    tabAREst(i, colonne) = -2146826246
+                    tabAREst(i, colonne - 1) = -2146826246
                     'prixPresent = prixPresent + 1
                 Else
-                    tabAREst(i, colonne) = (tabRentaEst(i, colonne) - (alpha + beta * tabRentaMarcheEst(i, colonne))) '* prixPresent
+                    tabAREst(i, colonne - 1) = (tabRentaEst(i, colonne) - (alpha + beta * tabRentaMarcheEst(i, colonne))) '* prixPresent
                     'prixPresent = 1
                 End If
             Next i
@@ -107,10 +108,10 @@
             'Dim prixPresent As Integer = 1
             For i = 0 To tabRentaEv.GetUpperBound(0)
                 If tabRentaEv(i, colonne) = -2146826246 Then
-                    tabAREv(i, colonne) = -2146826246
+                    tabAREv(i, colonne - 1) = -2146826246
                     'prixPresent = prixPresent + 1
                 Else
-                    tabAREv(i, colonne) = (tabRentaEv(i, colonne) - (alpha + beta * tabRentaMarcheEv(i, colonne))) '* prixPresent
+                    tabAREv(i, colonne - 1) = (tabRentaEv(i, colonne) - (alpha + beta * tabRentaMarcheEv(i, colonne))) '* prixPresent
                     'prixPresent = 1
                 End If
             Next i
