@@ -14,7 +14,7 @@
             Case 2
                 'Création des tableaux pour pouvoir les X et Y de la régression
                 Dim tabRentaReg(,,)() = UtilitaireRentabilites.constructionTableauxReg(UtilitaireRentabilites.maxPrixAbs, tabRentaEst, tabRentaMarcheEst)
-                'tabAR = modeleMarche(tailleComplete, premiereDate, fenetreEstDebut, fenetreEstFin, tabRenta, tabRentaMarche, tabRentaReg)
+                modeleMarche(tabRentaEst, tabRentaEv, tabRentaReg, tabRentaMarcheEst, tabRentaMarcheEv, tabAREst, tabAREv, tabDateEst, tabDateEv)
             Case Else
                 MsgBox("Erreur interne : numero de modèle incorrect dans ChoixSeuilFenetre", 16)
         End Select
@@ -25,10 +25,30 @@
     '***************************** Modèle de marché *****************************
 
     'Estimation des AR à partir du modèle de marché : K = alpha + beta*Rm
-    Public Function modeleMarche(tailleFenetre As Integer, premiereDate As Integer, fenetreEstDebut As Integer, fenetreEstFin As Integer, ByRef tabRenta(,) As Double, ByRef tabRentaMarche(,) As Double, ByRef tabRentaReg(,,)() As Double) As Double(,)
-        'Indices de la fenêtre d'estimation dans le tableau tabRenta
-        Dim indFenetreEstDeb As Integer = fenetreEstDebut - premiereDate
-        Dim indFenetreEstFin As Integer = fenetreEstFin - premiereDate
+    'Premiere colonne de tabRentaEst et tabRentaEv : dates
+    Public Sub modeleMarche(ByRef tabRentaEst(,) As Double, ByRef tabRentaEv(,) As Double, ByRef tabRentaReg(,,)() As Double, _
+                             ByRef tabRentaMarcheEst(,) As Double, ByRef tabRentaMarcheEv(,) As Double, ByRef tabAREst(,) As Double, _
+                             ByRef tabAREv(,) As Double, ByRef tabDateEst() As Integer, ByRef tabDateEv() As Integer)
+
+        'On dimensionne les tableaux de AR
+        'On ne range pas les dates d'événement dans les tableaux de AR
+        ReDim tabAREst(tabRentaEst.GetUpperBound(0), tabRentaEst.GetUpperBound(1) - 1)
+        ReDim tabAREv(tabRentaEv.GetUpperBound(0), tabRentaEv.GetUpperBound(1) - 1)
+
+        'Et ceux de dates
+        ReDim tabDateEst(tabRentaEst.GetUpperBound(0))
+        ReDim tabDateEv(tabRentaEv.GetUpperBound(0))
+
+        'On range les dates dans les tableaux de dates
+        'Pour la période d'estimation
+        For indDate = 0 To tabRentaEst.GetUpperBound(0)
+            tabDateEst(indDate) = tabRentaEst(indDate, 0)
+        Next indDate
+        'Puis pour la période d'événement
+        For indDate = 0 To tabRentaEv.GetUpperBound(0)
+            tabDateEv(indDate) = tabRentaEv(indDate, 0)
+        Next indDate
+
         'nombre de différentes régressions
         Dim nbReg = tabRentaReg.GetLength(1)
         'déclaration des tableaux contenant les alpha et beta de la régression
@@ -38,7 +58,6 @@
         Dim alpha As Double = 0
         Dim beta As Double = 0
         'tableau des AR
-        Dim tabAR(tabRenta.GetUpperBound(0), tabRenta.GetUpperBound(1)) As Double
 
         'pour chaque entreprise...
         For colonne = 0 To tabRentaReg.GetUpperBound(0)
@@ -70,21 +89,33 @@
             alpha = alpha / nbRent
             beta = beta / nbRent
 
-            'remplissage des AR
+            'remplissage des AR sur la fenetre d'estimation
             'Variable pour savoir si des AR précédents sont manquants
-            Dim prixPresent As Integer = 1
-            For i = 0 To tabRenta.GetUpperBound(0)
-                If tabRenta(i, colonne) = -2146826246 Then
-                    tabAR(i, colonne) = -2146826246
-                    prixPresent = prixPresent + 1
+            'Dim prixPresent As Integer = 1
+            For i = 0 To tabRentaEst.GetUpperBound(0)
+                If tabRentaEst(i, colonne) = -2146826246 Then
+                    tabAREst(i, colonne) = -2146826246
+                    'prixPresent = prixPresent + 1
                 Else
-                    tabAR(i, colonne) = (tabRenta(i, colonne) - (alpha + beta * tabRentaMarche(i, colonne))) * prixPresent
-                    prixPresent = 1
+                    tabAREst(i, colonne) = (tabRentaEst(i, colonne) - (alpha + beta * tabRentaMarcheEst(i, colonne))) '* prixPresent
+                    'prixPresent = 1
+                End If
+            Next i
+
+            'remplissage des AR sur la fenetre d'événement
+            'Variable pour savoir si des AR précédents sont manquants
+            'Dim prixPresent As Integer = 1
+            For i = 0 To tabRentaEv.GetUpperBound(0)
+                If tabRentaEv(i, colonne) = -2146826246 Then
+                    tabAREv(i, colonne) = -2146826246
+                    'prixPresent = prixPresent + 1
+                Else
+                    tabAREv(i, colonne) = (tabRentaEv(i, colonne) - (alpha + beta * tabRentaMarcheEv(i, colonne))) '* prixPresent
+                    'prixPresent = 1
                 End If
             Next i
         Next
-        modeleMarche = tabAR
-    End Function
+    End Sub
 
 
     '***************************** Modèle de marché simplifié *****************************
