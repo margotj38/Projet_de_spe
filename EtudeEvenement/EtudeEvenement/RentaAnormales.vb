@@ -10,7 +10,7 @@
             Case 0
                 modeleMoyenne(tabRentaEst, tabRentaEv, tabAREst, tabAREv, tabDateEst, tabDateEv)
             Case 1
-                'tabAR = modeleMarcheSimple()
+                modeleMarcheSimple(tabRentaEst, tabRentaEv, tabRentaMarcheEst, tabRentaMarcheEv, tabAREst, tabAREv, tabDateEst, tabDateEv)
             Case 2
                 'Création des tableaux pour pouvoir les X et Y de la régression
                 Dim tabRentaReg(,,)() = UtilitaireRentabilites.constructionTableauxReg(UtilitaireRentabilites.maxPrixAbs, tabRentaEst, tabRentaMarcheEst)
@@ -119,25 +119,49 @@
     '***************************** Modèle de marché simplifié *****************************
 
     'Estimation des AR à partir du modèle de marché simplifié : K = moyenne des rentabilités
-    Public Function modeleMarcheSimple() As Double(,)
-        Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("Rt"), Excel.Worksheet)
-        'compte le nombre de lignes et de colonnes
-        Dim nbLignes As Integer = currentSheet.UsedRange.Rows.Count
-        Dim nbColonnes As Integer = currentSheet.UsedRange.Columns.Count
-        'tableau stockant les AR calculés grâce à la régression
-        Dim tabAR(nbLignes - 2, nbColonnes - 2) As Double
+    Public Sub modeleMarcheSimple(ByRef tabRentaEst(,) As Double, ByRef tabRentaEv(,) As Double, _
+                             ByRef tabRentaMarcheEst(,) As Double, ByRef tabRentaMarcheEv(,) As Double, ByRef tabAREst(,) As Double, _
+                             ByRef tabAREv(,) As Double, ByRef tabDateEst() As Integer, ByRef tabDateEv() As Integer)
 
-        For i = 0 To nbColonnes - 2
-            'remplissage du tableau
-            For t = 0 To nbLignes - 2
-                currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("Rm"), Excel.Worksheet)
-                Dim k As Double = currentSheet.Cells(t + 2, i + 2).Value
-                currentSheet = CType(Globals.ThisAddIn.Application.Worksheets("Rt"), Excel.Worksheet)
-                tabAR(t, i) = currentSheet.Cells(t + 2, i + 2).Value - k
-            Next
+        'On dimensionne les tableaux de AR
+        'On ne range pas les dates d'événement dans les tableaux de AR
+        ReDim tabAREst(tabRentaEst.GetUpperBound(0), tabRentaEst.GetUpperBound(1) - 1)
+        ReDim tabAREv(tabRentaEv.GetUpperBound(0), tabRentaEv.GetUpperBound(1) - 1)
+
+        'Et ceux de dates
+        ReDim tabDateEst(tabRentaEst.GetUpperBound(0))
+        ReDim tabDateEv(tabRentaEv.GetUpperBound(0))
+
+        'On range les dates dans les tableaux de dates
+        'Pour la période d'estimation
+        For indDate = 0 To tabRentaEst.GetUpperBound(0)
+            tabDateEst(indDate) = tabRentaEst(indDate, 0)
+        Next indDate
+        'Puis pour la période d'événement
+        For indDate = 0 To tabRentaEv.GetUpperBound(0)
+            tabDateEv(indDate) = tabRentaEv(indDate, 0)
+        Next indDate
+
+        For colonne = 1 To tabRentaEst.GetUpperBound(1)
+            'remplissage des AR sur la fenetre d'estimation
+            For i = 0 To tabRentaEst.GetUpperBound(0)
+                If tabRentaEst(i, colonne) = -2146826246 Then
+                    tabAREst(i, colonne - 1) = -2146826246
+                Else
+                    tabAREst(i, colonne - 1) = tabRentaEst(i, colonne) - tabRentaMarcheEst(i, colonne)
+                End If
+            Next i
+
+            'remplissage des AR sur la fenetre d'événement
+            For i = 0 To tabRentaEv.GetUpperBound(0)
+                If tabRentaEv(i, colonne) = -2146826246 Then
+                    tabAREv(i, colonne - 1) = -2146826246
+                Else
+                    tabAREv(i, colonne - 1) = tabRentaEv(i, colonne) - tabRentaMarcheEv(i, colonne)
+                End If
+            Next i
         Next
-        modeleMarcheSimple = tabAR
-    End Function
+    End Sub
 
 
     '***************************** Modèle des rentabilités moyennes *****************************
