@@ -273,7 +273,12 @@ Module ExcelDialogue
         'Affichage des données pour la période d'estimation
         For colonne = 0 To tabAREst.GetUpperBound(1)
             For i = 0 To tabAREst.GetUpperBound(0)
-                valeurCellule(currentSheet.Cells(i + 4, colonne + 2), tabAREst(i, colonne))
+                If tabAREst(i, colonne) = -2146826246 Then
+                    currentSheet.Cells(i + 4, colonne + 2).Value = "#N/A"
+                    currentSheet.Cells(i + 4, colonne + 2).Borders.Value = 1
+                Else
+                    valeurCellule(currentSheet.Cells(i + 4, colonne + 2), tabAREst(i, colonne))
+                End If
             Next i
         Next colonne
 
@@ -295,10 +300,15 @@ Module ExcelDialogue
             nomCellule(currentSheet.Cells(9 + tabDateEst.GetLength(0) + i, 1), tabDateEv(i).ToString)
         Next i
 
-        'Affichage des données pour la période d'estimation
+        'Affichage des données pour la période d'événement
         For colonne = 0 To tabAREv.GetUpperBound(1)
             For i = 0 To tabAREv.GetUpperBound(0)
-                valeurCellule(currentSheet.Cells(9 + tabDateEst.GetLength(0) + i, colonne + 2), tabAREv(i, colonne))
+                If tabAREv(i, colonne) = -2146826246 Then
+                    currentSheet.Cells(9 + tabDateEst.GetLength(0) + i, colonne + 2).Value = "#N/A"
+                    currentSheet.Cells(9 + tabDateEst.GetLength(0) + i, colonne + 2).Borders.Value = 1
+                Else
+                    valeurCellule(currentSheet.Cells(9 + tabDateEst.GetLength(0) + i, colonne + 2), tabAREv(i, colonne))
+                End If
             Next i
         Next colonne
 
