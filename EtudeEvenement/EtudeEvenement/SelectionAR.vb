@@ -26,7 +26,7 @@ Public Class SelectionAR
             excelApp.Visible = True
 
             Me.refEditEst.ExcelConnector = excelApp
-            'Me.refEditEv.ExcelConnector = excelApp
+            Me.refEditEv.ExcelConnector = excelApp
         End Try
 
         Me.refEditEst.Focus()
@@ -38,10 +38,10 @@ Public Class SelectionAR
         'On récupère les plages des périodes d'estimation et d'événement + la feuille sur laquelle elles sont
         'Les plages ont pour premiere colonne les dates
         Dim plageEst As String = ""
-        Dim plageEv As String = "A20:F30"
+        Dim plageEv As String = ""
         Dim feuille As String = ""
         Utilitaires.recupererFeuillePlage(Me.refEditEst.Address, feuille, plageEst)
-        'Utilitaires.recupererFeuillePlage(Me.refEditEv.Address, feuille, plageEv)
+        Utilitaires.recupererFeuillePlage(Me.refEditEv.Address, feuille, plageEv)
 
         'Traitement des données AR fournies
         ExcelDialogue.traitementAR(plageEst, plageEv, feuille)

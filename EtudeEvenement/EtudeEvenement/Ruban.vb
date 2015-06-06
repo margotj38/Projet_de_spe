@@ -144,9 +144,9 @@ Public Class Ruban
         selAR.refEditEst.IncludeSheetName = True
         selAR.refEditEst.ShowRowAbsoluteIndicator = False
         selAR.refEditEst.ShowColumnAbsoluteIndicator = False
-        'selAR.refEditEv.IncludeSheetName = True
-        'selAR.refEditEv.ShowRowAbsoluteIndicator = False
-        'selAR.refEditEv.ShowColumnAbsoluteIndicator = False
+        selAR.refEditEv.IncludeSheetName = True
+        selAR.refEditEv.ShowRowAbsoluteIndicator = False
+        selAR.refEditEv.ShowColumnAbsoluteIndicator = False
         'selAR.TopMost = True
 
         selAR.Visible = True
