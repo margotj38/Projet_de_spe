@@ -90,8 +90,8 @@ Public Class SelectionDatesEv
                 UtilitaireRentabilites.tabRenta = tabRentaCentrees
 
                 'Calcul de maxPrixAbsent
-                'Dim maxPrixAbsent As Integer = UtilitaireRentabilites.calculMaxPrixAbs(tabRentaCentrees) 'A FAIRE
-                'UtilitaireRentabilites.maxPrixAbs = maxPrixAbsent
+                Dim maxPrixAbsent As Integer = UtilitaireRentabilites.calculMaxPrixAbs(tabRentaCentrees)
+                UtilitaireRentabilites.maxPrixAbs = maxPrixAbsent
 
                 'On affiche les rentabilités centrées
                 ExcelDialogue.affichageRentaCentrees(tabRentaCentrees)

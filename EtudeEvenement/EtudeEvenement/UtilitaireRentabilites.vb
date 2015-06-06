@@ -148,6 +148,27 @@
         Return tabRentaReg
     End Function
 
+    Public Function calculMaxPrixAbs(tabRenta(,) As Double) As Integer
+        Dim prixPresent As Integer = 1
+        Dim maxPrixAbsent As Integer = 1
+
+        For titre = 1 To tabRenta.GetUpperBound(1)
+            For indDate = 0 To tabRenta.GetUpperBound(0)
+                If tabRenta(indDate, titre) = -2146826246 Then
+                    prixPresent = prixPresent + 1
+                    If prixPresent > maxPrixAbsent Then
+                        maxPrixAbsent = prixPresent
+                    End If
+                Else
+                    prixPresent = 1
+                End If
+            Next indDate
+            prixPresent = 1
+        Next titre
+
+        Return maxPrixAbsent
+    End Function
+
 
     '***************************** Pour centrer les prix/rentabilités autour des dates d'événement *****************************
 
