@@ -26,8 +26,8 @@
         Dim tailleEchant As Integer = currentSheet.UsedRange.Columns.Count - 1
 
         'traitement des données AR fournies
-        ExcelDialogue.traitementAR(plageEst, plageEv)
-        Globals.Ribbons.Ruban.paramARTaskPane.Visible = False
+        'ExcelDialogue.traitementAR(plageEst, plageEv, feuille)
+        'Globals.Ribbons.Ruban.paramARTaskPane.Visible = False
     End Sub
 
     Private Sub estimation_Changed(sender As Object, e As EventArgs) Handles estimation.Changed

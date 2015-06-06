@@ -87,8 +87,10 @@ Public Class SelectionDatesEv
                 'On stocke le tableaux des rentabilités de marché dont on va avoir besoin
                 'PB : où ? Dans nouveau module rentabilité ?
                 UtilitaireRentabilites.tabRentaMarche = tabMarcheCentre
-                'A calculer avant ?
-                'Idem pour maxPrixAbsent
+                UtilitaireRentabilites.tabRenta = tabRentaCentrees
+
+                'Calcul de maxPrixAbsent
+                'Dim maxPrixAbsent As Integer = UtilitaireRentabilites.calculMaxPrixAbs(tabRentaCentrees) 'A FAIRE
                 'UtilitaireRentabilites.maxPrixAbs = maxPrixAbsent
 
                 'On affiche les rentabilités centrées

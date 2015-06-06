@@ -71,9 +71,8 @@ Module ExcelDialogue
     End Sub
 
     '***************************** traitement fichier AR *****************************
-    Public Sub traitementAR(plageEst As String, plageEv As String)
-        'Sélection de la feuille contenant les Rt
-        Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("AR"), Excel.Worksheet)
+    Public Sub traitementAR(plageEst As String, plageEv As String, feuille As String)
+        Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets(feuille), Excel.Worksheet)
 
         Dim tmpRange As Excel.Range
         tmpRange = currentSheet.Range(plageEst)

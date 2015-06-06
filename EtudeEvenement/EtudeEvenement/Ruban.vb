@@ -6,51 +6,14 @@ Imports Microsoft.Office.Interop
 
 Public Class Ruban
 
-    'Public choixSeuilFenetre As ChoixSeuilFenetre
     Public selFenetres As SelectionFenetres
-    Public paramAR As ParamAR
-    'Public choixDatesEv As ChoixDatesEv
+    Public selAR As SelectionAR
     Public selDatesEv As SelectionDatesEv
-    'Public WithEvents seuilFenetreTaskPane As Microsoft.Office.Tools.CustomTaskPane
-    Public WithEvents paramARTaskPane As Microsoft.Office.Tools.CustomTaskPane
-    'Public WithEvents datesEvTaskPane As Microsoft.Office.Tools.CustomTaskPane
-
 
     Public graphPVal As GraphiquePValeur
 
     Private Sub Ruban_Load(ByVal sender As System.Object, ByVal e As RibbonUIEventArgs) Handles MyBase.Load
 
-        'Initialisation du taskPane choixSeuilFenetre
-        'choixSeuilFenetre = New ChoixSeuilFenetre(0, 0)
-        'seuilFenetreTaskPane = Globals.ThisAddIn.CustomTaskPanes.Add(choixSeuilFenetre, "Choix des paramètres")
-        'With seuilFenetreTaskPane
-        '    .DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionFloating
-        '    .Height = 500
-        '    .DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionRight
-        '    .Width = 300
-        '    .Visible = False
-        'End With
-
-        'Initialisation du taskPane paramAR
-        paramAR = New ParamAR()
-        paramARTaskPane = Globals.ThisAddIn.CustomTaskPanes.Add(paramAR, "Choix des paramètres")
-        With paramARTaskPane
-            .DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionFloating
-            .Height = 500
-            .DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionRight
-            .Width = 300
-            .Visible = False
-        End With
-        'Initialisation du taskPane choixDatesEv
-        'choixDatesEv = New ChoixDatesEv()
-        'datesEvTaskPane = Globals.ThisAddIn.CustomTaskPanes.Add(choixDatesEv, "Choix des paramètres")
-        'With datesEvTaskPane
-        '    .DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionFloating
-        '    .Height = 500
-        '    .DockPosition = Office.MsoCTPDockPosition.msoCTPDockPositionRight
-        '    .Width = 300
-        '    .Visible = False
-        'End With
     End Sub
 
     Private Sub initialisationGraphPVal()
@@ -169,46 +132,56 @@ Public Class Ruban
         initialisationGraphPVal()
         selFenetres = New SelectionFenetres(2, 2)
         initSelFenetres(selFenetres)
-        'selFenetres.modele = 2
-        'selFenetres.test = 2
         selFenetres.nomModele.Text = "Test de signe - Modèle de marché classique"
-        'seuilFenetreTaskPane.Visible = True
         selFenetres.Visible = True
     End Sub
 
     Private Sub ARparam_Click(sender As Object, e As RibbonControlEventArgs) Handles ARparam.Click
 
-        'Définition des options de refEdit
-        paramAR.estimation.IncludeSheetName = False
-        paramAR.estimation.ShowRowAbsoluteIndicator = False
-        paramAR.estimation.ShowColumnAbsoluteIndicator = False
-        paramAR.evenement.IncludeSheetName = False
-        paramAR.evenement.ShowRowAbsoluteIndicator = False
-        paramAR.evenement.ShowColumnAbsoluteIndicator = False
+        selAR = New SelectionAR()
 
-        Dim excelApp As Excel.Application = Nothing
+        'Définition des options des refEdit
+        selAR.refEditEst.IncludeSheetName = True
+        selAR.refEditEst.ShowRowAbsoluteIndicator = False
+        selAR.refEditEst.ShowColumnAbsoluteIndicator = False
+        'selAR.refEditEv.IncludeSheetName = True
+        'selAR.refEditEv.ShowRowAbsoluteIndicator = False
+        'selAR.refEditEv.ShowColumnAbsoluteIndicator = False
+        'selAR.TopMost = True
 
-        ' Create an Excel App
-        Try
-            excelApp = Marshal.GetActiveObject("Excel.Application")
-        Catch ex As COMException
-            ' An exception is thrown if there is not an open excel instance.                    
-        Finally
-            If excelApp Is Nothing Then
-                'excelApp = New Application
-                excelApp.Workbooks.Add()
-            End If
-            excelApp.Visible = True
+        selAR.Visible = True
 
-            paramAR.estimation.ExcelConnector = excelApp
-            paramAR.evenement.ExcelConnector = excelApp
+        ''Définition des options de refEdit
+        'paramAR.estimation.IncludeSheetName = False
+        'paramAR.estimation.ShowRowAbsoluteIndicator = False
+        'paramAR.estimation.ShowColumnAbsoluteIndicator = False
+        'paramAR.evenement.IncludeSheetName = False
+        'paramAR.evenement.ShowRowAbsoluteIndicator = False
+        'paramAR.evenement.ShowColumnAbsoluteIndicator = False
 
-        End Try
+        'Dim excelApp As Excel.Application = Nothing
 
-        paramAR.estimation.Focus()
-        paramAR.evenement.Focus()
+        '' Create an Excel App
+        'Try
+        '    excelApp = Marshal.GetActiveObject("Excel.Application")
+        'Catch ex As COMException
+        '    ' An exception is thrown if there is not an open excel instance.                    
+        'Finally
+        '    If excelApp Is Nothing Then
+        '        'excelApp = New Application
+        '        excelApp.Workbooks.Add()
+        '    End If
+        '    excelApp.Visible = True
 
-        paramARTaskPane.Visible = True
+        '    paramAR.estimation.ExcelConnector = excelApp
+        '    paramAR.evenement.ExcelConnector = excelApp
+
+        'End Try
+
+        'paramAR.estimation.Focus()
+        'paramAR.evenement.Focus()
+
+        'paramARTaskPane.Visible = True
     End Sub
 
     Private Sub preTraitPrix_Click(sender As Object, e As RibbonControlEventArgs) Handles preTraitPrix.Click
