@@ -29,7 +29,7 @@
 
         'On met les tableaux à la bonne dimension
         ReDim tabRentaEst(finEst - debutEst, derniereCol - premiereCol)
-        ReDim tabRentaEv(finEst - debutEv, derniereCol - premiereCol)
+        ReDim tabRentaEv(finEv - debutEv, derniereCol - premiereCol)
         ReDim tabRentaMarcheEst(finEst - debutEst, derniereCol - premiereCol)
         ReDim tabRentaMarcheEv(finEv - debutEv, derniereCol - premiereCol)
 
@@ -37,13 +37,13 @@
         For colonne = premiereCol To derniereCol
             'On remplit le tableau d'estimation
             For i = debutEst To finEst
-                tabRentaEst(i - debutEst, colonne - premiereCol) = tabRenta(i - 1, colonne - 1)
-                tabRentaMarcheEst(i - debutEst, colonne - premiereCol) = tabRentaMarche(i - 1, colonne - 1)
+                tabRentaEst(i - debutEst, colonne - premiereCol) = tabRenta(i - debutEst, colonne - premiereCol)
+                tabRentaMarcheEst(i - debutEst, colonne - premiereCol) = tabRentaMarche(i - debutEst, colonne - premiereCol)
             Next i
             'Et celui d'événement
             For i = debutEv To finEv
-                tabRentaEv(i - debutEv, colonne - premiereCol) = tabRenta(i - 1, colonne - 1)
-                tabRentaMarcheEv(i - debutEv, colonne - premiereCol) = tabRentaMarche(i - 1, colonne - 1)
+                tabRentaEv(i - debutEv, colonne - premiereCol) = tabRenta(i - debutEst, colonne - premiereCol)
+                tabRentaMarcheEv(i - debutEv, colonne - premiereCol) = tabRentaMarche(i - debutEst, colonne - premiereCol)
             Next i
         Next colonne
     End Sub
@@ -86,11 +86,11 @@
                     End If
                 Else
                     'Sinon on fait le calcul en remontant au dernier prix disponible
-                    tabRenta(indDate - 1, titre) = (tabPrixCentres(indDate, titre) - tabPrixCentres(indDate - prixPresent, titre)) / _
-                        tabPrixCentres(indDate - prixPresent, titre)
+                    tabRenta(indDate - 1, titre) = ((tabPrixCentres(indDate, titre) - tabPrixCentres(indDate - prixPresent, titre)) / _
+                        tabPrixCentres(indDate - prixPresent, titre)) / prixPresent
                     'On fait de même pour les rentabilités de marché
-                    tabRentaMarche(indDate - 1, titre) = (tabMarcheCentre(indDate, titre) - tabMarcheCentre(indDate - prixPresent, titre)) / _
-                        tabMarcheCentre(indDate - prixPresent, titre)
+                    tabRentaMarche(indDate - 1, titre) = ((tabMarcheCentre(indDate, titre) - tabMarcheCentre(indDate - prixPresent, titre)) / _
+                        tabMarcheCentre(indDate - prixPresent, titre)) / prixPresent
                     'Et on indique qu'un prix était présent
                     prixPresent = 1
                 End If

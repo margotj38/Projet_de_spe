@@ -252,33 +252,53 @@ Module ExcelDialogue
 
         Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets(nom), Excel.Worksheet)
 
+        'Affichage en-tête estimation
+        currentSheet.Cells(1, 1).Value = "AR sur la période d'estimation"
+        currentSheet.Cells(1, 1).Font.Bold = True
+        currentSheet.Cells(1, 1).Interior.ColorIndex = 50
+        currentSheet.Cells(1, 2).Interior.ColorIndex = 50
+        currentSheet.Cells(1, 3).Interior.ColorIndex = 50
+
         'Affichage de la première ligne
         For i = 0 To tabAREst.GetUpperBound(1)
-            nomCellule(currentSheet.Cells(1, i + 2), "AR" & i + 1)
+            nomCellule(currentSheet.Cells(3, i + 2), "AR" & i + 1)
         Next i
 
         'Affichage des dates pour la période d'estimation
-        nomCellule(currentSheet.Range("A1"), "Dates")
+        nomCellule(currentSheet.Cells(3, 1), "Dates")
         For i = 0 To tabDateEst.GetUpperBound(0)
-            nomCellule(currentSheet.Range("A" & i + 2), tabDateEst(i).ToString)
+            nomCellule(currentSheet.Cells(i + 4, 1), tabDateEst(i).ToString)
         Next i
 
         'Affichage des données pour la période d'estimation
         For colonne = 0 To tabAREst.GetUpperBound(1)
             For i = 0 To tabAREst.GetUpperBound(0)
-                valeurCellule(currentSheet.Cells(i + 2, colonne + 2), tabAREst(i, colonne))
+                valeurCellule(currentSheet.Cells(i + 4, colonne + 2), tabAREst(i, colonne))
             Next i
         Next colonne
 
+        'Affichage en-tête événement
+        currentSheet.Cells(tabAREst.GetUpperBound(0) + 7, 1).Value = "AR sur la période d'événement"
+        currentSheet.Cells(tabAREst.GetUpperBound(0) + 7, 1).Font.Bold = True
+        currentSheet.Cells(tabAREst.GetUpperBound(0) + 7, 1).Interior.ColorIndex = 50
+        currentSheet.Cells(tabAREst.GetUpperBound(0) + 7, 2).Interior.ColorIndex = 50
+        currentSheet.Cells(tabAREst.GetUpperBound(0) + 7, 3).Interior.ColorIndex = 50
+
+        'Affichage de la première ligne
+        For i = 0 To tabAREst.GetUpperBound(1)
+            nomCellule(currentSheet.Cells(8 + tabDateEst.GetLength(0), i + 2), "AR" & i + 1)
+        Next i
+
         'Affichage des dates pour la période d'événement
+        nomCellule(currentSheet.Cells(8 + tabDateEst.GetLength(0), 1), "Dates")
         For i = 0 To tabDateEv.GetUpperBound(0)
-            nomCellule(currentSheet.Range("A" & 4 + tabDateEst.GetLength(0) + i), tabDateEv(i).ToString)
+            nomCellule(currentSheet.Cells(9 + tabDateEst.GetLength(0) + i, 1), tabDateEv(i).ToString)
         Next i
 
         'Affichage des données pour la période d'estimation
         For colonne = 0 To tabAREv.GetUpperBound(1)
             For i = 0 To tabAREv.GetUpperBound(0)
-                valeurCellule(currentSheet.Cells(4 + tabDateEst.GetLength(0) + i, colonne + 2), tabAREst(i, colonne))
+                valeurCellule(currentSheet.Cells(9 + tabDateEst.GetLength(0) + i, colonne + 2), tabAREv(i, colonne))
             Next i
         Next colonne
 
