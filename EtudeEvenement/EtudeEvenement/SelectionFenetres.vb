@@ -80,11 +80,9 @@ Public Class SelectionFenetres
         Dim tabRentaEv(,) As Double = Nothing
         Dim tabRentaMarcheEst(,) As Double = Nothing
         Dim tabRentaMarcheEv(,) As Double = Nothing
-        MsgBox("ok")
         UtilitaireRentabilites.constructionTabRenta(plageEst, plageEv, _
                                                     UtilitaireRentabilites.tabRentaMarche, UtilitaireRentabilites.tabRenta, _
                                                     tabRentaMarcheEst, tabRentaMarcheEv, tabRentaEst, tabRentaEv)
-        MsgBox("ok")
         'Calcul des AR
         Dim tabAREst(,) As Double = Nothing
         Dim tabAREv(,) As Double = Nothing

@@ -14,7 +14,6 @@
             Case 2
                 'Création des tableaux pour pouvoir les X et Y de la régression
                 Dim tabRentaReg(,,)() = UtilitaireRentabilites.constructionTableauxReg(UtilitaireRentabilites.maxPrixAbs, tabRentaEst, tabRentaMarcheEst)
-                MsgBox("ok1")
                 modeleMarche(tabRentaEst, tabRentaEv, tabRentaReg, tabRentaMarcheEst, tabRentaMarcheEv, tabAREst, tabAREv, tabDateEst, tabDateEv)
             Case Else
                 MsgBox("Erreur interne : numero de modèle incorrect dans ChoixSeuilFenetre", 16)
@@ -58,8 +57,6 @@
         'moyenne pondérée pour obtenir les véritables alpha et beta
         Dim alpha As Double = 0
         Dim beta As Double = 0
-        'tableau des AR
-        MsgBox("ok2")
         'pour chaque entreprise...
         For colonne = 1 To tabRentaReg.GetUpperBound(0)
             'nombre de rentabilités totale (sans NA)
