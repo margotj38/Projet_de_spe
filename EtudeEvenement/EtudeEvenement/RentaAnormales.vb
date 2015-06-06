@@ -173,46 +173,44 @@
         Dim tabMoy(tabRentaEst.GetUpperBound(1) - 1) As Double
 
         'Calcul des moyennes sur la fenêtre d'estimation
+        'Variable pour savoir si un #N/A précédait
+        Dim prixPresent As Integer = 1
         For colonne = 1 To tabRentaEst.GetUpperBound(1)
             For i = 0 To tabRentaEst.GetUpperBound(0)
-                'S'il n'y avait pas de NA, on somme
-                If Not tabRentaEst(i, colonne) = -2146826246 Then
-                    tabMoy(colonne - 1) = tabMoy(colonne - 1) + tabRentaEst(i, colonne)
+                'S'il y a un NA, on incrémente prixPresent
+                If tabRentaEst(i, colonne) = -2146826246 Then
+                    prixPresent = prixPresent + 1
+                Else
+                    'Sinon on somme en multipliant par le nombre de #N/A absents + 1 (ie prixPresent)
+                    tabMoy(colonne - 1) = tabMoy(colonne - 1) + tabRentaEst(i, colonne) * prixPresent
+                    prixPresent = 1
                 End If
             Next i
-            tabMoy(colonne - 1) = tabMoy(colonne - 1) / tabRentaEst.GetLength(0)
+            'On divise par la taille de la fenêtre d'estimation moins le nombre de #N/A finaux (ie prixPresent - 1)
+            tabMoy(colonne - 1) = tabMoy(colonne - 1) / (tabRentaEst.GetLength(0) - (prixPresent - 1))
         Next colonne
 
         'Calcul des AR sur la fenêtre sur la fenêtre d'estimation
-        'Variable pour savoir si des AR précédents sont manquants
-        Dim prixPresent As Integer = 1
         For colonne = 1 To tabRentaEst.GetUpperBound(1)
             For i = 0 To tabRentaEst.GetUpperBound(0)
                 If tabRentaEst(i, colonne) = -2146826246 Then
                     tabAREst(i, colonne - 1) = -2146826246
-                    prixPresent = prixPresent + 1
                 Else
-                    'On divise la rentabilité par prixPresent pour se ramenner à un équivalent sur une période
-                    'Puis on multiplie par cette même valeur pour avoir un AR correspondant au bon nombre de périodes
-                    tabAREst(i, colonne - 1) = (tabRentaEst(i, colonne) / prixPresent - tabMoy(colonne - 1)) * prixPresent
+                    'On obtient des AR sur une période
+                    tabAREst(i, colonne - 1) = (tabRentaEst(i, colonne) - tabMoy(colonne - 1))
                     prixPresent = 1
                 End If
             Next i
         Next colonne
 
         'Calcul des AR sur la fenêtre sur la fenêtre d'événement
-        'Variable pour savoir si des AR précédents sont manquants
-        prixPresent = 1
         For colonne = 1 To tabRentaEv.GetUpperBound(1)
             For i = 0 To tabRentaEv.GetUpperBound(0)
                 If tabRentaEv(i, colonne) = -2146826246 Then
                     tabAREv(i, colonne - 1) = -2146826246
-                    prixPresent = prixPresent + 1
                 Else
-                    'On divise la rentabilité par prixPresent pour se ramenner à un équivalent sur une période
-                    'Puis on multiplie par cette même valeur pour avoir un AR correspondant au bon nombre de périodes
-                    tabAREv(i, colonne - 1) = (tabRentaEv(i, colonne) / prixPresent - tabMoy(colonne - 1)) * prixPresent
-                    prixPresent = 1
+                    'On obtient des AR sur une période
+                    tabAREv(i, colonne - 1) = (tabRentaEv(i, colonne) - tabMoy(colonne - 1))
                 End If
             Next i
         Next colonne

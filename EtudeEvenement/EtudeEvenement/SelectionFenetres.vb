@@ -72,7 +72,7 @@ Public Class SelectionFenetres
         Dim plageEv As String = ""
         Dim feuille As String = ""
         Utilitaires.recupererFeuillePlage(Me.refEditEst.Address, feuille, plageEst)
-        Utilitaires.recupererFeuillePlage(Me.refEditEst.Address, feuille, plageEv)
+        Utilitaires.recupererFeuillePlage(Me.refEditEv.Address, feuille, plageEv)
 
         'On construit les 4 tableaux des rentabilités (entreprises et marché, période d'estimation et d'événement)
         Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets(feuille), Excel.Worksheet)
@@ -85,10 +85,8 @@ Public Class SelectionFenetres
                                                     tabRentaMarcheEst, tabRentaMarcheEv, tabRentaEst, tabRentaEv)
 
         'Calcul des AR
-        Dim tabAREst(,) As Double
-        Dim tabAREv(,) As Double
-
-        'RentaAnormales.calculAR(tabRentaMarcheEst, tabRentaMarcheEv, tabRentaEst, tabRentaEv, tabAREst, tabAREv)
+        Dim tabAREst(,) As Double = Nothing
+        Dim tabAREv(,) As Double = Nothing
         Dim tabDateEst() As Integer = Nothing
         Dim tabDateEv() As Integer = Nothing
         RentaAnormales.calculAR(tabRentaMarcheEst, tabRentaMarcheEv, tabRentaEst, tabRentaEv, _
