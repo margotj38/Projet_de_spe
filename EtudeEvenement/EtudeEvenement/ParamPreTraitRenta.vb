@@ -49,6 +49,7 @@ Public Class ParamPreTraitRenta
         'PB : où ? Dans nouveau module rentabilité ?
         UtilitaireRentabilites.tabRentaMarche = tabMarcheCentre
         UtilitaireRentabilites.tabRenta = tabRentaCentrees
+        UtilitaireRentabilites.tabRentaClassiquesMarche = tabMarcheCentre
 
         'Calcul de maxPrixAbsent
         Dim maxPrixAbsent As Integer = UtilitaireRentabilites.calculMaxPrixAbs(tabRentaCentrees)

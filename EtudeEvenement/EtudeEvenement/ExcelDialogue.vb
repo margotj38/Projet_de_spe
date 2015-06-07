@@ -27,16 +27,16 @@ Module ExcelDialogue
 
                     ''''Commenté pour test
                     'tabCAR = Globals.ThisAddIn.calculCAR(tabAR, currentSheet.Cells(2, 1).Value, -i - 1, -i, i)
-                    Dim testHyp As Double = TestsStatistiques.calculStatStudent(tabCAR)
-                    pValeur = TestsStatistiques.calculPValeur(tailleEchant, testHyp) * 100
+                    'Dim testHyp As Double = TestsStatistiques.calculStatStudent(tabCAR)
+                    'pValeur = TestsStatistiques.calculPValeur(tailleEchant, testHyp) * 100
                 Case 1
                     'test de Patell
-                    Dim testHyp As Double = TestsStatistiques.patellTest(tabAR, currentSheet.Cells(2, 1).Value, -i - 1, -i, i)
-                    pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHyp), True)) * 100
+                    'Dim testHyp As Double = TestsStatistiques.patellTest(tabAR, currentSheet.Cells(2, 1).Value, -i - 1, -i, i)
+                    'pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHyp), True)) * 100
                 Case 2
                     'test de signe
-                    Dim testHyp As Double = TestsStatistiques.statTestSigne(tabAR, currentSheet.Cells(2, 1).Value, -i - 1, -i, i)
-                    pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHyp), True)) * 100
+                    'Dim testHyp As Double = TestsStatistiques.statTestSigne(tabAR, currentSheet.Cells(2, 1).Value, -i - 1, -i, i)
+                    'pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHyp), True)) * 100
             End Select
 
             Dim p As New DataPoint
@@ -310,6 +310,40 @@ Module ExcelDialogue
                 End If
             Next i
         Next colonne
+
+    End Sub
+
+
+    Public Sub affichagePatell(ByRef tabDateEv() As Integer, ByRef testHyp() As Double)
+        'Création d'une nouvelle feuille
+        Dim nom As String
+        nom = InputBox("Entrer le nom de la feuille des résultats : ")
+        'Si l'utilisateur n'entre pas un nom
+        If nom Is "" Then nom = "Résulatats Patell"
+        Globals.ThisAddIn.Application.Sheets.Add(After:=Globals.ThisAddIn.Application.Worksheets(Globals.ThisAddIn.Application.Worksheets.Count))
+        Globals.ThisAddIn.Application.ActiveSheet.Name = nom
+
+        'Le nom de chaque colonne
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("A1"), "Période d'événement")
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("B1"), "Test Patell")
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("C1"), "P-valeur (%)")
+
+        'Affichage des dates
+        For i = 0 To tabDateEv.GetUpperBound(0)
+            nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + 2, 1), "[" & tabDateEv(0) & "; " & tabDateEv(i) & "]")
+        Next i
+
+        'Affichage des statistiques du test de Patell et de la P-Valeur
+        For i = 0 To tabDateEv.GetUpperBound(0)
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + 2, 2), testHyp(i))
+            Dim pValeur As Double
+            pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHyp(i)), True))
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + 2, 3), pValeur * 100)
+            'La signification du test
+            Globals.ThisAddIn.Application.Worksheets(nom).Cells(i + 2, 4).Value = signification(pValeur)
+        Next i
+
+
 
     End Sub
 

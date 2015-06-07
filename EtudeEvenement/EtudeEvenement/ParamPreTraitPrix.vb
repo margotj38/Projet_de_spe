@@ -51,13 +51,16 @@ Public Class ParamPreTraitPrix
         'On calcule les rentabilités
         Dim tabRenta(tabPrixCentres.GetUpperBound(0) - 1, tabPrixCentres.GetUpperBound(1)) As Double
         Dim tabRentaMarche(tabMarcheCentre.GetUpperBound(0) - 1, tabMarcheCentre.GetUpperBound(1)) As Double
+        Dim tabRentaClassiquesMarche(tabMarcheCentre.GetUpperBound(0) - 1, tabMarcheCentre.GetUpperBound(1)) As Double
         Dim maxPrixAbsent As Integer
-        UtilitaireRentabilites.calculTabRenta(tabPrixCentres, tabMarcheCentre, tabRenta, tabRentaMarche, maxPrixAbsent, rLog)
+        UtilitaireRentabilites.calculTabRenta(tabPrixCentres, tabMarcheCentre, tabRenta, tabRentaMarche, tabRentaClassiquesMarche, _
+                                              maxPrixAbsent, rLog)
 
         'On stocke le tableaux des rentabilités de marché et des entreprises dont on va avoir besoin
         'PB : où ? Dans nouveau module rentabilité ?
         UtilitaireRentabilites.tabRentaMarche = tabRentaMarche
         UtilitaireRentabilites.tabRenta = tabRenta
+        UtilitaireRentabilites.tabRentaClassiquesMarche = tabRentaClassiquesMarche
         'Idem pour maxPrixAbsent
         UtilitaireRentabilites.maxPrixAbs = maxPrixAbsent
 

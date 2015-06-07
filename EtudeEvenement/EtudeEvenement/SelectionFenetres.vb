@@ -80,9 +80,13 @@ Public Class SelectionFenetres
         Dim tabRentaEv(,) As Double = Nothing
         Dim tabRentaMarcheEst(,) As Double = Nothing
         Dim tabRentaMarcheEv(,) As Double = Nothing
+        Dim tabRentaClassiquesMarcheEst(,) As Double = Nothing
+        Dim tabRentaClassiquesMarcheEv(,) As Double = Nothing
         UtilitaireRentabilites.constructionTabRenta(plageEst, plageEv, _
                                                     UtilitaireRentabilites.tabRentaMarche, UtilitaireRentabilites.tabRenta, _
-                                                    tabRentaMarcheEst, tabRentaMarcheEv, tabRentaEst, tabRentaEv)
+                                                    UtilitaireRentabilites.tabRentaClassiquesMarche, _
+                                                    tabRentaMarcheEst, tabRentaMarcheEv, tabRentaEst, tabRentaEv, _
+                                                    tabRentaClassiquesMarcheEst, tabRentaClassiquesMarcheEv)
         'Calcul des AR
         Dim tabAREst(,) As Double = Nothing
         Dim tabAREv(,) As Double = Nothing
@@ -93,6 +97,23 @@ Public Class SelectionFenetres
 
         'Affichage des AR dans une nouvelle feuille excel
         ExcelDialogue.affichageAR(tabAREst, tabAREv, tabDateEst, tabDateEv)
+
+        'On appelle les différents tests
+        Select Case test
+            Case 0
+                'test simple
+                'A compléter : appeler ExcelDialogue.traitementAR avec des tableaux
+            Case 1
+                'test de Patell
+                'Calcul du nombre de AR non manquants pour chaque entreprise sur la période d'estimation
+                Dim nbNonMissingReturn() As Integer = TestsStatistiques.calculNbNonMissingReturn(tabAREst)
+                Dim testHyp() As Double = TestsStatistiques.patellTest(tabAREst, tabAREv, tabDateEst, tabDateEv, _
+                                             tabRentaClassiquesMarcheEst, tabRentaClassiquesMarcheEv, nbNonMissingReturn)
+                ExcelDialogue.affichagePatell(tabDateEv, testHyp)
+            Case 2
+                'test de signe
+                'A compléter
+        End Select
 
         'Dim pValeur As Double
         'Select Case test

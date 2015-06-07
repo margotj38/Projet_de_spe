@@ -9,6 +9,11 @@
     'Le nombre maximum de #N/A présents à la suite sont nécessaires pouvoir construire les tableaux de rentabilités
     'spécifiques à la régression
     Public maxPrixAbs As Integer = 0
+    'Tableau des rentabilités de marché calculé simplement 
+    '(ie pas de la même façon que les rentabilités d'entreprises en fonction des N/A)
+    'Utilisé pour le test de Patell
+    Public tabRentaClassiquesMarche(,) As Double = Nothing
+
 
     '***************************** Construction des rentabilités *****************************
 
@@ -17,8 +22,10 @@
     'Sortie : tableaux des rentabilités des entreprises et du marché pour les période d'événement et d'estimation
     Public Sub constructionTabRenta(plageEst As String, plageEv As String, _
                                     ByRef tabRentaMarche(,) As Double, ByRef tabRenta(,) As Double, _
+                                    ByRef tabRentaClassiquesMarche(,) As Double, _
                                     ByRef tabRentaMarcheEst(,) As Double, ByRef tabRentaMarcheEv(,) As Double, _
-                                    ByRef tabRentaEst(,) As Double, ByRef tabRentaEv(,) As Double)
+                                    ByRef tabRentaEst(,) As Double, ByRef tabRentaEv(,) As Double, _
+                                    ByRef tabRentaClassiquesMarcheEst(,) As Double, ByRef tabRentaClassiquesMarcheEv(,) As Double)
 
         'On parse les plages pour récupérer les indices de la fenêtre
         Dim premiereCol As Integer, derniereCol As Integer
@@ -32,6 +39,8 @@
         ReDim tabRentaEv(finEv - debutEv, derniereCol - premiereCol)
         ReDim tabRentaMarcheEst(finEst - debutEst, derniereCol - premiereCol)
         ReDim tabRentaMarcheEv(finEv - debutEv, derniereCol - premiereCol)
+        ReDim tabRentaClassiquesMarcheEst(finEst - debutEst, derniereCol - premiereCol)
+        ReDim tabRentaClassiquesMarcheEv(finEv - debutEv, derniereCol - premiereCol)
 
         'Pour chaque colonne
         For colonne = premiereCol To derniereCol
@@ -39,11 +48,13 @@
             For i = debutEst To finEst
                 tabRentaEst(i - debutEst, colonne - premiereCol) = tabRenta(i - debutEst, colonne - premiereCol)
                 tabRentaMarcheEst(i - debutEst, colonne - premiereCol) = tabRentaMarche(i - debutEst, colonne - premiereCol)
+                tabRentaClassiquesMarcheEst(i - debutEst, colonne - premiereCol) = tabRentaClassiquesMarche(i - debutEst, colonne - premiereCol)
             Next i
             'Et celui d'événement
             For i = debutEv To finEv
                 tabRentaEv(i - debutEv, colonne - premiereCol) = tabRenta(i - debutEst, colonne - premiereCol)
                 tabRentaMarcheEv(i - debutEv, colonne - premiereCol) = tabRentaMarche(i - debutEst, colonne - premiereCol)
+                tabRentaClassiquesMarcheEv(i - debutEv, colonne - premiereCol) = tabRentaClassiquesMarche(i - debutEst, colonne - premiereCol)
             Next i
         Next colonne
     End Sub
@@ -51,13 +62,15 @@
     'Entrée : tableaux centrés des cours et du marché (1ère colonne : dates)
     'Sortie : tableaux des rentabilités des entreprises et du marché (1ère colonne : dates) + maxPrixAbsent
     Public Sub calculTabRenta(ByRef tabPrixCentres(,) As Double, ByRef tabMarcheCentre(,) As Double, _
-                              ByRef tabRenta(,) As Double, ByRef tabRentaMarche(,) As Double, ByRef maxPrixAbsent As Integer, _
+                              ByRef tabRenta(,) As Double, ByRef tabRentaMarche(,) As Double, ByRef tabRentaClassiquesMarche(,) As Double, _
+                              ByRef maxPrixAbsent As Integer, _
                               rentaLog As Boolean)
 
         'On recopie la colonne des dates dans les tableaux
         For indDate = 1 To tabPrixCentres.GetUpperBound(0)
             tabRenta(indDate - 1, 0) = tabPrixCentres(indDate, 0)
             tabRentaMarche(indDate - 1, 0) = tabMarcheCentre(indDate, 0)
+            tabRentaClassiquesMarche(indDate - 1, 0) = tabMarcheCentre(indDate, 0)
         Next indDate
 
         'On calcule les rentabilités et les rentabilités de marché associées
@@ -81,6 +94,15 @@
                     'On met un équivalent de #N/A dans les tableaux
                     tabRenta(indDate - 1, titre) = -2146826246
                     tabRentaMarche(indDate - 1, titre) = -2146826246
+                    'Dans tabRentaClassiquesMarche, on fait le calcul classique selon le mode
+                    If rentaLog Then
+                        tabRentaClassiquesMarche(indDate - 1, titre) = Math.Log(tabMarcheCentre(indDate, titre) / _
+                                                                 tabMarcheCentre(indDate - 1, titre))
+                    Else
+                        tabRentaClassiquesMarche(indDate - 1, titre) = (tabMarcheCentre(indDate, titre) - tabMarcheCentre(indDate - 1, titre)) / _
+                                                                 tabMarcheCentre(indDate - 1, titre)
+                    End If
+
                     prixPresent = prixPresent + 1
                     If prixPresent > maxPrixAbsent Then
                         maxPrixAbsent = prixPresent
@@ -94,6 +116,9 @@
                         'On fait de même pour les rentabilités de marché
                         tabRentaMarche(indDate - 1, titre) = (Math.Log(tabMarcheCentre(indDate, titre) / _
                                                                  tabMarcheCentre(indDate - prixPresent, titre))) / prixPresent
+                        'Dans tabRentaClassiquesMarche, on fait le calcul classique
+                        tabRentaClassiquesMarche(indDate - 1, titre) = Math.Log(tabMarcheCentre(indDate, titre) / _
+                                                                 tabMarcheCentre(indDate - 1, titre))
                     Else
                         'Calcul des rentabilités des entreprises
                         tabRenta(indDate - 1, titre) = ((tabPrixCentres(indDate, titre) - tabPrixCentres(indDate - prixPresent, titre)) / _
@@ -101,7 +126,11 @@
                         'On fait de même pour les rentabilités de marché
                         tabRentaMarche(indDate - 1, titre) = ((tabMarcheCentre(indDate, titre) - tabMarcheCentre(indDate - prixPresent, titre)) / _
                             tabMarcheCentre(indDate - prixPresent, titre)) / prixPresent
+                        'Dans tabRentaClassiquesMarche, on fait le calcul classique
+                        tabRentaClassiquesMarche(indDate - 1, titre) = (tabMarcheCentre(indDate, titre) - tabMarcheCentre(indDate - 1, titre)) / _
+                            tabMarcheCentre(indDate - 1, titre)
                     End If
+
                     'Et on indique qu'un prix était présent
                     prixPresent = 1
                 End If

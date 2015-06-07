@@ -83,112 +83,134 @@
         Return Globals.ThisAddIn.Application.WorksheetFunction.T_Dist_2T(testHyp, tailleEchant - 1)
     End Function
 
+
     '***************************** Test de Patell *****************************
 
-    Public Function patellTest(tabAR(,) As Double, fenetreEstDebut As Integer, fenetreEstFin As Integer, fenetreEvDebut As Integer, fenetreEvFin As Integer) As Double
+    Public Function calculNbNonMissingReturn(ByRef tabAREst(,) As Double) As Integer()
+        Dim nbNMR(tabAREst.GetUpperBound(1)) As Integer
+        For colonne = 0 To tabAREst.GetUpperBound(1)
+            Dim nbMR As Integer = 0
+            For i = 0 To tabAREst.GetUpperBound(0)
+                'On compte le nombre d'AR manquants
+                If tabAREst(i, colonne) = -2146826246 Then
+                    nbMR = nbMR + 1
+                End If
+            Next i
+            nbNMR(colonne) = tabAREst.GetLength(0) - nbMR
+        Next colonne
+        Return nbNMR
+    End Function
+
+    Public Function patellTest(ByRef tabAREst(,) As Double, ByRef tabAREv(,) As Double, _
+                               ByRef tabDateEst() As Integer, ByRef tabDateEv() As Integer, _
+                               ByRef tabRentaClassiquesMarcheEst(,) As Double, ByRef tabRentaClassiquesMarcheEv(,) As Double, _
+                               ByRef Mj() As Integer) As Double()
         'La formule utilisée est donnée page 80 de "Eventus-Guide"
-        'On se positionne sur la feuille des Rt
-        Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("Rm"), Excel.Worksheet)
 
-        'Indices de la fenêtre d'estimation
-        Dim indFenetreEstDeb As Integer = fenetreEstDebut - currentSheet.Cells(2, 1).Value
-        Dim indFenetreEstFin As Integer = fenetreEstFin - currentSheet.Cells(2, 1).Value
-        Dim indFenetreEvDeb As Integer = fenetreEvDebut - currentSheet.Cells(2, 1).Value
-        Dim indFenetreEvFin As Integer = fenetreEvFin - currentSheet.Cells(2, 1).Value
-        Dim M As Integer = indFenetreEstFin - indFenetreEstDeb + 1
-
-        Dim sAtjCarre(tabAR.GetUpperBound(0), tabAR.GetUpperBound(1)) As Double
+        '(s_Atj)² uniquement pour la période d'événement
+        Dim sAtjCarre(tabAREv.GetUpperBound(0), tabAREv.GetUpperBound(1)) As Double
 
         'Calcul des (s_Aj)²
-        Dim sAjCarre(tabAR.GetUpperBound(1)) As Double
-        sAjCarre = patellCalcSAj(tabAR, indFenetreEstDeb, indFenetreEstFin)
+        Dim sAjCarre() As Double = patellCalcSAj(tabAREst, Mj)
 
-        'Attention, modification de la formule : on l'étend à plusieurs Rm => toujours ok ?
         'Calcul des Rm_Est
-        Dim rmEst(tabAR.GetUpperBound(1)) As Double
-        rmEst = patellCalcRmEst(tabAR.GetLength(1), indFenetreEstDeb, indFenetreEstFin)
+        Dim rmEst() As Double = patellCalcRmEst(tabRentaClassiquesMarcheEst)
 
         'Calcul somme au dénominateur
-        Dim sommeDenom(tabAR.GetUpperBound(1)) As Double
-        sommeDenom = patellCalcSommeDenom(rmEst, indFenetreEstDeb, indFenetreEstFin)
+        Dim sommeDenom() As Double = patellCalcSommeDenom(tabRentaClassiquesMarcheEst, rmEst)
 
         'Calcul de la formule complète
         For i = 0 To sAtjCarre.GetUpperBound(0)
             For j = 0 To sAtjCarre.GetUpperBound(1)
-                Dim tmp = currentSheet.Cells(i + 2, j + 2).Value - rmEst(j)
-                sAtjCarre(i, j) = sAjCarre(j) * (1 + (1 / M) + (tmp * tmp / sommeDenom(j)))
+                Dim tmp = tabRentaClassiquesMarcheEv(i, j) - rmEst(j)
+                sAtjCarre(i, j) = sAjCarre(j) * (1 + (1 / Mj(j)) + (tmp * tmp / sommeDenom(j)))
             Next j
         Next i
 
-        'Tableau des SAR
-        Dim SAR(tabAR.GetUpperBound(0), tabAR.GetUpperBound(1)) As Double
-        For i = 0 To tabAR.GetUpperBound(0)
-            For j = 0 To tabAR.GetUpperBound(1)
-                SAR(i, j) = tabAR(i, j) / Math.Sqrt(sAtjCarre(i, j))
+        'Tableau des SARuniquement pour la période d'événement
+        Dim SAR(tabAREv.GetUpperBound(0), tabAREv.GetUpperBound(1)) As Double
+        For i = 0 To tabAREv.GetUpperBound(0)
+            For j = 0 To tabAREv.GetUpperBound(1)
+                If tabAREv(i, j) = -2146826246 Then
+                    SAR(i, j) = -2146826246
+                Else
+                    SAR(i, j) = tabAREv(i, j) / Math.Sqrt(sAtjCarre(i, j))
+                End If
             Next j
         Next i
 
         'Calcul de Z-t1,t2
-        Dim testHyp As Double
-        testHyp = patellCalcZ(SAR, indFenetreEvDeb, indFenetreEvFin, M)
+        Dim testHyp() As Double = patellCalcZ(SAR, Mj)
         Return testHyp
     End Function
 
-    Private Function patellCalcSAj(tabAR(,) As Double, indFenetreEstDeb As Integer, indFenetreEstFin As Integer) As Double()
-        Dim sAjCarre(tabAR.GetUpperBound(1)) As Double
-        For colonne = 0 To tabAR.GetUpperBound(1)
+    Private Function patellCalcSAj(ByRef tabAREst(,) As Double, ByRef Mj() As Integer) As Double()
+        Dim sAjCarre(tabAREst.GetUpperBound(1)) As Double
+        For colonne = 0 To tabAREst.GetUpperBound(1)
             sAjCarre(colonne) = 0
-            For k = indFenetreEstDeb To indFenetreEstFin
-                sAjCarre(colonne) = sAjCarre(colonne) + tabAR(k, colonne) * tabAR(k, colonne)
-            Next k
-            sAjCarre(colonne) = sAjCarre(colonne) / (indFenetreEstFin - indFenetreEstDeb + 1)
+            For i = 0 To tabAREst.GetUpperBound(0)
+                If Not tabAREst(i, colonne) = -2146826246 Then
+                    sAjCarre(colonne) = sAjCarre(colonne) + tabAREst(i, colonne) * tabAREst(i, colonne)
+                End If
+            Next i
+            sAjCarre(colonne) = sAjCarre(colonne) / (Mj(colonne) - 2)
         Next colonne
         Return sAjCarre
     End Function
 
-    Private Function patellCalcRmEst(nbTitres As Integer, indFenetreEstDeb As Integer, indFenetreEstFin As Integer) As Double()
-        'On se positionne sur la feuille des Rm
-        Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("Rm"), Excel.Worksheet)
-        Dim rmEst(nbTitres - 1) As Double
-        For colonne = 0 To nbTitres - 1
-            rmEst(colonne) = 0
-            For i = indFenetreEstDeb To indFenetreEstFin
-                rmEst(colonne) = rmEst(colonne) + currentSheet.Cells(i + 2, colonne + 2).Value
+    Private Function patellCalcRmEst(ByRef tabRentaClassiquesMarcheEst(,) As Double) As Double()
+        Dim rmEst(tabRentaClassiquesMarcheEst.GetUpperBound(1) - 1) As Double
+        'La première colonne contient les dates, on ne l'utilise donc pas
+        For colonne = 1 To tabRentaClassiquesMarcheEst.GetUpperBound(1) - 1
+            rmEst(colonne - 1) = 0
+            For i = 0 To tabRentaClassiquesMarcheEst.GetUpperBound(0)
+                rmEst(colonne - 1) = rmEst(colonne - 1) + tabRentaClassiquesMarcheEst(i, colonne)
             Next i
-            rmEst(colonne) = rmEst(colonne) / (indFenetreEstFin - indFenetreEstDeb + 1)
+            rmEst(colonne - 1) = rmEst(colonne - 1) / (tabRentaClassiquesMarcheEst.GetLength(0))
         Next colonne
         Return rmEst
     End Function
 
-    Private Function patellCalcSommeDenom(rmEst As Double(), indFenetreEstDeb As Integer, indFenetreEstFin As Integer) As Double()
-        'on se positionne sur la feuille des Rm
-        Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("Rm"), Excel.Worksheet)
-        Dim sommeDenom(rmEst.GetUpperBound(0)) As Double
+    Private Function patellCalcSommeDenom(ByRef tabRentaClassiquesMarcheEst(,) As Double, ByRef rmEst As Double()) As Double()
+        Dim sommeDenom(tabRentaClassiquesMarcheEst.GetUpperBound(1) - 1) As Double
 
-        For colonne = 0 To rmEst.GetUpperBound(0)
-            sommeDenom(colonne) = 0
-            For i = indFenetreEstDeb To indFenetreEstFin
-                Dim tmp As Double = currentSheet.Cells(i + 2, colonne + 2).Value - rmEst(colonne)
-                sommeDenom(colonne) = sommeDenom(colonne) + tmp * tmp
+        For colonne = 1 To tabRentaClassiquesMarcheEst.GetUpperBound(1) - 1
+            sommeDenom(colonne - 1) = 0
+            For i = 0 To tabRentaClassiquesMarcheEst.GetUpperBound(0)
+                Dim tmp As Double = tabRentaClassiquesMarcheEst(i, colonne) - rmEst(colonne - 1)
+                sommeDenom(colonne - 1) = sommeDenom(colonne - 1) + tmp * tmp
             Next i
         Next colonne
         Return sommeDenom
     End Function
 
-    Private Function patellCalcZ(SAR As Double(,), indFenetreEvDeb As Integer, indFenetreEvFin As Integer, M As Integer) As Double
-        Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("Rt"), Excel.Worksheet)
-
-        Dim q As Double = (indFenetreEvFin - indFenetreEvDeb + 1) * (M - 2) / (M - 4)
-
-        Dim z As Double = 0
-        For colonne = 0 To SAR.GetUpperBound(1)
-            Dim zj As Double = 0
-            For t = indFenetreEvDeb To indFenetreEvFin
-                zj = zj + SAR(t, colonne)
-            Next t
-            z = z + zj / Math.Sqrt(q)
-        Next colonne
-        z = z / Math.Sqrt(SAR.GetLength(1))
+    ''' <summary>
+    ''' TEST TEST TEST TEST TEST
+    ''' </summary>
+    ''' <param name="SAR"></param>
+    ''' <param name="Mj"></param>
+    ''' <returns></returns>
+    ''' <remarks></remarks>
+    Private Function patellCalcZ(SAR As Double(,), Mj() As Integer) As Double()
+        Dim z(SAR.GetUpperBound(0)) As Double
+        For datesCum = 0 To SAR.GetUpperBound(0)
+            For colonne = 0 To SAR.GetUpperBound(1)
+                Dim zj As Double = 0
+                Dim nbVal = datesCum + 1
+                For t = 0 To datesCum
+                    If SAR(t, colonne) = -2146826246 Then
+                        nbVal = nbVal - 1
+                    Else
+                        zj = zj + SAR(t, colonne)
+                    End If
+                Next t
+                Dim q As Double = nbVal * (Mj(colonne) - 2) / (Mj(colonne) - 4)
+                If Not q = 0 Then
+                    z(datesCum) = z(datesCum) + zj / Math.Sqrt(q)
+                End If
+            Next colonne
+            z(datesCum) = z(datesCum) / Math.Sqrt(SAR.GetLength(1))
+        Next datesCum
         Return z
     End Function
 
