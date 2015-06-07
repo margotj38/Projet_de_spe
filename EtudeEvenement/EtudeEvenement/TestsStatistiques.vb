@@ -101,10 +101,10 @@
         Return nbNMR
     End Function
 
-    Public Function patellTest(ByRef tabAREst(,) As Double, ByRef tabAREv(,) As Double, _
+    Public Sub patellTest(ByRef tabAREst(,) As Double, ByRef tabAREv(,) As Double, _
                                ByRef tabDateEst() As Integer, ByRef tabDateEv() As Integer, _
                                ByRef tabRentaClassiquesMarcheEst(,) As Double, ByRef tabRentaClassiquesMarcheEv(,) As Double, _
-                               ByRef Mj() As Integer) As Double()
+                               ByRef Mj() As Integer, ByRef testHypAAR() As Double, ByRef testHypCAAR() As Double)
         'La formule utilisée est donnée page 80 de "Eventus-Guide"
 
         '(s_Atj)² uniquement pour la période d'événement
@@ -139,10 +139,12 @@
             Next j
         Next i
 
+        'Calcul des statistiques de l'hypothèse AAR = 0
+        testHypAAR = patellCalcStatAAR(SAR, Mj)
+
         'Calcul de Z-t1,t2
-        Dim testHyp() As Double = patellCalcZ(SAR, Mj)
-        Return testHyp
-    End Function
+        testHypCAAR = patellCalcZ(SAR, Mj)
+    End Sub
 
     Private Function patellCalcSAj(ByRef tabAREst(,) As Double, ByRef Mj() As Integer) As Double()
         Dim sAjCarre(tabAREst.GetUpperBound(1)) As Double
@@ -184,13 +186,6 @@
         Return sommeDenom
     End Function
 
-    ''' <summary>
-    ''' TEST TEST TEST TEST TEST
-    ''' </summary>
-    ''' <param name="SAR"></param>
-    ''' <param name="Mj"></param>
-    ''' <returns></returns>
-    ''' <remarks></remarks>
     Private Function patellCalcZ(SAR As Double(,), Mj() As Integer) As Double()
         Dim z(SAR.GetUpperBound(0)) As Double
         For datesCum = 0 To SAR.GetUpperBound(0)
@@ -212,6 +207,31 @@
             z(datesCum) = z(datesCum) / Math.Sqrt(SAR.GetLength(1))
         Next datesCum
         Return z
+    End Function
+
+    Private Function patellCalcStatAAR(ByRef SAR(,) As Double, ByRef Mj() As Integer) As Double()
+        'Calcul de ASAR (event study tools)
+        Dim ASAR(SAR.GetUpperBound(0)) As Double
+        For i = 0 To SAR.GetUpperBound(0)
+            For colonne = 0 To SAR.GetUpperBound(1)
+                If Not SAR(i, colonne) = -2146826246 Then
+                    ASAR(i) = ASAR(i) + SAR(i, colonne)
+                End If
+            Next colonne
+        Next i
+
+        'Calcul (s_ASAR)²
+        Dim sASARCarre As Double
+        For colonne = 0 To SAR.GetUpperBound(1)
+            sASARCarre = sASARCarre + (Mj(colonne) - 2) / (Mj(colonne) - 4)
+        Next colonne
+
+        'Calcul des statistiques de l'hypothèse AAR = 0
+        Dim testHypAAR(SAR.GetUpperBound(0)) As Double
+        For i = 0 To SAR.GetUpperBound(0)
+            testHypAAR(i) = ASAR(i) / Math.Sqrt(sASARCarre)
+        Next i
+        Return testHypAAR
     End Function
 
 

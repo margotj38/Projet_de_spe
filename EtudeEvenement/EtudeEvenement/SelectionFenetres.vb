@@ -107,9 +107,11 @@ Public Class SelectionFenetres
                 'test de Patell
                 'Calcul du nombre de AR non manquants pour chaque entreprise sur la période d'estimation
                 Dim nbNonMissingReturn() As Integer = TestsStatistiques.calculNbNonMissingReturn(tabAREst)
-                Dim testHyp() As Double = TestsStatistiques.patellTest(tabAREst, tabAREv, tabDateEst, tabDateEv, _
-                                             tabRentaClassiquesMarcheEst, tabRentaClassiquesMarcheEv, nbNonMissingReturn)
-                ExcelDialogue.affichagePatell(tabDateEv, testHyp)
+                Dim testHypAAR() As Double = Nothing
+                Dim testHypCAAR() As Double = Nothing
+                TestsStatistiques.patellTest(tabAREst, tabAREv, tabDateEst, tabDateEv, tabRentaClassiquesMarcheEst, _
+                                             tabRentaClassiquesMarcheEv, nbNonMissingReturn, testHypAAR, testHypCAAR)
+                ExcelDialogue.affichagePatell(tabDateEv, testHypAAR, testHypCAAR)
             Case 2
                 'test de signe
                 'A compléter

@@ -314,7 +314,7 @@ Module ExcelDialogue
     End Sub
 
 
-    Public Sub affichagePatell(ByRef tabDateEv() As Integer, ByRef testHyp() As Double)
+    Public Sub affichagePatell(ByRef tabDateEv() As Integer, ByRef testHypAAR() As Double, ByRef testHypCAAR() As Double)
         'Création d'une nouvelle feuille
         Dim nom As String
         nom = InputBox("Entrer le nom de la feuille des résultats : ")
@@ -323,24 +323,43 @@ Module ExcelDialogue
         Globals.ThisAddIn.Application.Sheets.Add(After:=Globals.ThisAddIn.Application.Worksheets(Globals.ThisAddIn.Application.Worksheets.Count))
         Globals.ThisAddIn.Application.ActiveSheet.Name = nom
 
+        '*** Test AAR = 0 ***
+
         'Le nom de chaque colonne
-        nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("A1"), "Période d'événement")
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("A1"), "AAR")
         nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("B1"), "Test Patell")
         nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("C1"), "P-valeur (%)")
 
-        'Affichage des dates
+        'Affichage des dates et des statistiques du test de Patell et de la P-Valeur
         For i = 0 To tabDateEv.GetUpperBound(0)
-            nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + 2, 1), "[" & tabDateEv(0) & "; " & tabDateEv(i) & "]")
-        Next i
-
-        'Affichage des statistiques du test de Patell et de la P-Valeur
-        For i = 0 To tabDateEv.GetUpperBound(0)
-            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + 2, 2), testHyp(i))
+            nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + 2, 1), tabDateEv(i))
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + 2, 2), testHypAAR(i))
             Dim pValeur As Double
-            pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHyp(i)), True))
+            'COMMENT CALCULER P-VALEUR ???
+            pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHypAAR(i)), True))
             valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + 2, 3), pValeur * 100)
             'La signification du test
             Globals.ThisAddIn.Application.Worksheets(nom).Cells(i + 2, 4).Value = signification(pValeur)
+        Next i
+
+        '*** Test CAAR = 0 ***
+
+        Dim debutAffichage As Integer = tabDateEv.GetLength(0) + 4
+
+        'Le nom de chaque colonne
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Cells(debutAffichage, 1), "CAAR")
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Cells(debutAffichage, 2), "Test Patell")
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Cells(debutAffichage, 3), "P-valeur (%)")
+
+        'Affichage des dates et des statistiques du test de Patell et de la P-Valeur
+        For i = 0 To tabDateEv.GetUpperBound(0)
+            nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + debutAffichage + 1, 1), "[" & tabDateEv(0) & "; " & tabDateEv(i) & "]")
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + debutAffichage + 1, 2), testHypCAAR(i))
+            Dim pValeur As Double
+            pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHypCAAR(i)), True))
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + debutAffichage + 1, 3), pValeur * 100)
+            'La signification du test
+            Globals.ThisAddIn.Application.Worksheets(nom).Cells(i + debutAffichage + 1, 4).Value = signification(pValeur)
         Next i
 
 
