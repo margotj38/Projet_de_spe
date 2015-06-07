@@ -306,6 +306,10 @@
         For e = 1 To N
             Dim somme As Double = 0
             For i = 1 To tailleFenetreEv
+                'si RA = NA => On ignore la valeur de RA
+                If (tabEvAR(i, e) = -2146826246) Then
+                    tabEvAR(i, e) = 0
+                End If
                 somme = somme + tabEvAR(i, e)
                 tabCAR(i - 1, e - 1) = somme
             Next
