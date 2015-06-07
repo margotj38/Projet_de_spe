@@ -52,7 +52,7 @@ Partial Class SelectionFenetres
         '
         'LancementEtEv
         '
-        Me.LancementEtEv.Location = New System.Drawing.Point(103, 259)
+        Me.LancementEtEv.Location = New System.Drawing.Point(104, 263)
         Me.LancementEtEv.Name = "LancementEtEv"
         Me.LancementEtEv.Size = New System.Drawing.Size(111, 23)
         Me.LancementEtEv.TabIndex = 20
