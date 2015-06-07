@@ -1,5 +1,5 @@
 ﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
-Partial Class SelectionDatesEv
+Partial Class ParamPreTraitRenta
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
@@ -22,12 +22,12 @@ Partial Class SelectionDatesEv
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(SelectionDatesEv))
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(ParamPreTraitRenta))
         Me.LabelDatesEv = New System.Windows.Forms.Label()
         Me.lancementPreT = New System.Windows.Forms.Button()
-        Me.datesEvRefEdit = New LeafCreations.Excel2007RefEdit()
         Me.nomFeuilleBox = New System.Windows.Forms.TextBox()
         Me.LabelFeuille = New System.Windows.Forms.Label()
+        Me.datesEvRefEdit = New LeafCreations.Excel2007RefEdit()
         Me.SuspendLayout()
         '
         'LabelDatesEv
@@ -48,6 +48,22 @@ Partial Class SelectionDatesEv
         Me.lancementPreT.Text = "Lancer prétraitement"
         Me.lancementPreT.UseVisualStyleBackColor = True
         '
+        'nomFeuilleBox
+        '
+        Me.nomFeuilleBox.Location = New System.Drawing.Point(39, 163)
+        Me.nomFeuilleBox.Name = "nomFeuilleBox"
+        Me.nomFeuilleBox.Size = New System.Drawing.Size(137, 20)
+        Me.nomFeuilleBox.TabIndex = 4
+        '
+        'LabelFeuille
+        '
+        Me.LabelFeuille.AutoSize = True
+        Me.LabelFeuille.Location = New System.Drawing.Point(23, 123)
+        Me.LabelFeuille.Name = "LabelFeuille"
+        Me.LabelFeuille.Size = New System.Drawing.Size(264, 13)
+        Me.LabelFeuille.TabIndex = 5
+        Me.LabelFeuille.Text = "Nom de la feuille où trouver les données de rentabilités"
+        '
         'datesEvRefEdit
         '
         Me.datesEvRefEdit.Address = Nothing
@@ -61,23 +77,7 @@ Partial Class SelectionDatesEv
         Me.datesEvRefEdit.Size = New System.Drawing.Size(195, 26)
         Me.datesEvRefEdit.TabIndex = 0
         '
-        'nomFeuilleBox
-        '
-        Me.nomFeuilleBox.Location = New System.Drawing.Point(39, 162)
-        Me.nomFeuilleBox.Name = "nomFeuilleBox"
-        Me.nomFeuilleBox.Size = New System.Drawing.Size(137, 20)
-        Me.nomFeuilleBox.TabIndex = 4
-        '
-        'LabelFeuille
-        '
-        Me.LabelFeuille.AutoSize = True
-        Me.LabelFeuille.Location = New System.Drawing.Point(23, 123)
-        Me.LabelFeuille.Name = "LabelFeuille"
-        Me.LabelFeuille.Size = New System.Drawing.Size(196, 13)
-        Me.LabelFeuille.TabIndex = 5
-        Me.LabelFeuille.Text = "Nom de la feuille où trouver les données"
-        '
-        'SelectionDatesEv
+        'ParamPreTraitRenta
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
@@ -87,7 +87,7 @@ Partial Class SelectionDatesEv
         Me.Controls.Add(Me.lancementPreT)
         Me.Controls.Add(Me.LabelDatesEv)
         Me.Controls.Add(Me.datesEvRefEdit)
-        Me.Name = "SelectionDatesEv"
+        Me.Name = "ParamPreTraitRenta"
         Me.Text = "SelectionDatesEv"
         Me.ResumeLayout(False)
         Me.PerformLayout()

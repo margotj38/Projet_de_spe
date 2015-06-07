@@ -51,7 +51,8 @@
     'Entrée : tableaux centrés des cours et du marché (1ère colonne : dates)
     'Sortie : tableaux des rentabilités des entreprises et du marché (1ère colonne : dates) + maxPrixAbsent
     Public Sub calculTabRenta(ByRef tabPrixCentres(,) As Double, ByRef tabMarcheCentre(,) As Double, _
-                              ByRef tabRenta(,) As Double, ByRef tabRentaMarche(,) As Double, ByRef maxPrixAbsent As Integer)
+                              ByRef tabRenta(,) As Double, ByRef tabRentaMarche(,) As Double, ByRef maxPrixAbsent As Integer, _
+                              rentaLog As Boolean)
 
         'On recopie la colonne des dates dans les tableaux
         For indDate = 1 To tabPrixCentres.GetUpperBound(0)
@@ -172,7 +173,8 @@
 
     '***************************** Pour centrer les prix/rentabilités autour des dates d'événement *****************************
 
-    Sub donneesCentrees(plageDate As String, feuilleDates As String, feuilleDonnees As String, ByRef tabEntreprisesCentre(,) As Double, ByRef tabMarcheCentre(,) As Double)
+    Sub donneesCentrees(plageDate As String, feuilleDates As String, feuilleDonnees As String, ByRef tabEntreprisesCentre(,) As Double, _
+                        ByRef tabMarcheCentre(,) As Double, coursOuv As Boolean)
 
         Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets(feuilleDates), Excel.Worksheet)
 

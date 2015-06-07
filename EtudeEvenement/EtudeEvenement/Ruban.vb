@@ -8,7 +8,8 @@ Public Class Ruban
 
     Public selFenetres As SelectionFenetres
     Public selAR As SelectionAR
-    Public selDatesEv As SelectionDatesEv
+    Public paramRenta As ParamPreTraitRenta
+    Public paramPrix As ParamPreTraitPrix
 
     Public graphPVal As GraphiquePValeur
 
@@ -186,27 +187,28 @@ Public Class Ruban
 
     Private Sub preTraitPrix_Click(sender As Object, e As RibbonControlEventArgs) Handles preTraitPrix.Click
 
-        selDatesEv = New SelectionDatesEv(0)
+        paramPrix = New ParamPreTraitPrix()
 
         'Définition des options de refEdit
-        selDatesEv.datesEvRefEdit.IncludeSheetName = True
-        selDatesEv.datesEvRefEdit.ShowRowAbsoluteIndicator = False
-        selDatesEv.datesEvRefEdit.ShowColumnAbsoluteIndicator = False
-        selDatesEv.TopMost = True
-        selDatesEv.Visible = True
-        selDatesEv.nomFeuilleBox.Text = "Prix"
+        paramPrix.datesEvRefEdit.IncludeSheetName = True
+        paramPrix.datesEvRefEdit.ShowRowAbsoluteIndicator = False
+        paramPrix.datesEvRefEdit.ShowColumnAbsoluteIndicator = False
+        paramPrix.TopMost = True
+        paramPrix.Visible = True
+        paramPrix.nomFeuilleBox.Text = "Prix"
     End Sub
 
     Private Sub preTraitRenta_Click(sender As Object, e As RibbonControlEventArgs) Handles preTraitRenta.Click
-        selDatesEv = New SelectionDatesEv(1)
+
+        paramRenta = New ParamPreTraitRenta()
 
         'Définition des options de refEdit
-        selDatesEv.datesEvRefEdit.IncludeSheetName = True
-        selDatesEv.datesEvRefEdit.ShowRowAbsoluteIndicator = False
-        selDatesEv.datesEvRefEdit.ShowColumnAbsoluteIndicator = False
-        selDatesEv.TopMost = True
-        selDatesEv.Visible = True
-        selDatesEv.nomFeuilleBox.Text = "Rent"
+        paramRenta.datesEvRefEdit.IncludeSheetName = True
+        paramRenta.datesEvRefEdit.ShowRowAbsoluteIndicator = False
+        paramRenta.datesEvRefEdit.ShowColumnAbsoluteIndicator = False
+        paramRenta.TopMost = True
+        paramRenta.Visible = True
+        paramRenta.nomFeuilleBox.Text = "Rent"
     End Sub
 
     Private Sub BoutonTest_Click(sender As Object, e As RibbonControlEventArgs) Handles BoutonTest.Click
