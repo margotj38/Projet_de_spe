@@ -215,6 +215,11 @@
         minUp = currentSheet.Range("A:A").Find(Format(tabDate(0), "Short date").ToString).Row - 2
         'indice derniere date - derniere date evenement
         minDown = nbLignes - currentSheet.Columns("A:A").Find(Format(tabDate(tabDate.GetUpperBound(0)), "Short date").ToString).Row
+        'si ce sont des cours d'ouverture, on modifie le centrage
+        If coursOuv Then
+            minUp = minUp + 1
+            minDown = minDown - 1
+        End If
 
         'Redimensionnement des tableaux de retour
         ReDim tabEntreprisesCentre(minDown + minUp, tabDate.GetUpperBound(0) + 1)
@@ -232,8 +237,16 @@
             Dim dateCour As Excel.Range
             Dim data As Excel.Range, marche As Excel.Range
             dateCour = currentSheet.Columns("A:A").Find(Format(tabDate(colonne - 1), "Short date").ToString)
-            fenetreInf = dateCour.Row - minUp
-            fenetreSup = dateCour.Row + minDown
+            If coursOuv Then
+                'si ce sont des cours d'ouverture, on centre par rapport au lendemain de la date d'événement
+                fenetreInf = dateCour.Row + 1 - minUp
+                fenetreSup = dateCour.Row + 1 + minDown
+            Else
+                'sinon on centre par rapport à la date d'événement
+                fenetreInf = dateCour.Row - minUp
+                fenetreSup = dateCour.Row + minDown
+            End If
+
             'récupération des prix centrés autour de l'évènement
             data = currentSheet.Range(currentSheet.Cells(fenetreInf, tabInd(colonne - 1) + 2), currentSheet.Cells(fenetreSup, tabInd(colonne - 1) + 2))
             'récupération des indices de marché correspondants
