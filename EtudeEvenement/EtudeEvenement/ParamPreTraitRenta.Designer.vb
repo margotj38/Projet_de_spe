@@ -50,7 +50,7 @@ Partial Class ParamPreTraitRenta
         '
         'nomFeuilleBox
         '
-        Me.nomFeuilleBox.Location = New System.Drawing.Point(39, 163)
+        Me.nomFeuilleBox.Location = New System.Drawing.Point(39, 161)
         Me.nomFeuilleBox.Name = "nomFeuilleBox"
         Me.nomFeuilleBox.Size = New System.Drawing.Size(137, 20)
         Me.nomFeuilleBox.TabIndex = 4

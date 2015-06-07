@@ -86,12 +86,22 @@
                         maxPrixAbsent = prixPresent
                     End If
                 Else
-                    'Sinon on fait le calcul en remontant au dernier prix disponible
-                    tabRenta(indDate - 1, titre) = ((tabPrixCentres(indDate, titre) - tabPrixCentres(indDate - prixPresent, titre)) / _
-                        tabPrixCentres(indDate - prixPresent, titre)) / prixPresent
-                    'On fait de même pour les rentabilités de marché
-                    tabRentaMarche(indDate - 1, titre) = ((tabMarcheCentre(indDate, titre) - tabMarcheCentre(indDate - prixPresent, titre)) / _
-                        tabMarcheCentre(indDate - prixPresent, titre)) / prixPresent
+                    'Sinon on fait le calcul en remontant au dernier prix disponible (avec le bon mode de calcul (log ou arithmétique))
+                    If rentaLog Then
+                        'Calcul des rentabilités des entreprises
+                        tabRenta(indDate - 1, titre) = (Math.Log(tabPrixCentres(indDate, titre) / _
+                                                                 tabPrixCentres(indDate - prixPresent, titre))) / prixPresent
+                        'On fait de même pour les rentabilités de marché
+                        tabRentaMarche(indDate - 1, titre) = (Math.Log(tabMarcheCentre(indDate, titre) / _
+                                                                 tabMarcheCentre(indDate - prixPresent, titre))) / prixPresent
+                    Else
+                        'Calcul des rentabilités des entreprises
+                        tabRenta(indDate - 1, titre) = ((tabPrixCentres(indDate, titre) - tabPrixCentres(indDate - prixPresent, titre)) / _
+                            tabPrixCentres(indDate - prixPresent, titre)) / prixPresent
+                        'On fait de même pour les rentabilités de marché
+                        tabRentaMarche(indDate - 1, titre) = ((tabMarcheCentre(indDate, titre) - tabMarcheCentre(indDate - prixPresent, titre)) / _
+                            tabMarcheCentre(indDate - prixPresent, titre)) / prixPresent
+                    End If
                     'Et on indique qu'un prix était présent
                     prixPresent = 1
                 End If

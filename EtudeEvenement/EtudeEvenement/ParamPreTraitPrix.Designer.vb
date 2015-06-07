@@ -43,7 +43,7 @@ Partial Class ParamPreTraitPrix
         '
         'nomFeuilleBox
         '
-        Me.nomFeuilleBox.Location = New System.Drawing.Point(45, 163)
+        Me.nomFeuilleBox.Location = New System.Drawing.Point(45, 160)
         Me.nomFeuilleBox.Name = "nomFeuilleBox"
         Me.nomFeuilleBox.Size = New System.Drawing.Size(137, 20)
         Me.nomFeuilleBox.TabIndex = 9
