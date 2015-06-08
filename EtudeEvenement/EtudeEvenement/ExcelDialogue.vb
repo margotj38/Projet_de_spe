@@ -73,8 +73,8 @@ Module ExcelDialogue
         Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
         'Remplissage des tableaux : CAR, moyenne, variance
         Dim tabCAR(,) As Double = RentaAnormales.CalculCar(tabEvAR)
-        Dim tabMoyCar() As Double = RentaAnormales.calculMoyenneCar(tabCAR)
-        Dim tabVarCar() As Double = RentaAnormales.calculVarianceCar(tabCAR, tabMoyCar)
+        Dim tabMoyCar() As Double = RentaAnormales.moyNormCar(tabEstAR, tabCAR)
+        Dim tabVarCar() As Double = RentaAnormales.ecartNormCar(tabEstAR, tabCAR, tabMoyCar)
 
         'affichage des résultats des CAR
         afficheResCAR(tabMoyCar, tabVarCar, datesEvAR, N, nom)
@@ -135,8 +135,8 @@ Module ExcelDialogue
         Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
         'Remplissage des tableaux :moyenne, variance
         Dim tabCAR(,) As Double = RentaAnormales.CalculCar(tabEvAR)
-        Dim tabMoyCar() As Double = RentaAnormales.calculMoyenneCar(tabCAR)
-        Dim tabVarCar() As Double = RentaAnormales.calculVarianceCar(tabCAR, tabMoyCar)
+        Dim tabMoyCar() As Double = RentaAnormales.moyNormCar(tabEstAR, tabCAR)
+        Dim tabVarCar() As Double = RentaAnormales.ecartNormCar(tabEstAR, tabCAR, tabMoyCar)
 
         'affichage des résultats des CAR
         afficheResCAR(tabMoyCar, tabVarCar, dates, N, nom)
