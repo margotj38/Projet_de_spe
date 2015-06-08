@@ -44,7 +44,7 @@ Public Class SelectionAR
         Utilitaires.recupererFeuillePlage(Me.refEditEv.Address, feuille, plageEv)
 
         'Traitement des données AR fournies
-        ExcelDialogue.traitementAR(plageEst, plageEv, feuille)
+        ExcelDialogue.traitementPlageAR(plageEst, plageEv, feuille)
 
         '
         'Me.Visible = False

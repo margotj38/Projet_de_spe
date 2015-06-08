@@ -48,7 +48,7 @@ Module ExcelDialogue
     End Sub
 
     'Traitement des ARs à partir des deux tableaux des AR
-    Public Sub traitementTabAR(tabEvAR(,) As Object, tabEstAR(,) As Object, datesEvAR() As Object)
+    Public Sub traitementTabAR(tabEvAR(,) As Double, tabEstAR(,) As Double, datesEvAR() As Integer)
 
         'La création d'une nouvelle feuille
         Dim nom As String
@@ -82,7 +82,7 @@ Module ExcelDialogue
     End Sub
 
     '***************************** traitement fichier AR *****************************
-    Public Sub traitementAR(plageEst As String, plageEv As String, feuille As String)
+    Public Sub traitementPlageAR(plageEst As String, plageEv As String, feuille As String)
         Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets(feuille), Excel.Worksheet)
 
         'La création d'une nouvelle feuille
@@ -97,15 +97,28 @@ Module ExcelDialogue
         Dim tmpRange As Excel.Range
         tmpRange = currentSheet.Range(plageEst)
         'tableau des données pour l'estimation
-        Dim tabEstAR(0 To tmpRange.Rows.Count, 0 To tmpRange.Columns.Count - 1) As Object
-        tabEstAR = currentSheet.Range(tmpRange.Cells(1, 2), tmpRange.Cells(tmpRange.Rows.Count, tmpRange.Columns.Count)).Value
+        Dim tabEstAR(0 To tmpRange.Rows.Count - 1, 0 To tmpRange.Columns.Count - 2) As Double
+        For ligne = 0 To tabEstAR.GetUpperBound(0)
+            For colonne = 0 To tabEstAR.GetUpperBound(1)
+                tabEstAR(ligne, colonne) = tmpRange.Cells(ligne + 1, colonne + 2).Value
+            Next
+        Next
+        'tabEstAR = currentSheet.Range(tmpRange.Cells(1, 2), tmpRange.Cells(tmpRange.Rows.Count, tmpRange.Columns.Count)).Value
         'extraction de la première colonne correspondant aux dates
         tmpRange = currentSheet.Range(plageEv)
-        Dim dates(0 To tmpRange.Rows.Count) As Object
-        dates = currentSheet.Range(tmpRange.Cells(1, 1), tmpRange.Cells(tmpRange.Rows.Count, 1)).Value
+        Dim dates(0 To tmpRange.Rows.Count - 1) As Integer
+        For ligne = 0 To dates.GetUpperBound(0)
+            dates(ligne) = tmpRange.Cells(ligne + 1, 1).Value
+        Next
+        'dates = currentSheet.Range(tmpRange.Cells(1, 1), tmpRange.Cells(tmpRange.Rows.Count, 1)).Value
         'tableau des données pour l'estimation
-        Dim tabEvAR(0 To tmpRange.Rows.Count, 0 To tmpRange.Columns.Count - 1) As Object
-        tabEvAR = currentSheet.Range(tmpRange.Cells(1, 2), tmpRange.Cells(tmpRange.Rows.Count, tmpRange.Columns.Count)).Value
+        Dim tabEvAR(0 To tmpRange.Rows.Count - 1, 0 To tmpRange.Columns.Count - 2) As Double
+        For ligne = 0 To tabEvAR.GetUpperBound(0)
+            For colonne = 0 To tabEstAR.GetUpperBound(1)
+                tabEvAR(ligne, colonne) = tmpRange.Cells(ligne + 1, colonne + 2).Value
+            Next
+        Next
+        'tabEvAR = currentSheet.Range(tmpRange.Cells(1, 2), tmpRange.Cells(tmpRange.Rows.Count, tmpRange.Columns.Count)).Value
 
         'nombre d'entreprises de l'échantillon
         Dim N As Integer = tabEvAR.GetLength(1)
@@ -132,7 +145,7 @@ Module ExcelDialogue
 
 
     '----------------------------------- affichage résultats AR
-    Public Sub afficheResAR(tabMoyAR() As Double, tabEcartAR() As Double, datesEvAR() As Object, tailleEch As Integer, nomFeuille As String)
+    Public Sub afficheResAR(tabMoyAR() As Double, tabEcartAR() As Double, datesEvAR() As Integer, tailleEch As Integer, nomFeuille As String)
 
         'Le nom de chaque colonne
         nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("B1"), "Moyenne")
@@ -169,7 +182,7 @@ Module ExcelDialogue
     End Sub
 
     '----------------------------------- affichage résultats CAR
-    Public Sub afficheResCAR(tabMoyCAR() As Double, tabVarCAR() As Double, datesEvAR() As Object, tailleEch As Integer, nomFeuille As String)
+    Public Sub afficheResCAR(tabMoyCAR() As Double, tabVarCAR() As Double, datesEvAR() As Integer, tailleEch As Integer, nomFeuille As String)
 
         Dim tailleFenetreEv As Integer = datesEvAR.GetLength(0)
 
