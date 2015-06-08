@@ -100,8 +100,8 @@ Public Class ChoixSeuilFenetre
                     'pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHyp), True)) * 100
                 Case 2
                     'test de signe'
-                    Dim testHyp As Double = TestsStatistiques.statTestSigne(tabAR, fenetreEstDebut, fenetreEstFin, fenetreEvDebut, fenetreEvFin)
-                    pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHyp), True)) * 100
+                    'Dim testHyp As Double = TestsStatistiques.statTestSigne(tabAR, fenetreEstDebut, fenetreEstFin, fenetreEvDebut, fenetreEvFin)
+                    'pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHyp), True)) * 100
             End Select
 
             MsgBox("P-Valeur : " & pValeur.ToString("0.0000") & "%")

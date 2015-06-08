@@ -43,7 +43,7 @@ Partial Class SelectionFenetres
         '
         'PValeurFenetre
         '
-        Me.PValeurFenetre.Location = New System.Drawing.Point(91, 348)
+        Me.PValeurFenetre.Location = New System.Drawing.Point(82, 341)
         Me.PValeurFenetre.Name = "PValeurFenetre"
         Me.PValeurFenetre.Size = New System.Drawing.Size(133, 49)
         Me.PValeurFenetre.TabIndex = 21
