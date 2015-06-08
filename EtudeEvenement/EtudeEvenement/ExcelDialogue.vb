@@ -48,7 +48,7 @@ Module ExcelDialogue
     End Sub
 
     'Traitement des ARs à partir des deux tableaux des AR
-    Public Sub traitementTabAR(tabEvAR(,) As Object, tabEstAR(,) As Object, datesEvAR() As Integer)
+    Public Sub traitementTabAR(tabEvAR(,) As Object, tabEstAR(,) As Object, datesEvAR() As Object)
 
         'La création d'une nouvelle feuille
         Dim nom As String
@@ -101,7 +101,7 @@ Module ExcelDialogue
         tabEstAR = currentSheet.Range(tmpRange.Cells(1, 2), tmpRange.Cells(tmpRange.Rows.Count, tmpRange.Columns.Count)).Value
         'extraction de la première colonne correspondant aux dates
         tmpRange = currentSheet.Range(plageEv)
-        Dim dates(0 To tmpRange.Rows.Count) As Integer
+        Dim dates(0 To tmpRange.Rows.Count) As Object
         dates = currentSheet.Range(tmpRange.Cells(1, 1), tmpRange.Cells(tmpRange.Rows.Count, 1)).Value
         'tableau des données pour l'estimation
         Dim tabEvAR(0 To tmpRange.Rows.Count, 0 To tmpRange.Columns.Count - 1) As Object
@@ -132,7 +132,7 @@ Module ExcelDialogue
 
 
     '----------------------------------- affichage résultats AR
-    Public Sub afficheResAR(tabMoyAR() As Double, tabEcartAR() As Double, datesEvAR() As Integer, tailleEch As Integer, nomFeuille As String)
+    Public Sub afficheResAR(tabMoyAR() As Double, tabEcartAR() As Double, datesEvAR() As Object, tailleEch As Integer, nomFeuille As String)
 
         'Le nom de chaque colonne
         nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("B1"), "Moyenne")
@@ -169,7 +169,7 @@ Module ExcelDialogue
     End Sub
 
     '----------------------------------- affichage résultats CAR
-    Public Sub afficheResCAR(tabMoyCAR() As Double, tabVarCAR() As Double, datesEvAR() As Integer, tailleEch As Integer, nomFeuille As String)
+    Public Sub afficheResCAR(tabMoyCAR() As Double, tabVarCAR() As Double, datesEvAR() As Object, tailleEch As Integer, nomFeuille As String)
 
         Dim tailleFenetreEv As Integer = datesEvAR.GetLength(0)
 

@@ -122,6 +122,19 @@
         Return nbNMR
     End Function
 
+    ''' <summary>
+    ''' PATELL
+    ''' </summary>
+    ''' <param name="tabAREst"></param>
+    ''' <param name="tabAREv"></param>
+    ''' <param name="tabDateEst"></param>
+    ''' <param name="tabDateEv"></param>
+    ''' <param name="tabRentaClassiquesMarcheEst"></param>
+    ''' <param name="tabRentaClassiquesMarcheEv"></param>
+    ''' <param name="Mj"></param>
+    ''' <param name="testHypAAR"></param>
+    ''' <param name="testHypCAAR"></param>
+    ''' <remarks></remarks>
     Public Sub patellTest(ByRef tabAREst(,) As Double, ByRef tabAREv(,) As Double, _
                                ByRef tabDateEst() As Integer, ByRef tabDateEv() As Integer, _
                                ByRef tabRentaClassiquesMarcheEst(,) As Double, ByRef tabRentaClassiquesMarcheEv(,) As Double, _
