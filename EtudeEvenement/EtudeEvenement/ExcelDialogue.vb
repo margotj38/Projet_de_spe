@@ -47,53 +47,8 @@ Module ExcelDialogue
         Next i
     End Sub
 
-    'Traitement des ARs à partir des deux tableaux d'estimation et de 
-    Public Sub traitementTabAR(tabEvAR(,) As Object, tabEstAR(,) As Object)
-
-        'tableau des AR moyen normalisés
-        Dim tabMoyAR() As Double = RentaAnormales.moyNormAR(tabEstAR, tabEvAR)
-        'tableau des écart-types des AR normalisés
-        Dim tabEcartAR() As Double = RentaAnormales.ecartNormAR(tabEstAR, tabEvAR, tabMoyAR)
-
-        Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
-        Dim N As Integer = tabEvAR.GetLength(1)
-
-        'tableau des CAR
-        Dim tabCAR(tailleFenetreEv - 1, N - 1) As Double
-
-        For e = 1 To N
-            Dim somme As Double = 0
-            For i = 1 To tailleFenetreEv
-                somme = somme + tabEvAR(i, e)
-                tabCAR(i - 1, e - 1) = somme
-            Next
-        Next
-    End Sub
-
-    '***************************** traitement fichier AR *****************************
-    Public Sub traitementAR(plageEst As String, plageEv As String, feuille As String)
-        Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets(feuille), Excel.Worksheet)
-
-        Dim tmpRange As Excel.Range
-        tmpRange = currentSheet.Range(plageEst)
-        'tableau des données pour l'estimation
-        Dim tabEstAR(,) As Object = currentSheet.Range(tmpRange.Cells(1, 2), tmpRange.Cells(tmpRange.Rows.Count, tmpRange.Columns.Count)).Value
-        'extraction de la première colonne correspondant aux dates
-        tmpRange = currentSheet.Range(plageEv)
-        Dim dates As Excel.Range = currentSheet.Range(tmpRange.Cells(1, 1), tmpRange.Cells(tmpRange.Rows.Count, 1))
-        'tableau des données pour l'estimation
-        Dim tabEvAR(,) As Object = currentSheet.Range(tmpRange.Cells(1, 2), tmpRange.Cells(tmpRange.Rows.Count, tmpRange.Columns.Count)).Value
-        'taille fenêtre  d'événement
-        Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
-        Dim N As Integer = tabEvAR.GetLength(1)
-
-        'tableau des AR moyen normalisés
-        Dim tabMoyAR() As Double = RentaAnormales.moyNormAR(tabEstAR, tabEvAR)
-        'tableau des écart-types des AR normalisés
-        Dim tabEcartAR() As Double = RentaAnormales.ecartNormAR(tabEstAR, tabEvAR, tabMoyAR)
-
-
-        '-----------------------------------A FAIRE : affichage résultats
+    'Traitement des ARs à partir des deux tableaux des AR
+    Public Sub traitementTabAR(tabEvAR(,) As Object, tabEstAR(,) As Object, datesEvAR() As Integer)
 
         'La création d'une nouvelle feuille
         Dim nom As String
@@ -103,75 +58,148 @@ Module ExcelDialogue
         Globals.ThisAddIn.Application.Sheets.Add(After:=Globals.ThisAddIn.Application.Worksheets(Globals.ThisAddIn.Application.Worksheets.Count))
         Globals.ThisAddIn.Application.ActiveSheet.Name = nom
 
-        'Le nom de chaque colonne
-        nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("B1"), "Moyenne")
-        nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("C1"), "Ecart-type")
-        nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("D1"), "T-test")
-        nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("E1"), "P-valeur (%)")
+        '----------------- AR -----------------
+        'tableau des AR moyen normalisés
+        Dim tabMoyAR() As Double = RentaAnormales.moyNormAR(tabEstAR, tabEvAR)
+        'tableau des écart-types des AR normalisés
+        Dim tabEcartAR() As Double = RentaAnormales.ecartNormAR(tabEstAR, tabEvAR, tabMoyAR)
 
-        Dim j As Integer
-        j = 2
-        For Each var_Rge In dates
-            nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("A" & j), "AR(" & var_Rge.value & ")")
-            j = j + 1
-        Next var_Rge
+        Dim N As Integer = tabEvAR.GetLength(1)
 
+        'affichage des résultats des AR
+        afficheResAR(tabMoyAR, tabEcartAR, datesEvAR, N, nom)
 
-        For i = 0 To tailleFenetreEv - 1
-            j = i + 2
-            'La colonne des moyennes
-            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("B" & j), tabMoyAR(i))
+        '----------------- CAR -----------------
+        Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
+        'Remplissage des tableaux : CAR, moyenne, variance
+        Dim tabCAR(,) As Double = RentaAnormales.CalculCar(tabEvAR)
+        Dim tabMoyCar() As Double = RentaAnormales.calculMoyenneCar(tabCAR)
+        Dim tabVarCar() As Double = RentaAnormales.calculVarianceCar(tabCAR, tabMoyCar)
 
-            'La colonne des écart-types
-            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("C" & j), tabEcartAR(i))
+        'affichage des résultats des CAR
+        afficheResCAR(tabMoyAR, tabEcartAR, datesEvAR, N, nom)
 
-            'La statistique du test
-            Dim stat As Double = Math.Abs(Math.Sqrt(N) * tabMoyAR(i) / tabEcartAR(i))
-            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("D" & j), stat)
+    End Sub
 
-            'La colonne des p-valeurs
-            'A Décommenter après
-            Dim pValeur As Double = Globals.ThisAddIn.Application.WorksheetFunction.T_Dist_2T(stat, N - 1)
-            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("E" & j), pValeur * 100)
-            'La signification du test
-            Globals.ThisAddIn.Application.Worksheets(nom).Range("F" & j).Value = signification(pValeur)
-        Next i
+    '***************************** traitement fichier AR *****************************
+    Public Sub traitementAR(plageEst As String, plageEv As String, feuille As String)
+        Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets(feuille), Excel.Worksheet)
 
-        '************************ Tableau de résultats des CAR
-        nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("B" & tailleFenetreEv + 4), "Moyenne")
-        nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("C" & tailleFenetreEv + 4), "Ecart-type")
-        nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("D" & tailleFenetreEv + 4), "T-test")
-        nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("E" & tailleFenetreEv + 4), "P-valeur (%)")
+        'La création d'une nouvelle feuille
+        Dim nom As String
+        nom = InputBox("Entrer Le nom de la feuille des résultats de l'étude d'événements: ")
+        'Si l'utilisateur n'entre pas un nom
+        If nom Is "" Then nom = "Resultat"
+        Globals.ThisAddIn.Application.Sheets.Add(After:=Globals.ThisAddIn.Application.Worksheets(Globals.ThisAddIn.Application.Worksheets.Count))
+        Globals.ThisAddIn.Application.ActiveSheet.Name = nom
 
-        j = tailleFenetreEv + 5
-        For Each var_Rge In dates
-            nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("A" & j), "CAR(" & var_Rge.value & ")")
-            j = j + 1
-        Next var_Rge
+        '----------------- AR -----------------
+        Dim tmpRange As Excel.Range
+        tmpRange = currentSheet.Range(plageEst)
+        'tableau des données pour l'estimation
+        Dim tabEstAR(0 To tmpRange.Rows.Count, 0 To tmpRange.Columns.Count - 1) As Object
+        tabEstAR = currentSheet.Range(tmpRange.Cells(1, 2), tmpRange.Cells(tmpRange.Rows.Count, tmpRange.Columns.Count)).Value
+        'extraction de la première colonne correspondant aux dates
+        tmpRange = currentSheet.Range(plageEv)
+        Dim dates(0 To tmpRange.Rows.Count) As Integer
+        dates = currentSheet.Range(tmpRange.Cells(1, 1), tmpRange.Cells(tmpRange.Rows.Count, 1)).Value
+        'tableau des données pour l'estimation
+        Dim tabEvAR(0 To tmpRange.Rows.Count, 0 To tmpRange.Columns.Count - 1) As Object
+        tabEvAR = currentSheet.Range(tmpRange.Cells(1, 2), tmpRange.Cells(tmpRange.Rows.Count, tmpRange.Columns.Count)).Value
 
+        'nombre d'entreprises de l'échantillon
+        Dim N As Integer = tabEvAR.GetLength(1)
 
+        'tableau des AR moyen normalisés
+        Dim tabMoyAR() As Double = RentaAnormales.moyNormAR(tabEstAR, tabEvAR)
+        'tableau des écart-types des AR normalisés
+        Dim tabEcartAR() As Double = RentaAnormales.ecartNormAR(tabEstAR, tabEvAR, tabMoyAR)
+
+        'affichage des résultats
+        afficheResAR(tabMoyAR, tabEcartAR, dates, N, nom)
+
+        '----------------- CAR -----------------
+        Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
         'Remplissage des tableaux :moyenne, variance
         Dim tabCAR(,) As Double = RentaAnormales.CalculCar(tabEvAR)
         Dim tabMoyCar() As Double = RentaAnormales.calculMoyenneCar(tabCAR)
         Dim tabVarCar() As Double = RentaAnormales.calculVarianceCar(tabCAR, tabMoyCar)
 
-        For i = 0 To tailleFenetreEv - 1
-            j = i + tailleFenetreEv + 5
+        'affichage des résultats des CAR
+        afficheResCAR(tabMoyAR, tabEcartAR, dates, N, nom)
+
+    End Sub
+
+
+    '----------------------------------- affichage résultats AR
+    Public Sub afficheResAR(tabMoyAR() As Double, tabEcartAR() As Double, datesEvAR() As Integer, tailleEch As Integer, nomFeuille As String)
+
+        'Le nom de chaque colonne
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("B1"), "Moyenne")
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("C1"), "Ecart-type")
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("D1"), "T-test")
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("E1"), "P-valeur (%)")
+
+        'indice pour l'écriture dans les cellules
+        Dim j As Integer
+        For i = 0 To datesEvAR.GetUpperBound(0)
+
+            j = i + 2
+
+            'entête des lignes
+            nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("A" & j), "AR(" & datesEvAR(i) & ")")
+
             'La colonne des moyennes
-            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("B" & j), tabMoyCar(i))
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("B" & j), tabMoyAR(i))
 
             'La colonne des écart-types
-            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("C" & j), Math.Sqrt(tabVarCar(i)))
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("C" & j), tabEcartAR(i))
 
             'La statistique du test
-            Dim stat As Double = Math.Abs(Math.Sqrt(N) * tabMoyCar(i) / Math.Sqrt(tabVarCar(i)))
-            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("D" & j), stat)
+            Dim stat As Double = Math.Abs(Math.Sqrt(tailleEch) * tabMoyAR(i) / tabEcartAR(i))
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("D" & j), stat)
 
             'La colonne des p-valeurs
-            Dim pValeur As Double = Globals.ThisAddIn.Application.WorksheetFunction.T_Dist_2T(stat, N - 1)
-            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("E" & j), pValeur * 100)
+            'A Décommenter après
+            Dim pValeur As Double = Globals.ThisAddIn.Application.WorksheetFunction.T_Dist_2T(stat, tailleEch - 1)
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("E" & j), pValeur * 100)
             'La signification du test
-            Globals.ThisAddIn.Application.Worksheets(nom).Range("F" & j).Value = signification(pValeur)
+            Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("F" & j).Value = signification(pValeur)
+        Next i
+    End Sub
+
+    '----------------------------------- affichage résultats CAR
+    Public Sub afficheResCAR(tabMoyCAR() As Double, tabVarCAR() As Double, datesEvAR() As Integer, tailleEch As Integer, nomFeuille As String)
+
+        Dim tailleFenetreEv As Integer = datesEvAR.GetLength(0)
+
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("B" & tailleFenetreEv + 4), "Moyenne")
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("C" & tailleFenetreEv + 4), "Ecart-type")
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("D" & tailleFenetreEv + 4), "T-test")
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("E" & tailleFenetreEv + 4), "P-valeur (%)")
+
+        'indice pour l'écriture dans les cellules
+        Dim j As Integer
+        For i = 0 To tailleFenetreEv - 1
+            j = i + tailleFenetreEv + 5
+
+            nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("A" & j), "CAR(" & datesEvAR(i) & ")")
+
+            'La colonne des moyennes
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("B" & j), tabMoyCAR(i))
+
+            'La colonne des écart-types
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("C" & j), Math.Sqrt(tabVarCAR(i)))
+
+            'La statistique du test
+            Dim stat As Double = Math.Abs(Math.Sqrt(tailleEch) * tabMoyCAR(i) / Math.Sqrt(tabVarCAR(i)))
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("D" & j), stat)
+
+            'La colonne des p-valeurs
+            Dim pValeur As Double = Globals.ThisAddIn.Application.WorksheetFunction.T_Dist_2T(stat, tailleEch - 1)
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("E" & j), pValeur * 100)
+            'La signification du test
+            Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("F" & j).Value = signification(pValeur)
         Next i
     End Sub
 
