@@ -50,7 +50,7 @@ Partial Class ParamPreTraitPrix
         '
         'lancementPreT
         '
-        Me.lancementPreT.Location = New System.Drawing.Point(137, 301)
+        Me.lancementPreT.Location = New System.Drawing.Point(133, 296)
         Me.lancementPreT.Name = "lancementPreT"
         Me.lancementPreT.Size = New System.Drawing.Size(88, 58)
         Me.lancementPreT.TabIndex = 8

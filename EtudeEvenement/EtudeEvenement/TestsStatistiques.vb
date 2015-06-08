@@ -320,7 +320,7 @@
     Function statTestSigne(ByRef tabEstAR(,) As Double, ByRef tabEvAR(,) As Double) As Double()
         Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
         Dim tailleFenetreEst As Integer = tabEstAR.GetLength(0)
-        Dim N As Integer = tabEvAR.GetLength(1) 'Le nombre des entreprises
+        Dim N As Integer = tabEvAR.GetLength(1) * tailleFenetreEv 'Le nombre totale des AR
 
         'Tableau qui contient le nombre de AR>0 à une date donnée
         Dim nbARPos(tailleFenetreEv - 1) As Double
@@ -351,6 +351,7 @@
             p = p + (nb / tailleFenetreEst)
         Next e
         p = p / N
+
 
         'Calcul de la statistique du test
         Dim tabStatSigne(tailleFenetreEv - 1) As Double

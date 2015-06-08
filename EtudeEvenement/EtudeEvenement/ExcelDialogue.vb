@@ -428,7 +428,7 @@ Module ExcelDialogue
             nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + 2, 1), tabDateEv(i))
             valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + 2, 2), stat(i))
             Dim pValeur As Double
-            'COMMENT CALCULER P-VALEUR ???
+            'Calcul de la p-valeur
             pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(stat(i)), True))
             valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + 2, 3), pValeur * 100)
             'La signification du test
