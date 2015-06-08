@@ -77,7 +77,7 @@ Module ExcelDialogue
         Dim tabVarCar() As Double = RentaAnormales.calculVarianceCar(tabCAR, tabMoyCar)
 
         'affichage des résultats des CAR
-        afficheResCAR(tabMoyAR, tabEcartAR, datesEvAR, N, nom)
+        afficheResCAR(tabMoyCar, tabVarCar, datesEvAR, N, nom)
 
     End Sub
 
@@ -139,7 +139,7 @@ Module ExcelDialogue
         Dim tabVarCar() As Double = RentaAnormales.calculVarianceCar(tabCAR, tabMoyCar)
 
         'affichage des résultats des CAR
-        afficheResCAR(tabMoyAR, tabEcartAR, dates, N, nom)
+        afficheResCAR(tabMoyCar, tabVarCar, dates, N, nom)
 
     End Sub
 
