@@ -26,8 +26,8 @@ Partial Class SelectionAR
         Me.Label1 = New System.Windows.Forms.Label()
         Me.LancementEtEv = New System.Windows.Forms.Button()
         Me.FenetreText = New System.Windows.Forms.Label()
-        Me.refEditEst = New LeafCreations.Excel2007RefEdit()
         Me.refEditEv = New LeafCreations.Excel2007RefEdit()
+        Me.refEditEst = New LeafCreations.Excel2007RefEdit()
         Me.SuspendLayout()
         '
         'Label1
@@ -41,7 +41,7 @@ Partial Class SelectionAR
         '
         'LancementEtEv
         '
-        Me.LancementEtEv.Location = New System.Drawing.Point(89, 200)
+        Me.LancementEtEv.Location = New System.Drawing.Point(76, 195)
         Me.LancementEtEv.Name = "LancementEtEv"
         Me.LancementEtEv.Size = New System.Drawing.Size(111, 23)
         Me.LancementEtEv.TabIndex = 26
@@ -57,19 +57,6 @@ Partial Class SelectionAR
         Me.FenetreText.TabIndex = 25
         Me.FenetreText.Text = "Fenêtre autour de l'événement"
         '
-        'refEditEst
-        '
-        Me.refEditEst.Address = Nothing
-        Me.refEditEst.BackColor = System.Drawing.Color.Transparent
-        Me.refEditEst.ExcelConnector = Nothing
-        Me.refEditEst.ImageMaximized = CType(resources.GetObject("refEditEst.ImageMaximized"), System.Drawing.Image)
-        Me.refEditEst.ImageMinimized = CType(resources.GetObject("refEditEst.ImageMinimized"), System.Drawing.Image)
-        Me.refEditEst.Location = New System.Drawing.Point(43, 65)
-        Me.refEditEst.Name = "refEditEst"
-        Me.refEditEst.RefEditFont = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.refEditEst.Size = New System.Drawing.Size(195, 26)
-        Me.refEditEst.TabIndex = 28
-        '
         'refEditEv
         '
         Me.refEditEv.Address = Nothing
@@ -82,6 +69,19 @@ Partial Class SelectionAR
         Me.refEditEv.RefEditFont = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.refEditEv.Size = New System.Drawing.Size(195, 26)
         Me.refEditEv.TabIndex = 30
+        '
+        'refEditEst
+        '
+        Me.refEditEst.Address = Nothing
+        Me.refEditEst.BackColor = System.Drawing.Color.Transparent
+        Me.refEditEst.ExcelConnector = Nothing
+        Me.refEditEst.ImageMaximized = CType(resources.GetObject("refEditEst.ImageMaximized"), System.Drawing.Image)
+        Me.refEditEst.ImageMinimized = CType(resources.GetObject("refEditEst.ImageMinimized"), System.Drawing.Image)
+        Me.refEditEst.Location = New System.Drawing.Point(43, 65)
+        Me.refEditEst.Name = "refEditEst"
+        Me.refEditEst.RefEditFont = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.refEditEst.Size = New System.Drawing.Size(195, 26)
+        Me.refEditEst.TabIndex = 28
         '
         'SelectionAR
         '
