@@ -335,7 +335,6 @@ Module ExcelDialogue
             nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + 2, 1), tabDateEv(i))
             valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + 2, 2), testHypAAR(i))
             Dim pValeur As Double
-            'COMMENT CALCULER P-VALEUR ???
             pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHypAAR(i)), True))
             valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + 2, 3), pValeur * 100)
             'La signification du test
