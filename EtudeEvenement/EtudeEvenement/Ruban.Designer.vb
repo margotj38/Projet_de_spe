@@ -41,9 +41,13 @@
     'Ne la modifiez pas à l'aide de l'éditeur de code.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Ruban))
         Me.EtudeEvenement = Me.Factory.CreateRibbonTab
         Me.Group2 = Me.Factory.CreateRibbonGroup
         Me.Group1 = Me.Factory.CreateRibbonGroup
+        Me.EtudeAR = Me.Factory.CreateRibbonMenu
+        Me.testSimplAR = Me.Factory.CreateRibbonButton
+        Me.testSignAR = Me.Factory.CreateRibbonButton
         Me.ModeleMoy = Me.Factory.CreateRibbonMenu
         Me.testSimpleR = Me.Factory.CreateRibbonButton
         Me.TestPatellR = Me.Factory.CreateRibbonButton
@@ -58,22 +62,15 @@
         Me.testSigneM = Me.Factory.CreateRibbonButton
         Me.preTraitPrix = Me.Factory.CreateRibbonButton
         Me.preTraitRenta = Me.Factory.CreateRibbonButton
-        Me.Group3 = Me.Factory.CreateRibbonGroup
-        Me.BoutonTest = Me.Factory.CreateRibbonButton
-        Me.EtudeAR = Me.Factory.CreateRibbonMenu
-        Me.testSimplAR = Me.Factory.CreateRibbonButton
-        Me.TestPatAR = Me.Factory.CreateRibbonButton
-        Me.testSignAR = Me.Factory.CreateRibbonButton
+        Me.Separator1 = Me.Factory.CreateRibbonSeparator
         Me.EtudeEvenement.SuspendLayout()
         Me.Group2.SuspendLayout()
         Me.Group1.SuspendLayout()
-        Me.Group3.SuspendLayout()
         '
         'EtudeEvenement
         '
         Me.EtudeEvenement.Groups.Add(Me.Group2)
         Me.EtudeEvenement.Groups.Add(Me.Group1)
-        Me.EtudeEvenement.Groups.Add(Me.Group3)
         Me.EtudeEvenement.Label = "Etude d'événements"
         Me.EtudeEvenement.Name = "EtudeEvenement"
         '
@@ -85,17 +82,40 @@
         '
         'Group1
         '
+        Me.Group1.Items.Add(Me.preTraitPrix)
+        Me.Group1.Items.Add(Me.preTraitRenta)
+        Me.Group1.Items.Add(Me.Separator1)
         Me.Group1.Items.Add(Me.ModeleMoy)
         Me.Group1.Items.Add(Me.ModeleMS)
         Me.Group1.Items.Add(Me.ModeleM)
-        Me.Group1.Items.Add(Me.preTraitPrix)
-        Me.Group1.Items.Add(Me.preTraitRenta)
         Me.Group1.Label = "Etude complète"
         Me.Group1.Name = "Group1"
+        '
+        'EtudeAR
+        '
+        Me.EtudeAR.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
+        Me.EtudeAR.Items.Add(Me.testSimplAR)
+        Me.EtudeAR.Items.Add(Me.testSignAR)
+        Me.EtudeAR.Label = "Choix du test"
+        Me.EtudeAR.Name = "EtudeAR"
+        Me.EtudeAR.ShowImage = True
+        '
+        'testSimplAR
+        '
+        Me.testSimplAR.Label = "Test simple"
+        Me.testSimplAR.Name = "testSimplAR"
+        Me.testSimplAR.ShowImage = True
+        '
+        'testSignAR
+        '
+        Me.testSignAR.Label = "Test de signe"
+        Me.testSignAR.Name = "testSignAR"
+        Me.testSignAR.ShowImage = True
         '
         'ModeleMoy
         '
         Me.ModeleMoy.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
+        Me.ModeleMoy.Image = CType(resources.GetObject("ModeleMoy.Image"), System.Drawing.Image)
         Me.ModeleMoy.Items.Add(Me.testSimpleR)
         Me.ModeleMoy.Items.Add(Me.TestPatellR)
         Me.ModeleMoy.Items.Add(Me.testSigneR)
@@ -124,6 +144,7 @@
         'ModeleMS
         '
         Me.ModeleMS.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
+        Me.ModeleMS.Image = CType(resources.GetObject("ModeleMS.Image"), System.Drawing.Image)
         Me.ModeleMS.Items.Add(Me.testSimpleMS)
         Me.ModeleMS.Items.Add(Me.testPatellMS)
         Me.ModeleMS.Items.Add(Me.testSigneMS)
@@ -152,6 +173,7 @@
         'ModeleM
         '
         Me.ModeleM.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
+        Me.ModeleM.Image = CType(resources.GetObject("ModeleM.Image"), System.Drawing.Image)
         Me.ModeleM.Items.Add(Me.testSimpleM)
         Me.ModeleM.Items.Add(Me.testPatellM)
         Me.ModeleM.Items.Add(Me.testSigneM)
@@ -187,44 +209,9 @@
         Me.preTraitRenta.Label = "Prétraitement rentabilités"
         Me.preTraitRenta.Name = "preTraitRenta"
         '
-        'Group3
+        'Separator1
         '
-        Me.Group3.Items.Add(Me.BoutonTest)
-        Me.Group3.Label = "Pour tests"
-        Me.Group3.Name = "Group3"
-        '
-        'BoutonTest
-        '
-        Me.BoutonTest.Label = "Tester"
-        Me.BoutonTest.Name = "BoutonTest"
-        '
-        'EtudeAR
-        '
-        Me.EtudeAR.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
-        Me.EtudeAR.Items.Add(Me.testSimplAR)
-        Me.EtudeAR.Items.Add(Me.TestPatAR)
-        Me.EtudeAR.Items.Add(Me.testSignAR)
-        Me.EtudeAR.Label = "Choix du test"
-        Me.EtudeAR.Name = "EtudeAR"
-        Me.EtudeAR.ShowImage = True
-        '
-        'testSimplAR
-        '
-        Me.testSimplAR.Label = "Test simple"
-        Me.testSimplAR.Name = "testSimplAR"
-        Me.testSimplAR.ShowImage = True
-        '
-        'TestPatAR
-        '
-        Me.TestPatAR.Label = "Test de Patell"
-        Me.TestPatAR.Name = "TestPatAR"
-        Me.TestPatAR.ShowImage = True
-        '
-        'testSignAR
-        '
-        Me.testSignAR.Label = "Test de signe"
-        Me.testSignAR.Name = "testSignAR"
-        Me.testSignAR.ShowImage = True
+        Me.Separator1.Name = "Separator1"
         '
         'Ruban
         '
@@ -237,8 +224,6 @@
         Me.Group2.PerformLayout()
         Me.Group1.ResumeLayout(False)
         Me.Group1.PerformLayout()
-        Me.Group3.ResumeLayout(False)
-        Me.Group3.PerformLayout()
 
     End Sub
 
@@ -259,12 +244,10 @@
     Friend WithEvents Group2 As Microsoft.Office.Tools.Ribbon.RibbonGroup
     Friend WithEvents preTraitRenta As Microsoft.Office.Tools.Ribbon.RibbonButton
     Friend WithEvents preTraitPrix As Microsoft.Office.Tools.Ribbon.RibbonButton
-    Friend WithEvents Group3 As Microsoft.Office.Tools.Ribbon.RibbonGroup
-    Friend WithEvents BoutonTest As Microsoft.Office.Tools.Ribbon.RibbonButton
     Friend WithEvents EtudeAR As Microsoft.Office.Tools.Ribbon.RibbonMenu
     Friend WithEvents testSimplAR As Microsoft.Office.Tools.Ribbon.RibbonButton
-    Friend WithEvents TestPatAR As Microsoft.Office.Tools.Ribbon.RibbonButton
     Friend WithEvents testSignAR As Microsoft.Office.Tools.Ribbon.RibbonButton
+    Friend WithEvents Separator1 As Microsoft.Office.Tools.Ribbon.RibbonSeparator
 End Class
 
 Partial Class ThisRibbonCollection

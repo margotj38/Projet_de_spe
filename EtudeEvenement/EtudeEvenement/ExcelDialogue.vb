@@ -82,7 +82,7 @@ Module ExcelDialogue
     End Sub
 
     'Conversion d'une plage de données avec dates en un tableau de données et un tableau de dates
-    Public Sub convertPlageTab(plage As String, feuille As String, tabDonnees(,) As Double, tabDates() As Integer)
+    Public Sub convertPlageTab(plage As String, feuille As String, ByRef tabDonnees(,) As Double, ByRef tabDates() As Integer)
 
         Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets(feuille), Excel.Worksheet)
 

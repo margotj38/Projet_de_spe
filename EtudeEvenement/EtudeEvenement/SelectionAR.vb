@@ -5,7 +5,7 @@ Imports System.Runtime.InteropServices
 
 Public Class SelectionAR
 
-    Private numTest As Integer ' 0 => TestSimple; 1 => TestPatell; 2 => TestSigne
+    Private numTest As Integer ' 0 => TestSimple; 1 => TestSigne
 
     'constructeur
     Public Sub New(ByVal valTest As Integer)
@@ -19,7 +19,7 @@ Public Class SelectionAR
             Return numTest
         End Get
         Set(value As Integer)
-            If value < 0 Or value > 2 Then
+            If value < 0 Or value > 1 Then
                 MsgBox("Erreur interne : numéro de test incorrect", 16)
             End If
             numTest = value
@@ -59,19 +59,21 @@ Public Class SelectionAR
         Utilitaires.recupererFeuillePlage(Me.refEditEst.Address, feuille, plageEst)
         Utilitaires.recupererFeuillePlage(Me.refEditEv.Address, feuille, plageEv)
 
+        'On récupère les données dans des tableaux adaptés
+        Dim tabEstAR(,) As Double = Nothing
+        Dim tabEvAR(,) As Double = Nothing
+        Dim tabDateEst() As Integer = Nothing
+        Dim tabDateEv() As Integer = Nothing
+        ExcelDialogue.convertPlageTab(plageEst, feuille, tabEstAR, tabDateEst)
+        ExcelDialogue.convertPlageTab(plageEv, feuille, tabEvAR, tabDateEv)
+
         Select Case test
             Case 0
                 'test simple
-                Dim tabEstAR(,) As Double = Nothing
-                Dim tabEvAR(,) As Double = Nothing
-                Dim tabDateEst() As Integer = Nothing
-                Dim tabDateEv() As Integer = Nothing
-                ExcelDialogue.convertPlageTab(plageEst, feuille, tabEstAR, tabDateEst)
-                ExcelDialogue.convertPlageTab(plageEv, feuille, tabEvAR, tabDateEv)
-                ExcelDialogue.traitementPlageAR(plageEst, plageEv, feuille)
-            Case 2
+                ExcelDialogue.traitementTabAR(tabEvAR, tabEstAR, tabDateEv)
+            Case 1
                 'test de signe
-                ExcelDialogue.affichageSigne(tabDateEv:=, tabEstAR:=, tabEvAR)
+                ExcelDialogue.affichageSigne(tabDateEv, tabEstAR, tabEvAR)
         End Select
 
     End Sub

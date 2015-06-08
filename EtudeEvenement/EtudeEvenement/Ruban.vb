@@ -137,54 +137,6 @@ Public Class Ruban
         selFenetres.Visible = True
     End Sub
 
-    Private Sub ARparam_Click(sender As Object, e As RibbonControlEventArgs)
-
-        selAR = New SelectionAR()
-
-        'Définition des options des refEdit
-        selAR.refEditEst.IncludeSheetName = True
-        selAR.refEditEst.ShowRowAbsoluteIndicator = False
-        selAR.refEditEst.ShowColumnAbsoluteIndicator = False
-        selAR.refEditEv.IncludeSheetName = True
-        selAR.refEditEv.ShowRowAbsoluteIndicator = False
-        selAR.refEditEv.ShowColumnAbsoluteIndicator = False
-        'selAR.TopMost = True
-
-        selAR.Visible = True
-
-        ''Définition des options de refEdit
-        'paramAR.estimation.IncludeSheetName = False
-        'paramAR.estimation.ShowRowAbsoluteIndicator = False
-        'paramAR.estimation.ShowColumnAbsoluteIndicator = False
-        'paramAR.evenement.IncludeSheetName = False
-        'paramAR.evenement.ShowRowAbsoluteIndicator = False
-        'paramAR.evenement.ShowColumnAbsoluteIndicator = False
-
-        'Dim excelApp As Excel.Application = Nothing
-
-        '' Create an Excel App
-        'Try
-        '    excelApp = Marshal.GetActiveObject("Excel.Application")
-        'Catch ex As COMException
-        '    ' An exception is thrown if there is not an open excel instance.                    
-        'Finally
-        '    If excelApp Is Nothing Then
-        '        'excelApp = New Application
-        '        excelApp.Workbooks.Add()
-        '    End If
-        '    excelApp.Visible = True
-
-        '    paramAR.estimation.ExcelConnector = excelApp
-        '    paramAR.evenement.ExcelConnector = excelApp
-
-        'End Try
-
-        'paramAR.estimation.Focus()
-        'paramAR.evenement.Focus()
-
-        'paramARTaskPane.Visible = True
-    End Sub
-
     Private Sub preTraitPrix_Click(sender As Object, e As RibbonControlEventArgs) Handles preTraitPrix.Click
 
         paramPrix = New ParamPreTraitPrix()
@@ -211,10 +163,6 @@ Public Class Ruban
         paramRenta.nomFeuilleBox.Text = "Rent"
     End Sub
 
-    Private Sub BoutonTest_Click(sender As Object, e As RibbonControlEventArgs) Handles BoutonTest.Click
-
-    End Sub
-
     Private Sub testSimplAR_Click(sender As Object, e As RibbonControlEventArgs) Handles testSimplAR.Click
         selAR = New SelectionAR(0)
 
@@ -230,23 +178,8 @@ Public Class Ruban
         selAR.Visible = True
     End Sub
 
-    Private Sub TestPatAR_Click(sender As Object, e As RibbonControlEventArgs) Handles TestPatAR.Click
-        selAR = New SelectionAR(1)
-
-        'Définition des options des refEdit
-        selAR.refEditEst.IncludeSheetName = True
-        selAR.refEditEst.ShowRowAbsoluteIndicator = False
-        selAR.refEditEst.ShowColumnAbsoluteIndicator = False
-        selAR.refEditEv.IncludeSheetName = True
-        selAR.refEditEv.ShowRowAbsoluteIndicator = False
-        selAR.refEditEv.ShowColumnAbsoluteIndicator = False
-        'selAR.TopMost = True
-
-        selAR.Visible = True
-    End Sub
-
     Private Sub testSignAR_Click(sender As Object, e As RibbonControlEventArgs) Handles testSignAR.Click
-        selAR = New SelectionAR(2)
+        selAR = New SelectionAR(1)
 
         'Définition des options des refEdit
         selAR.refEditEst.IncludeSheetName = True
