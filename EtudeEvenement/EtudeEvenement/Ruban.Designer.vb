@@ -94,6 +94,7 @@
         'EtudeAR
         '
         Me.EtudeAR.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
+        Me.EtudeAR.Image = CType(resources.GetObject("EtudeAR.Image"), System.Drawing.Image)
         Me.EtudeAR.Items.Add(Me.testSimplAR)
         Me.EtudeAR.Items.Add(Me.testSignAR)
         Me.EtudeAR.Label = "Choix du test"
