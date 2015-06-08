@@ -1,4 +1,9 @@
-﻿Module TestsStatistiques
+﻿''' <summary>
+''' MODULE STATS
+''' </summary>
+''' <remarks></remarks>
+
+Module TestsStatistiques
 
     '***************************** T-Test *****************************
 
