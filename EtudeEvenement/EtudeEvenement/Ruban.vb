@@ -137,7 +137,7 @@ Public Class Ruban
         selFenetres.Visible = True
     End Sub
 
-    Private Sub ARparam_Click(sender As Object, e As RibbonControlEventArgs) Handles ARparam.Click
+    Private Sub ARparam_Click(sender As Object, e As RibbonControlEventArgs)
 
         selAR = New SelectionAR()
 
@@ -213,5 +213,50 @@ Public Class Ruban
 
     Private Sub BoutonTest_Click(sender As Object, e As RibbonControlEventArgs) Handles BoutonTest.Click
 
+    End Sub
+
+    Private Sub testSimplAR_Click(sender As Object, e As RibbonControlEventArgs) Handles testSimplAR.Click
+        selAR = New SelectionAR(0)
+
+        'Définition des options des refEdit
+        selAR.refEditEst.IncludeSheetName = True
+        selAR.refEditEst.ShowRowAbsoluteIndicator = False
+        selAR.refEditEst.ShowColumnAbsoluteIndicator = False
+        selAR.refEditEv.IncludeSheetName = True
+        selAR.refEditEv.ShowRowAbsoluteIndicator = False
+        selAR.refEditEv.ShowColumnAbsoluteIndicator = False
+        'selAR.TopMost = True
+
+        selAR.Visible = True
+    End Sub
+
+    Private Sub TestPatAR_Click(sender As Object, e As RibbonControlEventArgs) Handles TestPatAR.Click
+        selAR = New SelectionAR(1)
+
+        'Définition des options des refEdit
+        selAR.refEditEst.IncludeSheetName = True
+        selAR.refEditEst.ShowRowAbsoluteIndicator = False
+        selAR.refEditEst.ShowColumnAbsoluteIndicator = False
+        selAR.refEditEv.IncludeSheetName = True
+        selAR.refEditEv.ShowRowAbsoluteIndicator = False
+        selAR.refEditEv.ShowColumnAbsoluteIndicator = False
+        'selAR.TopMost = True
+
+        selAR.Visible = True
+    End Sub
+
+    Private Sub testSignAR_Click(sender As Object, e As RibbonControlEventArgs) Handles testSignAR.Click
+        selAR = New SelectionAR(2)
+
+        'Définition des options des refEdit
+        selAR.refEditEst.IncludeSheetName = True
+        selAR.refEditEst.ShowRowAbsoluteIndicator = False
+        selAR.refEditEst.ShowColumnAbsoluteIndicator = False
+        selAR.refEditEv.IncludeSheetName = True
+        selAR.refEditEv.ShowRowAbsoluteIndicator = False
+        selAR.refEditEv.ShowColumnAbsoluteIndicator = False
+        'selAR.TopMost = True
+
+        selAR.Visible = True
     End Sub
 End Class

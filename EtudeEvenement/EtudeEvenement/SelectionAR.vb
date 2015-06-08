@@ -5,10 +5,26 @@ Imports System.Runtime.InteropServices
 
 Public Class SelectionAR
 
+    Private numTest As Integer ' 0 => TestSimple; 1 => TestPatell; 2 => TestSigne
+
     'constructeur
-    Public Sub New()
+    Public Sub New(ByVal valTest As Integer)
         InitializeComponent()
+        test = valTest
     End Sub
+
+    'accesseur sur numTest
+    Public Property test() As Integer
+        Get
+            Return numTest
+        End Get
+        Set(value As Integer)
+            If value < 0 Or value > 2 Then
+                MsgBox("Erreur interne : numéro de test incorrect", 16)
+            End If
+            numTest = value
+        End Set
+    End Property
 
     Private Sub SelectionAR_Load(sender As Object, e As EventArgs) Handles Me.Load
         Dim excelApp As Excel.Application = Nothing
@@ -43,11 +59,20 @@ Public Class SelectionAR
         Utilitaires.recupererFeuillePlage(Me.refEditEst.Address, feuille, plageEst)
         Utilitaires.recupererFeuillePlage(Me.refEditEv.Address, feuille, plageEv)
 
-        'Traitement des données AR fournies
-        ExcelDialogue.traitementPlageAR(plageEst, plageEv, feuille)
-
-        '
-        'Me.Visible = False
+        Select Case test
+            Case 0
+                'test simple
+                Dim tabEstAR(,) As Double = Nothing
+                Dim tabEvAR(,) As Double = Nothing
+                Dim tabDateEst() As Integer = Nothing
+                Dim tabDateEv() As Integer = Nothing
+                ExcelDialogue.convertPlageTab(plageEst, feuille, tabEstAR, tabDateEst)
+                ExcelDialogue.convertPlageTab(plageEv, feuille, tabEvAR, tabDateEv)
+                ExcelDialogue.traitementPlageAR(plageEst, plageEv, feuille)
+            Case 2
+                'test de signe
+                ExcelDialogue.affichageSigne(tabDateEv:=, tabEstAR:=, tabEvAR)
+        End Select
 
     End Sub
 

@@ -43,7 +43,6 @@
     Private Sub InitializeComponent()
         Me.EtudeEvenement = Me.Factory.CreateRibbonTab
         Me.Group2 = Me.Factory.CreateRibbonGroup
-        Me.ARparam = Me.Factory.CreateRibbonButton
         Me.Group1 = Me.Factory.CreateRibbonGroup
         Me.ModeleMoy = Me.Factory.CreateRibbonMenu
         Me.testSimpleR = Me.Factory.CreateRibbonButton
@@ -61,6 +60,10 @@
         Me.preTraitRenta = Me.Factory.CreateRibbonButton
         Me.Group3 = Me.Factory.CreateRibbonGroup
         Me.BoutonTest = Me.Factory.CreateRibbonButton
+        Me.EtudeAR = Me.Factory.CreateRibbonMenu
+        Me.testSimplAR = Me.Factory.CreateRibbonButton
+        Me.TestPatAR = Me.Factory.CreateRibbonButton
+        Me.testSignAR = Me.Factory.CreateRibbonButton
         Me.EtudeEvenement.SuspendLayout()
         Me.Group2.SuspendLayout()
         Me.Group1.SuspendLayout()
@@ -76,16 +79,9 @@
         '
         'Group2
         '
-        Me.Group2.Items.Add(Me.ARparam)
+        Me.Group2.Items.Add(Me.EtudeAR)
         Me.Group2.Label = "Etude à partir des AR"
         Me.Group2.Name = "Group2"
-        '
-        'ARparam
-        '
-        Me.ARparam.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
-        Me.ARparam.Label = "Choix des données"
-        Me.ARparam.Name = "ARparam"
-        Me.ARparam.ShowImage = True
         '
         'Group1
         '
@@ -202,6 +198,34 @@
         Me.BoutonTest.Label = "Tester"
         Me.BoutonTest.Name = "BoutonTest"
         '
+        'EtudeAR
+        '
+        Me.EtudeAR.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
+        Me.EtudeAR.Items.Add(Me.testSimplAR)
+        Me.EtudeAR.Items.Add(Me.TestPatAR)
+        Me.EtudeAR.Items.Add(Me.testSignAR)
+        Me.EtudeAR.Label = "Choix du test"
+        Me.EtudeAR.Name = "EtudeAR"
+        Me.EtudeAR.ShowImage = True
+        '
+        'testSimplAR
+        '
+        Me.testSimplAR.Label = "Test simple"
+        Me.testSimplAR.Name = "testSimplAR"
+        Me.testSimplAR.ShowImage = True
+        '
+        'TestPatAR
+        '
+        Me.TestPatAR.Label = "Test de Patell"
+        Me.TestPatAR.Name = "TestPatAR"
+        Me.TestPatAR.ShowImage = True
+        '
+        'testSignAR
+        '
+        Me.testSignAR.Label = "Test de signe"
+        Me.testSignAR.Name = "testSignAR"
+        Me.testSignAR.ShowImage = True
+        '
         'Ruban
         '
         Me.Name = "Ruban"
@@ -233,11 +257,14 @@
     Friend WithEvents testPatellM As Microsoft.Office.Tools.Ribbon.RibbonButton
     Friend WithEvents testSigneM As Microsoft.Office.Tools.Ribbon.RibbonButton
     Friend WithEvents Group2 As Microsoft.Office.Tools.Ribbon.RibbonGroup
-    Friend WithEvents ARparam As Microsoft.Office.Tools.Ribbon.RibbonButton
     Friend WithEvents preTraitRenta As Microsoft.Office.Tools.Ribbon.RibbonButton
     Friend WithEvents preTraitPrix As Microsoft.Office.Tools.Ribbon.RibbonButton
     Friend WithEvents Group3 As Microsoft.Office.Tools.Ribbon.RibbonGroup
     Friend WithEvents BoutonTest As Microsoft.Office.Tools.Ribbon.RibbonButton
+    Friend WithEvents EtudeAR As Microsoft.Office.Tools.Ribbon.RibbonMenu
+    Friend WithEvents testSimplAR As Microsoft.Office.Tools.Ribbon.RibbonButton
+    Friend WithEvents TestPatAR As Microsoft.Office.Tools.Ribbon.RibbonButton
+    Friend WithEvents testSignAR As Microsoft.Office.Tools.Ribbon.RibbonButton
 End Class
 
 Partial Class ThisRibbonCollection
