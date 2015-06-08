@@ -203,13 +203,14 @@
                 If tabRentaEst(i, colonne) = -2146826246 Then
                     prixPresent = prixPresent + 1
                 Else
-                    'Sinon on somme en multipliant par le nombre de #N/A absents + 1 (ie prixPresent)
+                    'Sinon on somme en multipliant par le nombre de #N/A présents + 1 (ie prixPresent)
                     tabMoy(colonne - 1) = tabMoy(colonne - 1) + tabRentaEst(i, colonne) * prixPresent
                     prixPresent = 1
                 End If
             Next i
             'On divise par la taille de la fenêtre d'estimation moins le nombre de #N/A finaux (ie prixPresent - 1)
             tabMoy(colonne - 1) = tabMoy(colonne - 1) / (tabRentaEst.GetLength(0) - (prixPresent - 1))
+            prixPresent = 1
         Next colonne
 
         'Calcul des AR sur la fenêtre sur la fenêtre d'estimation
@@ -220,7 +221,6 @@
                 Else
                     'On obtient des AR sur une période
                     tabAREst(i, colonne - 1) = (tabRentaEst(i, colonne) - tabMoy(colonne - 1))
-                    prixPresent = 1
                 End If
             Next i
         Next colonne
@@ -251,7 +251,11 @@
             'tableau des ARi/si
             Dim tabNormAR(tabEvAR.GetLength(1) - 1) As Double
             For e = 1 To tabEvAR.GetUpperBound(1)
-                tabNormAR(e - 1) = tabEvAR(i, e) / Math.Sqrt(tabVarAR(e - 1))
+                If tabEvAR(i, e) = -2146826246 Then
+                    tabNormAR(e - 1) = -2146826246
+                Else
+                    tabNormAR(e - 1) = tabEvAR(i, e) / Math.Sqrt(tabVarAR(e - 1))
+                End If
             Next
             'moyenne sur les ARi/si
             tabMoyNormAR(i - 1) = TestsStatistiques.calcul_moyenne(tabNormAR)
@@ -271,12 +275,13 @@
             Dim tabNormAR(tabEvAR.GetLength(1) - 1) As Double
             For e = 1 To tabEvAR.GetUpperBound(1)
                 'Gestion des NA dans le tableau des AR
-                If (tabEvAR(i, e) = -2146826246) Then
-                    tabEvAR(i, e) = 0
+                If tabEvAR(i, e) = -2146826246 Then
+                    tabNormAR(e - 1) = -2146826246
+                Else
+                    tabNormAR(e - 1) = tabEvAR(i, e) / Math.Sqrt(tabVarAR(e - 1))
                 End If
-                tabNormAR(e - 1) = tabEvAR(i, e) / Math.Sqrt(tabVarAR(e - 1))
             Next
-            'moyenne sur les ARi/si
+            'écart-type sur les ARi/si
             tabEcartNormAR(i - 1) = Math.Sqrt(TestsStatistiques.calcul_variance(tabNormAR, tabMoyNormAR(i - 1)))
         Next
         Return tabEcartNormAR
@@ -287,16 +292,10 @@
         'tableau à retourner
         Dim tabVarAR(tabEstAR.GetLength(1) - 1) As Double
 
-        'NA cmp => compteur du nombre de NA
-        Dim cmp As Integer = 1
         'pour chaque entreprise...
         For e = 1 To tabEstAR.GetUpperBound(1)
             Dim vectAR(tabEstAR.GetLength(0) - 1) As Double
             For t = 1 To tabEstAR.GetUpperBound(0)
-                'Si on trouve NA
-                If (tabEstAR(t, e) = -2146826246) Then
-                    cmp = cmp + 1
-                End If
                 vectAR(t - 1) = CDbl(tabEstAR(t, e))
             Next
             tabVarAR(e - 1) = TestsStatistiques.calcul_variance(vectAR, TestsStatistiques.calcul_moyenne(vectAR))
@@ -314,16 +313,22 @@
         'tableau à retourner
         Dim tabCAR(tailleFenetreEv - 1, N - 1) As Double
 
+        'Variable pour savoir si un #N/A précédait
+        Dim prixPresent As Integer = 1
         For e = 1 To N
             Dim somme As Double = 0
             For i = 1 To tailleFenetreEv
-                'si RA = NA => On ignore la valeur de RA
-                If (tabEvAR(i, e) = -2146826246) Then
-                    tabEvAR(i, e) = 0
+                If tabEvAR(i, e) = -2146826246 Then
+                    'S'il y a un NA, on incrémente prixPresent
+                    prixPresent = prixPresent + 1
+                Else
+                    'Sinon on somme en multipliant par le nombre de #N/A présents + 1 (ie prixPresent)
+                    somme = somme + tabEvAR(i, e) * prixPresent
+                    prixPresent = 1
                 End If
-                somme = somme + tabEvAR(i, e)
                 tabCAR(i - 1, e - 1) = somme
             Next
+            prixPresent = 1
         Next
 
         CalculCar = tabCAR

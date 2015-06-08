@@ -273,7 +273,7 @@ Module ExcelDialogue
         For colonne = 0 To tabAREst.GetUpperBound(1)
             For i = 0 To tabAREst.GetUpperBound(0)
                 If tabAREst(i, colonne) = -2146826246 Then
-                    currentSheet.Cells(i + 4, colonne + 2).Value = "#N/A"
+                    currentSheet.Cells(i + 4, colonne + 2).Value = -2146826246
                     currentSheet.Cells(i + 4, colonne + 2).Borders.Value = 1
                 Else
                     valeurCellule(currentSheet.Cells(i + 4, colonne + 2), tabAREst(i, colonne))
@@ -303,7 +303,7 @@ Module ExcelDialogue
         For colonne = 0 To tabAREv.GetUpperBound(1)
             For i = 0 To tabAREv.GetUpperBound(0)
                 If tabAREv(i, colonne) = -2146826246 Then
-                    currentSheet.Cells(9 + tabDateEst.GetLength(0) + i, colonne + 2).Value = "#N/A"
+                    currentSheet.Cells(9 + tabDateEst.GetLength(0) + i, colonne + 2).Value = -2146826246
                     currentSheet.Cells(9 + tabDateEst.GetLength(0) + i, colonne + 2).Borders.Value = 1
                 Else
                     valeurCellule(currentSheet.Cells(9 + tabDateEst.GetLength(0) + i, colonne + 2), tabAREv(i, colonne))
