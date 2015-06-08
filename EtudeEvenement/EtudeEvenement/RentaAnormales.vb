@@ -270,6 +270,10 @@
             'tableau des ARi/si
             Dim tabNormAR(tabEvAR.GetLength(1) - 1) As Double
             For e = 1 To tabEvAR.GetUpperBound(1)
+                'Gestion des NA dans le tableau des AR
+                If (tabEvAR(i, e) = -2146826246) Then
+                    tabEvAR(i, e) = 0
+                End If
                 tabNormAR(e - 1) = tabEvAR(i, e) / Math.Sqrt(tabVarAR(e - 1))
             Next
             'moyenne sur les ARi/si
@@ -282,10 +286,17 @@
     Public Function calcVarEstAR(ByRef tabEstAR(,) As Object) As Double()
         'tableau à retourner
         Dim tabVarAR(tabEstAR.GetLength(1) - 1) As Double
+
+        'NA cmp => compteur du nombre de NA
+        Dim cmp As Integer = 1
         'pour chaque entreprise...
         For e = 1 To tabEstAR.GetUpperBound(1)
             Dim vectAR(tabEstAR.GetLength(0) - 1) As Double
             For t = 1 To tabEstAR.GetUpperBound(0)
+                'Si on trouve NA
+                If (tabEstAR(t, e) = -2146826246) Then
+                    cmp = cmp + 1
+                End If
                 vectAR(t - 1) = CDbl(tabEstAR(t, e))
             Next
             tabVarAR(e - 1) = TestsStatistiques.calcul_variance(vectAR, TestsStatistiques.calcul_moyenne(vectAR))
@@ -325,8 +336,7 @@
         For i = 1 To tailleFenetreEv
             Dim tab(tabCAR.GetLength(1) - 1) As Double
             For e = 1 To tabCAR.GetUpperBound(1)
-                tab(e - 1) = tabCAR(
-                    i - 1, e - 1)
+                tab(e - 1) = tabCAR(i - 1, e - 1)
             Next
             tabMoyCar(i - 1) = TestsStatistiques.calcul_moyenne(tab)
         Next
