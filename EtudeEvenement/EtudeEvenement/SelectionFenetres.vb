@@ -114,7 +114,7 @@ Public Class SelectionFenetres
                 ExcelDialogue.affichagePatell(tabDateEv, testHypAAR, testHypCAAR)
             Case 2
                 'test de signe
-                'A compléter
+                ExcelDialogue.affichageSigne(tabDateEv, tabAREst, tabAREst)
         End Select
 
         'Dim pValeur As Double

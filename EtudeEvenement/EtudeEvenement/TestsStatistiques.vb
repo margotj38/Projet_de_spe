@@ -272,49 +272,100 @@
 
     '***************************** Test de signe *****************************
 
-    Function statTestSigne(tabAR(,) As Double, fenetreEstDebut As Integer, fenetreEstFin As Integer, fenetreEvDebut As Integer, fenetreEvFin As Integer) As Double
-        Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("Rt"), Excel.Worksheet)
-        Dim indFenetreEstDeb As Integer = fenetreEstDebut - currentSheet.Cells(2, 1).Value
-        Dim indFenetreEstFin As Integer = fenetreEstFin - currentSheet.Cells(2, 1).Value
-        Dim indFenetreEvDeb As Integer = fenetreEvDebut - currentSheet.Cells(2, 1).Value
-        Dim indFenetreEvFin As Integer = fenetreEvFin - currentSheet.Cells(2, 1).Value
-        Dim tailleFenetreEst As Integer = fenetreEstFin - fenetreEstDebut + 1
-        Dim tailleFenetreEv As Integer = fenetreEvFin - fenetreEvDebut + 1
-        Dim N = currentSheet.UsedRange.Columns.Count - 1
+    'Function statTestSigne(tabAR(,) As Double, fenetreEstDebut As Integer, fenetreEstFin As Integer, fenetreEvDebut As Integer, fenetreEvFin As Integer) As Double
+    '    Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("Rt"), Excel.Worksheet)
+    '    Dim indFenetreEstDeb As Integer = fenetreEstDebut - currentSheet.Cells(2, 1).Value
+    '    Dim indFenetreEstFin As Integer = fenetreEstFin - currentSheet.Cells(2, 1).Value
+    '    Dim indFenetreEvDeb As Integer = fenetreEvDebut - currentSheet.Cells(2, 1).Value
+    '    Dim indFenetreEvFin As Integer = fenetreEvFin - currentSheet.Cells(2, 1).Value
+    '    Dim tailleFenetreEst As Integer = fenetreEstFin - fenetreEstDebut + 1
+    '    Dim tailleFenetreEv As Integer = fenetreEvFin - fenetreEvDebut + 1
+    '    Dim N = currentSheet.UsedRange.Columns.Count - 1
 
-        Dim nbPosAR As Double = 0
-        'On prend les AR > 0 sur la fenêtre d'événement
-        For colonne = 0 To tabAR.GetUpperBound(1)
-            For i = indFenetreEvDeb To indFenetreEvFin
-                If (tabAR(i, colonne) > 0) Then
-                    nbPosAR = nbPosAR + 1
+    '    Dim nbPosAR As Double = 0
+    '    'On prend les AR > 0 sur la fenêtre d'événement
+    '    For colonne = 0 To tabAR.GetUpperBound(1)
+    '        For i = indFenetreEvDeb To indFenetreEvFin
+    '            If (tabAR(i, colonne) > 0) Then
+    '                nbPosAR = nbPosAR + 1
+    '            End If
+    '        Next i
+    '    Next colonne
+    '    'MsgBox(nbPosAR)
+
+    '    'Estimation de p sur la fenêtre d'estimation
+    '    Dim p As Double = 0
+    '    Dim nb As Double = 0
+    '    For colonne = 0 To tabAR.GetUpperBound(1)
+    '        For i = indFenetreEstDeb To indFenetreEstFin
+    '            If (tabAR(i, colonne) > 0) Then
+    '                nb = nb + 1
+    '            End If
+    '        Next i
+    '        p = p + nb / tailleFenetreEst
+    '    Next colonne
+    '    MsgBox(p)
+    '    p = p / tailleFenetreEv
+    '    'MsgBox(p)
+
+    '    'Calcul de la statistique du test
+    '    Dim stat As Double
+    '    stat = (nbPosAR - tailleFenetreEv * p) / (Math.Sqrt(tailleFenetreEv * p * (1 - p)))
+
+    '    'MsgBox(stat)
+    '    statTestSigne = stat
+
+    'End Function
+
+    Function statTestSigne(ByRef tabEstAR(,) As Double, ByRef tabEvAR(,) As Double) As Double()
+        Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
+        Dim tailleFenetreEst As Integer = tabEstAR.GetLength(0)
+        Dim N As Integer = tabEvAR.GetLength(1)  'Le nombre des entreprises
+
+        'Tableau qui contient le nombre de AR>0 à une date donnée
+        Dim nbARPos(tailleFenetreEv - 1) As Double
+
+        'Compteur des AR > 0
+        Dim cmp As Integer
+
+        'On prend les AR > 0 sur la fenêtre d'événement à une date donnée
+        For t = 0 To tabEvAR.GetUpperBound(0)
+            cmp = 0
+            For e = 0 To tabEvAR.GetUpperBound(1)
+                If (tabEvAR(t, e) > 0) Then
+                    cmp = cmp + 1
                 End If
-            Next i
-        Next colonne
-        'MsgBox(nbPosAR)
+            Next e
+            nbARPos(t) = cmp
+        Next t
 
         'Estimation de p sur la fenêtre d'estimation
         Dim p As Double = 0
-        Dim nb As Double = 0
-        For colonne = 0 To tabAR.GetUpperBound(1)
-            For i = indFenetreEstDeb To indFenetreEstFin
-                If (tabAR(i, colonne) > 0) Then
+        Dim nb As Double
+        For e = 0 To tabEstAR.GetUpperBound(1)
+            nb = 0
+            For t = 0 To tabEstAR.GetUpperBound(0)
+                If (tabEstAR(t, e) > 0) Then
                     nb = nb + 1
                 End If
-            Next i
-            p = p + nb / tailleFenetreEst
-        Next colonne
-        MsgBox(p)
-        p = p / tailleFenetreEv
-        'MsgBox(p)
+            Next t
+            p = p + (nb / tailleFenetreEst)
+        Next e
+        p = p / N
+
 
         'Calcul de la statistique du test
-        Dim stat As Double
-        stat = (nbPosAR - tailleFenetreEv * p) / (Math.Sqrt(tailleFenetreEv * p * (1 - p)))
+        Dim tabStatSigne(tailleFenetreEv - 1) As Double
+        For t = 0 To tabEvAR.GetUpperBound(0)
+            tabStatSigne(t) = (nbARPos(t) - N * p) / (Math.Sqrt(N * p * (1 - p)))
+        Next t
 
-        'MsgBox(stat)
-        statTestSigne = stat
+        'Retourner la statistique du test
+        statTestSigne = tabStatSigne
 
     End Function
+
+
+
 
 End Module

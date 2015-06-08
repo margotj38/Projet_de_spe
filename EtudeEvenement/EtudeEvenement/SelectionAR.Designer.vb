@@ -41,7 +41,7 @@ Partial Class SelectionAR
         '
         'LancementEtEv
         '
-        Me.LancementEtEv.Location = New System.Drawing.Point(76, 195)
+        Me.LancementEtEv.Location = New System.Drawing.Point(77, 201)
         Me.LancementEtEv.Name = "LancementEtEv"
         Me.LancementEtEv.Size = New System.Drawing.Size(111, 23)
         Me.LancementEtEv.TabIndex = 26
