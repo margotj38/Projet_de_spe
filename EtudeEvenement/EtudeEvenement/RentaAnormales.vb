@@ -336,31 +336,49 @@
         CalculCar = tabCAR
     End Function
 
-    Function calculMoyenneCar(ByRef tabCAR(,) As Double) As Double()
+    Function moyNormCar(ByRef tabEstAR(,) As Double, ByRef tabCAR(,) As Double) As Double()
         Dim tailleFenetreEv As Integer = tabCAR.GetLength(0)
-        Dim tabMoyCar(tailleFenetreEv - 1) As Double
+        Dim tabMoyNormCAR(tailleFenetreEv - 1) As Double
+
+        'tableau des variances
+        Dim tabVarAR() As Double = calcVarEstAR(tabEstAR)
 
         For i = 0 To tailleFenetreEv - 1
-            Dim tab(tabCAR.GetLength(1) - 1) As Double
+            Dim tabNormCAR(tabCAR.GetLength(1) - 1) As Double
             For e = 0 To tabCAR.GetUpperBound(1)
-                tab(e) = tabCAR(i, e)
+                'Gestion des NA dans le tableau des AR
+                If tabCAR(i, e) = -2146826246 Then
+                    tabNormCAR(e) = -2146826246
+                Else
+                    'normalisation du CAR sur i+1 périodes
+                    tabNormCAR(e) = tabCAR(i, e) / ((i + 1) * Math.Sqrt(tabVarAR(e)))
+                End If
             Next
-            tabMoyCar(i) = TestsStatistiques.calcul_moyenne(tab)
+            tabMoyNormCAR(i) = TestsStatistiques.calcul_moyenne(tabNormCAR)
         Next
-        Return tabMoyCar
+        Return tabMoyNormCAR
     End Function
 
-    Function calculVarianceCar(tabCAR(,) As Double, tabMoy() As Double) As Double()
+    Function ecartNormCar(ByRef tabEstAR(,) As Double, tabCAR(,) As Double, tabMoy() As Double) As Double()
         Dim tailleFenetreEv As Integer = tabCAR.GetLength(0)
-        Dim tabMoyCar(tailleFenetreEv - 1) As Double
+        Dim tabEcartNormCAR(tailleFenetreEv - 1) As Double
+
+        'tableau des variances
+        Dim tabVarAR() As Double = calcVarEstAR(tabEstAR)
 
         For i = 0 To tailleFenetreEv - 1
-            Dim tab(tabCAR.GetLength(1) - 1) As Double
+            Dim tabNormCAR(tabCAR.GetLength(1) - 1) As Double
             For e = 0 To tabCAR.GetUpperBound(1)
-                tab(e) = tabCAR(i, e)
+                'Gestion des NA dans le tableau des AR
+                If tabCAR(i, e) = -2146826246 Then
+                    tabNormCAR(e) = -2146826246
+                Else
+                    'normalisation du CAR sur i+1 périodes
+                    tabNormCAR(e) = tabCAR(i, e) / ((i + 1) * Math.Sqrt(tabVarAR(e)))
+                End If
             Next
-            tabMoyCar(i) = TestsStatistiques.calcul_variance(tab, tabMoy(i))
+            tabEcartNormCAR(i) = TestsStatistiques.calcul_variance(tabNormCAR, tabMoy(i))
         Next
-        Return tabMoyCar
+        Return tabEcartNormCAR
     End Function
 End Module

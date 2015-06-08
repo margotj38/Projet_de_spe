@@ -73,74 +73,34 @@ Module ExcelDialogue
         Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
         'Remplissage des tableaux : CAR, moyenne, variance
         Dim tabCAR(,) As Double = RentaAnormales.CalculCar(tabEvAR)
-        Dim tabMoyCar() As Double = RentaAnormales.calculMoyenneCar(tabCAR)
-        Dim tabVarCar() As Double = RentaAnormales.calculVarianceCar(tabCAR, tabMoyCar)
+        Dim tabMoyCar() As Double = RentaAnormales.moyNormCar(tabEstAR, tabCAR)
+        Dim tabVarCar() As Double = RentaAnormales.ecartNormCar(tabEstAR, tabCAR, tabMoyCar)
 
         'affichage des résultats des CAR
         afficheResCAR(tabMoyCar, tabVarCar, datesEvAR, N, nom)
 
     End Sub
 
-    '***************************** traitement fichier AR *****************************
-    Public Sub traitementPlageAR(plageEst As String, plageEv As String, feuille As String)
+    'Conversion d'une plage de données avec dates en un tableau de données et un tableau de dates
+    Public Sub convertPlageTab(plage As String, feuille As String, tabDonnees(,) As Double, tabDates() As Integer)
+
         Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets(feuille), Excel.Worksheet)
 
-        'La création d'une nouvelle feuille
-        Dim nom As String
-        nom = InputBox("Entrer Le nom de la feuille des résultats de l'étude d'événements: ")
-        'Si l'utilisateur n'entre pas un nom
-        If nom Is "" Then nom = "Resultat"
-        Globals.ThisAddIn.Application.Sheets.Add(After:=Globals.ThisAddIn.Application.Worksheets(Globals.ThisAddIn.Application.Worksheets.Count))
-        Globals.ThisAddIn.Application.ActiveSheet.Name = nom
-
-        '----------------- AR -----------------
         Dim tmpRange As Excel.Range
-        tmpRange = currentSheet.Range(plageEst)
-        'tableau des données pour l'estimation
-        Dim tabEstAR(0 To tmpRange.Rows.Count - 1, 0 To tmpRange.Columns.Count - 2) As Double
-        For ligne = 0 To tabEstAR.GetUpperBound(0)
-            For colonne = 0 To tabEstAR.GetUpperBound(1)
-                tabEstAR(ligne, colonne) = tmpRange.Cells(ligne + 1, colonne + 2).Value
-            Next
-        Next
-        'tabEstAR = currentSheet.Range(tmpRange.Cells(1, 2), tmpRange.Cells(tmpRange.Rows.Count, tmpRange.Columns.Count)).Value
+        tmpRange = currentSheet.Range(plage)
         'extraction de la première colonne correspondant aux dates
-        tmpRange = currentSheet.Range(plageEv)
-        Dim dates(0 To tmpRange.Rows.Count - 1) As Integer
-        For ligne = 0 To dates.GetUpperBound(0)
-            dates(ligne) = tmpRange.Cells(ligne + 1, 1).Value
+        tmpRange = currentSheet.Range(plage)
+        ReDim tabDates(0 To tmpRange.Rows.Count - 1)
+        For ligne = 0 To tabDates.GetUpperBound(0)
+            tabDates(ligne) = tmpRange.Cells(ligne + 1, 1).Value
         Next
-        'dates = currentSheet.Range(tmpRange.Cells(1, 1), tmpRange.Cells(tmpRange.Rows.Count, 1)).Value
         'tableau des données pour l'estimation
-        Dim tabEvAR(0 To tmpRange.Rows.Count - 1, 0 To tmpRange.Columns.Count - 2) As Double
-        For ligne = 0 To tabEvAR.GetUpperBound(0)
-            For colonne = 0 To tabEstAR.GetUpperBound(1)
-                tabEvAR(ligne, colonne) = tmpRange.Cells(ligne + 1, colonne + 2).Value
+        ReDim tabDonnees(0 To tmpRange.Rows.Count - 1, 0 To tmpRange.Columns.Count - 2)
+        For ligne = 0 To tabDonnees.GetUpperBound(0)
+            For colonne = 0 To tabDonnees.GetUpperBound(1)
+                tabDonnees(ligne, colonne) = tmpRange.Cells(ligne + 1, colonne + 2).Value
             Next
         Next
-        'tabEvAR = currentSheet.Range(tmpRange.Cells(1, 2), tmpRange.Cells(tmpRange.Rows.Count, tmpRange.Columns.Count)).Value
-
-        'nombre d'entreprises de l'échantillon
-        Dim N As Integer = tabEvAR.GetLength(1)
-
-        'tableau des AR moyen normalisés
-        Dim tabMoyAR() As Double = RentaAnormales.moyNormAR(tabEstAR, tabEvAR)
-        'tableau des écart-types des AR normalisés
-        Dim tabEcartAR() As Double = RentaAnormales.ecartNormAR(tabEstAR, tabEvAR, tabMoyAR)
-
-        'affichage des résultats
-        afficheResAR(tabMoyAR, tabEcartAR, dates, N, nom)
-
-        '----------------- CAR -----------------
-        Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
-        'Remplissage des tableaux :moyenne, variance
-        Dim tabCAR(,) As Double = RentaAnormales.CalculCar(tabEvAR)
-        Dim tabMoyCar() As Double = RentaAnormales.calculMoyenneCar(tabCAR)
-        Dim tabVarCar() As Double = RentaAnormales.calculVarianceCar(tabCAR, tabMoyCar)
-
-        'affichage des résultats des CAR
-        afficheResCAR(tabMoyCar, tabVarCar, dates, N, nom)
-
     End Sub
 
 
