@@ -94,6 +94,7 @@
                 Dim tmp As Double = tab(i) - moyenne
                 'On somme en multipliant par le nombre de #N/A présents + 1 (ie prixPresent)
                 calcul_variance = calcul_variance + tmp * tmp * prixPresent
+                prixPresent = 1
             End If
         Next i
         'On divise par la taille de la fenêtre d'estimation - 1, moins le nombre de #N/A finaux (ie prixPresent - 1)
