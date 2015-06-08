@@ -74,10 +74,10 @@ Module ExcelDialogue
         'Remplissage des tableaux : CAR, moyenne, variance
         Dim tabCAR(,) As Double = RentaAnormales.CalculCar(tabEvAR)
         Dim tabMoyCar() As Double = RentaAnormales.moyNormCar(tabEstAR, tabCAR)
-        Dim tabVarCar() As Double = RentaAnormales.ecartNormCar(tabEstAR, tabCAR, tabMoyCar)
+        Dim tabEcartCar() As Double = RentaAnormales.ecartNormCar(tabEstAR, tabCAR, tabMoyCar)
 
         'affichage des résultats des CAR
-        afficheResCAR(tabMoyCar, tabVarCar, datesEvAR, N, nom)
+        afficheResCAR(tabMoyCar, tabEcartCar, datesEvAR, N, nom)
 
     End Sub
 
@@ -142,7 +142,7 @@ Module ExcelDialogue
     End Sub
 
     '----------------------------------- affichage résultats CAR
-    Public Sub afficheResCAR(tabMoyCAR() As Double, tabVarCAR() As Double, datesEvAR() As Integer, tailleEch As Integer, nomFeuille As String)
+    Public Sub afficheResCAR(tabMoyCAR() As Double, tabEcartCAR() As Double, datesEvAR() As Integer, tailleEch As Integer, nomFeuille As String)
 
         Dim tailleFenetreEv As Integer = datesEvAR.GetLength(0)
 
@@ -162,10 +162,10 @@ Module ExcelDialogue
             valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("B" & j), tabMoyCAR(i))
 
             'La colonne des écart-types
-            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("C" & j), Math.Sqrt(tabVarCAR(i)))
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("C" & j), tabEcartCAR(i))
 
             'La statistique du test
-            Dim stat As Double = Math.Abs(Math.Sqrt(tailleEch) * tabMoyCAR(i) / Math.Sqrt(tabVarCAR(i)))
+            Dim stat As Double = Math.Abs(Math.Sqrt(tailleEch) * tabMoyCAR(i) / Math.Sqrt(tabEcartCAR(i)))
             valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("D" & j), stat)
 
             'La colonne des p-valeurs

@@ -1,4 +1,9 @@
-﻿Module Utilitaires
+﻿''' <summary>
+''' bla bla bla
+''' </summary>
+''' <remarks></remarks>
+
+Module Utilitaires
 
     '***************************** Pour parser les données de refEdit *****************************
 

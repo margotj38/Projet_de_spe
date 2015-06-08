@@ -317,9 +317,9 @@
 
         'Variable pour savoir si un #N/A précédait
         Dim prixPresent As Integer = 1
-        For e = 0 To N - 1
+        For e = 0 To tabEvAR.GetUpperBound(1)
             Dim somme As Double = 0
-            For i = 0 To tailleFenetreEv - 1
+            For i = 0 To tabEvAR.GetUpperBound(0)
                 If tabEvAR(i, e) = -2146826246 Then
                     'S'il y a un NA, on incrémente prixPresent
                     prixPresent = prixPresent + 1
@@ -329,6 +329,12 @@
                     prixPresent = 1
                 End If
                 tabCAR(i, e) = somme
+                'debug
+                'Sélection de la feuille contenant les Rt
+                Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("DateEvt"), Excel.Worksheet)
+                If i = 0 Then
+                    currentSheet.Cells(1, e + 4) = somme
+                End If
             Next
             prixPresent = 1
         Next
@@ -337,14 +343,15 @@
     End Function
 
     Function moyNormCar(ByRef tabEstAR(,) As Double, ByRef tabCAR(,) As Double) As Double()
-        Dim tailleFenetreEv As Integer = tabCAR.GetLength(0)
-        Dim tabMoyNormCAR(tailleFenetreEv - 1) As Double
 
+        Dim tailleFenetreEv As Integer = tabCAR.GetLength(0)
+        'tableau à retourner
+        Dim tabMoyNormCAR(tailleFenetreEv - 1) As Double
         'tableau des variances
         Dim tabVarAR() As Double = calcVarEstAR(tabEstAR)
 
-        For i = 0 To tailleFenetreEv - 1
-            Dim tabNormCAR(tabCAR.GetLength(1) - 1) As Double
+        For i = 0 To tabCAR.GetUpperBound(0)
+            Dim tabNormCAR(tabCAR.GetUpperBound(1)) As Double
             For e = 0 To tabCAR.GetUpperBound(1)
                 'Gestion des NA dans le tableau des AR
                 If tabCAR(i, e) = -2146826246 Then
@@ -377,7 +384,7 @@
                     tabNormCAR(e) = tabCAR(i, e) / ((i + 1) * Math.Sqrt(tabVarAR(e)))
                 End If
             Next
-            tabEcartNormCAR(i) = TestsStatistiques.calcul_variance(tabNormCAR, tabMoy(i))
+            tabEcartNormCAR(i) = Math.Sqrt(TestsStatistiques.calcul_variance(tabNormCAR, tabMoy(i)))
         Next
         Return tabEcartNormCAR
     End Function
