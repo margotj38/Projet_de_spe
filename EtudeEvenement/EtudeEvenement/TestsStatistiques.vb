@@ -1,4 +1,9 @@
-﻿Module TestsStatistiques
+﻿''' <summary>
+''' MODULE STATS
+''' </summary>
+''' <remarks></remarks>
+''' 
+Module TestsStatistiques
 
     '***************************** T-Test *****************************
 
@@ -78,7 +83,9 @@
             End If
         Next i
         'On divise par la taille de la fenêtre d'estimation moins le nombre de #N/A finaux (ie prixPresent - 1)
-        calcul_moyenne = calcul_moyenne / (tab.GetLength(0) - (prixPresent - 1))
+        If Not (tab.GetLength(0) - (prixPresent - 1)) = 0 Then
+            calcul_moyenne = calcul_moyenne / (tab.GetLength(0) - (prixPresent - 1))
+        End If
     End Function
 
     Function calcul_variance(tab() As Double, moyenne As Double) As Double
@@ -98,7 +105,9 @@
             End If
         Next i
         'On divise par la taille de la fenêtre d'estimation - 1, moins le nombre de #N/A finaux (ie prixPresent - 1)
-        calcul_variance = calcul_variance / (tab.GetLength(0) - prixPresent)
+        If Not tab.GetLength(0) - prixPresent = 0 Then
+            calcul_variance = calcul_variance / (tab.GetLength(0) - prixPresent)
+        End If
     End Function
 
     Public Function calculPValeur(tailleEchant As Integer, testHyp As Double) As Double
