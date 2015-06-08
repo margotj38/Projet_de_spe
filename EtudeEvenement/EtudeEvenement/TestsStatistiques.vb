@@ -63,20 +63,41 @@
     End Function
 
     Function calcul_moyenne(tab() As Double) As Double
+        'tab() peut contenir des #N/A
         calcul_moyenne = 0
+
+        'Variable pour savoir si un #N/A précédait
+        Dim prixPresent As Integer = 1
         For i = 0 To tab.GetUpperBound(0)
-            calcul_moyenne = calcul_moyenne + tab(i)
+            If tab(i) = -2146826246 Then
+                prixPresent = prixPresent + 1
+            Else
+                'Sinon on somme en multipliant par le nombre de #N/A présents + 1 (ie prixPresent)
+                calcul_moyenne = calcul_moyenne + tab(i) * prixPresent
+                prixPresent = 1
+            End If
         Next i
-        calcul_moyenne = calcul_moyenne / (tab.GetLength(0))
+        'On divise par la taille de la fenêtre d'estimation moins le nombre de #N/A finaux (ie prixPresent - 1)
+        calcul_moyenne = calcul_moyenne / (tab.GetLength(0) - (prixPresent - 1))
     End Function
 
     Function calcul_variance(tab() As Double, moyenne As Double) As Double
+        'tab() peut contenir des #N/A
         calcul_variance = 0
+
+        'Variable pour savoir si un #N/A précédait
+        Dim prixPresent As Integer = 1
         For i = 0 To tab.GetUpperBound(0)
-            Dim tmp As Double = tab(i) - moyenne
-            calcul_variance = calcul_variance + tmp * tmp
+            If tab(i) = -2146826246 Then
+                prixPresent = prixPresent + 1
+            Else
+                Dim tmp As Double = tab(i) - moyenne
+                'On somme en multipliant par le nombre de #N/A présents + 1 (ie prixPresent)
+                calcul_variance = calcul_variance + tmp * tmp * prixPresent
+            End If
         Next i
-        calcul_variance = calcul_variance / (tab.GetLength(0) - 1)
+        'On divise par la taille de la fenêtre d'estimation - 1, moins le nombre de #N/A finaux (ie prixPresent - 1)
+        calcul_variance = calcul_variance / (tab.GetLength(0) - prixPresent)
     End Function
 
     Public Function calculPValeur(tailleEchant As Integer, testHyp As Double) As Double
