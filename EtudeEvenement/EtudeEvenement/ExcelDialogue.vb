@@ -402,7 +402,38 @@ Module ExcelDialogue
             Globals.ThisAddIn.Application.Worksheets(nom).Cells(i + debutAffichage + 1, 4).Value = signification(pValeur)
         Next i
 
+    End Sub
 
+    Public Sub affichageSigne(ByRef tabDateEv() As Integer, ByRef tabEstAR(,) As Double, ByRef tabEvAR(,) As Double)
+        Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
+
+        'Création d'une nouvelle feuille
+        Dim nom As String
+        nom = InputBox("Entrer le nom de la feuille des résultats : ")
+        'Si l'utilisateur n'entre pas un nom
+        If nom Is "" Then nom = "Résultats Signe"
+        Globals.ThisAddIn.Application.Sheets.Add(After:=Globals.ThisAddIn.Application.Worksheets(Globals.ThisAddIn.Application.Worksheets.Count))
+        Globals.ThisAddIn.Application.ActiveSheet.Name = nom
+
+
+        'Le nom de chaque colonne
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("B1"), "Test signe")
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("C1"), "P-valeur (%)")
+
+        'Appel de la fonction qui calcule la statistique du test de signe
+        Dim stat() As Double = TestsStatistiques.statTestSigne(tabEstAR, tabEvAR)
+
+        'Affichage des dates et des statistiques du test de Patell et de la P-Valeur
+        For i = 0 To tailleFenetreEv - 1
+            nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + 2, 1), tabDateEv(i))
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + 2, 2), stat(i))
+            Dim pValeur As Double
+            'Calcul de la p-valeur
+            pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(stat(i)), True))
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + 2, 3), pValeur * 100)
+            'La signification du test
+            Globals.ThisAddIn.Application.Worksheets(nom).Cells(i + 2, 4).Value = signification(pValeur)
+        Next i
 
     End Sub
 
