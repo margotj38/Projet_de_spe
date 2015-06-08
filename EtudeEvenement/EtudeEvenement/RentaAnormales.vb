@@ -209,7 +209,9 @@
                 End If
             Next i
             'On divise par la taille de la fenêtre d'estimation moins le nombre de #N/A finaux (ie prixPresent - 1)
-            tabMoy(colonne - 1) = tabMoy(colonne - 1) / (tabRentaEst.GetLength(0) - (prixPresent - 1))
+            If Not tabRentaEst.GetLength(0) - (prixPresent - 1) = 0 Then
+                tabMoy(colonne - 1) = tabMoy(colonne - 1) / (tabRentaEst.GetLength(0) - (prixPresent - 1))
+            End If
             prixPresent = 1
         Next colonne
 
