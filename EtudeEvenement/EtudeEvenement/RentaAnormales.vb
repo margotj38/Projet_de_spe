@@ -12,7 +12,7 @@
             Case 1
                 modeleMarcheSimple(tabRentaEst, tabRentaEv, tabRentaMarcheEst, tabRentaMarcheEv, tabAREst, tabAREv, tabDateEst, tabDateEv)
             Case 2
-                'Création des tableaux pour pouvoir les X et Y de la régression
+                'Création des tableaux pour pouvoir faire les régressions en fonction des N/A
                 Dim tabRentaReg(,,)() = UtilitaireRentabilites.constructionTableauxReg(UtilitaireRentabilites.maxPrixAbs, tabRentaEst, tabRentaMarcheEst)
                 modeleMarche(tabRentaEst, tabRentaEv, tabRentaReg, tabRentaMarcheEst, tabRentaMarcheEv, tabAREst, tabAREv, tabDateEst, tabDateEv)
             Case Else
