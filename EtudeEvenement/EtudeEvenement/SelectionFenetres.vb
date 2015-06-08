@@ -102,7 +102,8 @@ Public Class SelectionFenetres
         Select Case test
             Case 0
                 'test simple
-                'A compléter : appeler ExcelDialogue.traitementAR avec des tableaux
+                'Calcule et affiches les résultats des test AR et CAR
+                ExcelDialogue.traitementTabAR(tabAREv, tabAREst, tabDateEv)
             Case 1
                 'test de Patell
                 'Calcul du nombre de AR non manquants pour chaque entreprise sur la période d'estimation
