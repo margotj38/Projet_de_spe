@@ -70,7 +70,7 @@ Public Class SelectionAR
         Select Case test
             Case 0
                 'test simple
-                ExcelDialogue.traitementTabAR(tabEvAR, tabEstAR, tabDateEv)
+                RentaAnormales.traitementTabAR(tabEvAR, tabEstAR, tabDateEv)
             Case 1
                 'test de signe
                 ExcelDialogue.affichageSigne(tabDateEv, tabEstAR, tabEvAR)

@@ -1,85 +1,13 @@
 ﻿Imports System.Windows.Forms.DataVisualization.Charting
 Imports System.Diagnostics
 
+''' <summary>
+''' Module d'intéraction avec l'interface Excel. Il regroupe principalement les fonctions d'affichage des résultats
+''' dans les feuilles Excel.
+''' </summary>
+''' <remarks></remarks>
+
 Module ExcelDialogue
-
-    '***************************** graphique p-Valeur *****************************
-
-    Public Sub tracerPValeur(tailleEchant As Integer, maxFenetre As Integer)
-        'Sélection de la feuille contenant les Rt
-        Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("Rt"), Excel.Worksheet)
-
-        'Tant que la fenêtre contient au moins un élément
-        For i = 0 To maxFenetre
-            Dim tabAR As Double(,)
-            'On apprend sur toutes les données disponibles
-
-
-            ''''Commenté pour test
-            'tabAR = calculAR(currentSheet.Cells(2, 1).Value, -i - 1)
-
-            Dim pValeur As Double
-
-            Select Case Globals.Ribbons.Ruban.selFenetres.test
-                Case 0
-                    'test simple
-                    Dim tabCAR As Double()
-
-                    ''''Commenté pour test
-                    'tabCAR = Globals.ThisAddIn.calculCAR(tabAR, currentSheet.Cells(2, 1).Value, -i - 1, -i, i)
-                    'Dim testHyp As Double = TestsStatistiques.calculStatStudent(tabCAR)
-                    'pValeur = TestsStatistiques.calculPValeur(tailleEchant, testHyp) * 100
-                Case 1
-                    'test de Patell
-                    'Dim testHyp As Double = TestsStatistiques.patellTest(tabAR, currentSheet.Cells(2, 1).Value, -i - 1, -i, i)
-                    'pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHyp), True)) * 100
-                Case 2
-                    'test de signe
-                    'Dim testHyp As Double = TestsStatistiques.statTestSigne(tabAR, currentSheet.Cells(2, 1).Value, -i - 1, -i, i)
-                    'pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHyp), True)) * 100
-            End Select
-
-            Dim p As New DataPoint
-            p.XValue = i
-            p.YValues = {pValeur.ToString("0.00000")}
-
-            Globals.Ribbons.Ruban.graphPVal.GraphiqueChart.Series("Series1").Points.Add(p)
-        Next i
-    End Sub
-
-    'Traitement des ARs à partir des deux tableaux des AR
-    Public Sub traitementTabAR(tabEvAR(,) As Double, tabEstAR(,) As Double, datesEvAR() As Integer)
-
-        'La création d'une nouvelle feuille
-        Dim nom As String
-        nom = InputBox("Entrer Le nom de la feuille des résultats de l'étude d'événements: ")
-        'Si l'utilisateur n'entre pas un nom
-        If nom Is "" Then nom = "Resultat"
-        Globals.ThisAddIn.Application.Sheets.Add(After:=Globals.ThisAddIn.Application.Worksheets(Globals.ThisAddIn.Application.Worksheets.Count))
-        Globals.ThisAddIn.Application.ActiveSheet.Name = nom
-
-        '----------------- AR -----------------
-        'tableau des AR moyen normalisés
-        Dim tabMoyAR() As Double = RentaAnormales.moyNormAR(tabEstAR, tabEvAR)
-        'tableau des écart-types des AR normalisés
-        Dim tabEcartAR() As Double = RentaAnormales.ecartNormAR(tabEstAR, tabEvAR, tabMoyAR)
-
-        Dim N As Integer = tabEvAR.GetLength(1)
-
-        'affichage des résultats des AR
-        afficheResAR(tabMoyAR, tabEcartAR, datesEvAR, N, nom)
-
-        '----------------- CAR -----------------
-        Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
-        'Remplissage des tableaux : CAR, moyenne, variance
-        Dim tabCAR(,) As Double = RentaAnormales.CalculCar(tabEvAR)
-        Dim tabMoyCar() As Double = RentaAnormales.moyNormCar(tabEstAR, tabCAR)
-        Dim tabEcartCar() As Double = RentaAnormales.ecartNormCar(tabEstAR, tabCAR, tabMoyCar)
-
-        'affichage des résultats des CAR
-        afficheResCAR(tabMoyCar, tabEcartCar, datesEvAR, N, nom)
-
-    End Sub
 
     'Conversion d'une plage de données avec dates en un tableau de données et un tableau de dates
     Public Sub convertPlageTab(plage As String, feuille As String, ByRef tabDonnees(,) As Double, ByRef tabDates() As Integer)

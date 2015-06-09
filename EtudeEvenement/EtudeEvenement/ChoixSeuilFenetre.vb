@@ -112,16 +112,4 @@ Public Class ChoixSeuilFenetre
         'End Try
     End Sub
 
-    Private Sub PValeurFenetre_Click(sender As Object, e As EventArgs) Handles PValeurFenetre.Click
-        Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("Rt"), Excel.Worksheet)
-        Dim premiereDate As Integer = currentSheet.Cells(2, 1).Value
-        Dim derniereDate As Integer = premiereDate + currentSheet.UsedRange.Rows.Count - 2
-        Dim tailleEchant As Integer = currentSheet.UsedRange.Columns.Count - 1
-
-        'Calcul des pvaleurs et affichage de la courbe
-        ExcelDialogue.tracerPValeur(tailleEchant, derniereDate)
-        'Globals.Ribbons.Ruban.seuilFenetreTaskPane.Visible = False
-        Globals.Ribbons.Ruban.graphPVal.Visible = True
-    End Sub
-
 End Class

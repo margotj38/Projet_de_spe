@@ -388,4 +388,39 @@
         Next
         Return tabEcartNormCAR
     End Function
+
+    'Traitement des ARs à partir des deux tableaux des AR
+    Public Sub traitementTabAR(tabEvAR(,) As Double, tabEstAR(,) As Double, datesEvAR() As Integer)
+
+        'La création d'une nouvelle feuille
+        Dim nom As String
+        nom = InputBox("Entrer Le nom de la feuille des résultats de l'étude d'événements: ")
+        'Si l'utilisateur n'entre pas un nom
+        If nom Is "" Then nom = "Resultat"
+        Globals.ThisAddIn.Application.Sheets.Add(After:=Globals.ThisAddIn.Application.Worksheets(Globals.ThisAddIn.Application.Worksheets.Count))
+        Globals.ThisAddIn.Application.ActiveSheet.Name = nom
+
+        '----------------- AR -----------------
+        'tableau des AR moyen normalisés
+        Dim tabMoyAR() As Double = RentaAnormales.moyNormAR(tabEstAR, tabEvAR)
+        'tableau des écart-types des AR normalisés
+        Dim tabEcartAR() As Double = RentaAnormales.ecartNormAR(tabEstAR, tabEvAR, tabMoyAR)
+
+        Dim N As Integer = tabEvAR.GetLength(1)
+
+        'affichage des résultats des AR
+        ExcelDialogue.afficheResAR(tabMoyAR, tabEcartAR, datesEvAR, N, nom)
+
+        '----------------- CAR -----------------
+        Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
+        'Remplissage des tableaux : CAR, moyenne, variance
+        Dim tabCAR(,) As Double = RentaAnormales.CalculCar(tabEvAR)
+        Dim tabMoyCar() As Double = RentaAnormales.moyNormCar(tabEstAR, tabCAR)
+        Dim tabEcartCar() As Double = RentaAnormales.ecartNormCar(tabEstAR, tabCAR, tabMoyCar)
+
+        'affichage des résultats des CAR
+        ExcelDialogue.afficheResCAR(tabMoyCar, tabEcartCar, datesEvAR, N, nom)
+
+    End Sub
+
 End Module

@@ -103,7 +103,7 @@ Public Class SelectionFenetres
             Case 0
                 'test simple
                 'Calcule et affiches les résultats des test AR et CAR
-                ExcelDialogue.traitementTabAR(tabAREv, tabAREst, tabDateEv)
+                RentaAnormales.traitementTabAR(tabAREv, tabAREst, tabDateEv)
             Case 1
                 'test de Patell
                 'Calcul du nombre de AR non manquants pour chaque entreprise sur la période d'estimation
@@ -140,16 +140,5 @@ Public Class SelectionFenetres
         'Globals.Ribbons.Ruban.seuilFenetreTaskPane.Visible = False
     End Sub
 
-    Private Sub PValeurFenetre_Click(sender As Object, e As EventArgs) Handles PValeurFenetre.Click
-        Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("Rt"), Excel.Worksheet)
-        Dim premiereDate As Integer = currentSheet.Cells(2, 1).Value
-        Dim derniereDate As Integer = premiereDate + currentSheet.UsedRange.Rows.Count - 2
-        Dim tailleEchant As Integer = currentSheet.UsedRange.Columns.Count - 1
-
-        'Calcul des pvaleurs et affichage de la courbe
-        ExcelDialogue.tracerPValeur(tailleEchant, derniereDate)
-        'Globals.Ribbons.Ruban.seuilFenetreTaskPane.Visible = False
-        Globals.Ribbons.Ruban.graphPVal.Visible = True
-    End Sub
 
 End Class
