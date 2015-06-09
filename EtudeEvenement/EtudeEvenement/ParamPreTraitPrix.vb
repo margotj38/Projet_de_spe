@@ -80,7 +80,22 @@ Public Class ParamPreTraitPrix
         Dim plage As String = ""
         Dim feuilleDonnees As String = Me.nomFeuille
         Dim feuilleDates As String = ""
+        'Si aucune plage n'a été sélectionnée, on lève une erreur
+        If Me.datesEvRefEdit.Address = "" Then
+            MsgBox("Erreur : Aucune plage de dates n'a été sélectionnée", 16)
+            Return
+        End If
         Utilitaires.recupererFeuillePlage(Me.datesEvRefEdit.Address, feuilleDates, plage)
+
+        'On compte le nom de colonnes de la plage fournie
+        Dim premiereColonne As Integer = 0
+        Dim derniereColonne As Integer = 0
+        Utilitaires.parserPlageColonnes(plage, premiereColonne, derniereColonne)
+        'S'il n'y a pas exactement une colonne, on lève une erreur
+        If Not premiereColonne = derniereColonne Then
+            MsgBox("Erreur : Vous devez sélectionner uniquement la colonne des dates", 16)
+            Return
+        End If
 
         'traitement des prix
         'On centre les cours des entreprises et du marché

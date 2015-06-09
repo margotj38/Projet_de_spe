@@ -101,8 +101,6 @@ Module UtilitaireRentabilites
         Next colonne
     End Sub
 
-    'Entrée : tableaux centrés des cours et du marché (1ère colonne : dates)
-    'Sortie : tableaux des rentabilités des entreprises et du marché (1ère colonne : dates) + maxPrixAbsent
     ''' <summary>
     ''' Méthode calculant les rentabilités des entreprises et du marché à partir des cours.
     ''' </summary>
