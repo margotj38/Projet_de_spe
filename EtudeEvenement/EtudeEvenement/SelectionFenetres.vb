@@ -3,19 +3,44 @@ Imports System.Windows.Forms.DataVisualization.Charting
 Imports Microsoft.Office.Interop
 Imports System.Runtime.InteropServices
 
+''' <summary>
+''' Windows Form permettant la gestion du lancement de l'étude d'événement à partir des rentabilités centrées.
+''' </summary>
+''' <remarks>L'interface graphique de cette Windows Form contient deux objets de type refEdit (un pour sélectionner la 
+''' plage correspondant à la période d'estimation, un second pour la sélection de la période d'événement) et un bouton 
+''' pour lancer l'étude d'événement à partir des rentabilités choisies.</remarks>
 Public Class SelectionFenetres
 
-    Private model As Integer ' 0 => ModeleMoyenne; 1 => ModeleMarcheSimple; 2 => ModeleMarche
-    Private numTest As Integer ' 0 => TestSimple; 1 => TestPatell; 2 => TestSigne
+    ''' <summary>
+    ''' Numéro du modèle à utiliser (0 => ModeleMoyenne; 1 => ModeleMarcheSimple; 2 => ModeleMarche).
+    ''' </summary>
+    ''' <remarks></remarks>
+    Private model As Integer
 
-    'constructeur
+    ''' <summary>
+    ''' Numéro du test à utiliser (0 => test de Student; 1 => test de Patell; 2 => test de signe).
+    ''' </summary>
+    ''' <remarks></remarks>
+    Private numTest As Integer
+
+    ''' <summary>
+    ''' Constructeur initialisant les numéro du modèle et du test.
+    ''' </summary>
+    ''' <param name="model">Numéro de modèle à utiliser pour l'étude d'événement.</param>
+    ''' <param name="test">Numéro de test à utiliser pour l'étude d'événement.</param>
+    ''' <remarks></remarks>
     Public Sub New(ByVal model As Integer, ByVal test As Integer)
         InitializeComponent()
         Me.model = model
         Me.numTest = test
     End Sub
 
-    'accesseur sur model
+    ''' <summary>
+    ''' Accesseur sur le numéro du modèle.
+    ''' </summary>
+    ''' <value>Numéro du modèle choisi</value>
+    ''' <returns>Le numéro du modèle</returns>
+    ''' <remarks></remarks>
     Public Property modele() As Integer
         Get
             Return model
@@ -28,7 +53,12 @@ Public Class SelectionFenetres
         End Set
     End Property
 
-    'accesseur sur numTest
+    ''' <summary>
+    ''' Accesseur sur le numéro du test.
+    ''' </summary>
+    ''' <value>Numéro du test choisi</value>
+    ''' <returns>Le numéro du test</returns>
+    ''' <remarks></remarks>
     Public Property test() As Integer
         Get
             Return numTest
@@ -41,14 +71,21 @@ Public Class SelectionFenetres
         End Set
     End Property
 
+    ''' <summary>
+    ''' Méthode appelée au chargement de cette classe. Elle connecte les objets refEdit à l'application Excel en cours
+    ''' d'exécution.
+    ''' </summary>
+    ''' <param name="sender">Non utilisé</param>
+    ''' <param name="e">Non utilisé</param>
+    ''' <remarks></remarks>
     Private Sub SelectionFenetres_Load(sender As Object, e As EventArgs) Handles Me.Load
         Dim excelApp As Excel.Application = Nothing
 
-        ' Create an Excel App
+        'Create an Excel App
         Try
             excelApp = Marshal.GetActiveObject("Excel.Application")
         Catch ex As COMException
-            ' An exception is thrown if there is not an open excel instance.                    
+            'An exception is thrown if there is not an open excel instance.                    
         Finally
             If excelApp Is Nothing Then
                 excelApp = New Microsoft.Office.Interop.Excel.Application
@@ -64,6 +101,13 @@ Public Class SelectionFenetres
         Me.refEditEv.Focus()
     End Sub
 
+    ''' <summary>
+    ''' Méthode associée au clic sur le bouton "Lancement". Elle calcule les AR selon le modèle choisi, les affiche dans une
+    ''' nouvelle feuille, effectue le test statistique choisi, puis affiche les résultats finaux dans une autre feuille
+    ''' </summary>
+    ''' <param name="sender">Non utilisé</param>
+    ''' <param name="e">Non utilisé</param>
+    ''' <remarks></remarks>
     Private Sub LancementEtEv_Click(sender As Object, e As EventArgs) Handles LancementEtEv.Click
 
         'On récupère les plages des périodes d'estimation et d'événement + la feuille sur laquelle elles sont

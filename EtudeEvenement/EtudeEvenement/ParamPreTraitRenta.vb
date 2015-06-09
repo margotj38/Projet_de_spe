@@ -1,23 +1,43 @@
 ﻿Imports Microsoft.Office.Interop
 Imports System.Runtime.InteropServices
 
+''' <summary>
+''' Windows Form permettant la gestion du pré-traitement des rentabilités.
+''' </summary>
+''' <remarks>L'interface graphique de cette Windows Form contient un objet de type refEdit (pour sélectionner les dates 
+''' d'événements), une textBox (contenant la feuille sur laquelle on doit récupérer les rentabilités) et un bouton 
+''' pour lancer le calcul des rentabilités centrées autour de la date d'événement.</remarks>
 Public Class ParamPreTraitRenta
 
+    ''' <summary>
+    ''' Nom de la feuille sur laquelle on va récupérer les cours.
+    ''' </summary>
+    ''' <remarks></remarks>
     Private nomFeuille As String
 
-    'constructeur
+    ''' <summary>
+    ''' Constructeur initialisant les composants.
+    ''' </summary>
+    ''' <remarks></remarks>
     Public Sub New()
         InitializeComponent()
     End Sub
 
+    ''' <summary>
+    ''' Méthode appelée au chargement de cette classe. Elle connecte l'objet refEdit à l'application Excel en cours
+    ''' d'exécution.
+    ''' </summary>
+    ''' <param name="sender">Non utilisé</param>
+    ''' <param name="e">Non utilisé</param>
+    ''' <remarks></remarks>
     Private Sub SelectionDatesEv_Load(sender As Object, e As EventArgs) Handles Me.Load
         Dim excelApp As Excel.Application = Nothing
 
-        ' Create an Excel App
+        'Create an Excel App
         Try
             excelApp = Marshal.GetActiveObject("Excel.Application")
         Catch ex As COMException
-            ' An exception is thrown if there is not an open excel instance.                    
+            'An exception is thrown if there is not an open excel instance.                    
         Finally
             If excelApp Is Nothing Then
                 excelApp = New Microsoft.Office.Interop.Excel.Application
@@ -31,6 +51,12 @@ Public Class ParamPreTraitRenta
         Me.datesEvRefEdit.Focus()
     End Sub
 
+    ''' <summary>
+    ''' Méthode associée au clic sur le bouton "Lancer prétraitement". Elle centre les rentabilités et les affiche
+    ''' </summary>
+    ''' <param name="sender">Non utilisé</param>
+    ''' <param name="e">Non utilisé</param>
+    ''' <remarks></remarks>
     Private Sub lancementPreT_Click(sender As Object, e As EventArgs) Handles lancementPreT.Click
         'On récupère la plage des dates et la feuille sur laquelle elle est
         Dim plage As String = ""
@@ -60,6 +86,12 @@ Public Class ParamPreTraitRenta
 
     End Sub
 
+    ''' <summary>
+    ''' Méthode qui récupère le nom de la feuille contenant les rentabilités
+    ''' </summary>
+    ''' <param name="sender">Non utilisé</param>
+    ''' <param name="e">Non utilisé</param>
+    ''' <remarks></remarks>
     Private Sub nomFeuilleBox_TextChanged(sender As Object, e As EventArgs) Handles nomFeuilleBox.TextChanged
         nomFeuille = nomFeuilleBox.Text
     End Sub

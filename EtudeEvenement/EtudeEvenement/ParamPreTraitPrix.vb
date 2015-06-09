@@ -1,27 +1,60 @@
 ﻿Imports Microsoft.Office.Interop
 Imports System.Runtime.InteropServices
 
+''' <summary>
+''' Windows Form permettant la gestion du pré-traitement des prix.
+''' </summary>
+''' <remarks>L'interface graphique de cette Windows Form contient un objet de type refEdit (pour sélectionner les dates 
+''' d'événements), une textBox (contenant la feuille sur laquelle on doit récupérer les cours), deux checkBox (une pour savoir 
+''' comment on calcule les rentabilités, une seconde pour savoir si ce sont des cours d'ouverture ou de clôture) et un bouton 
+''' pour lancer le calcul des rentabilités centrées autour de la date d'événement.</remarks>
 Public Class ParamPreTraitPrix
 
+    ''' <summary>
+    ''' Nom de la feuille sur laquelle on va récupérer les cours.
+    ''' </summary>
+    ''' <remarks></remarks>
     Private nomFeuille As String
+
+    ''' <summary>
+    ''' Variable permettant de savoir quel mode de calcul sera utilisé pour les rentabilités 
+    ''' (False pour un calcul arithmétique (valeur par défaut), True pour un calcul logarithmique).
+    ''' </summary>
+    ''' <remarks></remarks>
     Private rLog As Boolean
+
+    ''' <summary>
+    ''' Variable permettant de savoir si l'on dispose de cours d'ouverture ou de clôture 
+    ''' (False pour des cours de clôture (valeur par défaut), True pour des cours d'ouverture).
+    ''' </summary>
+    ''' <remarks></remarks>
     Private cOuv As Boolean
 
-    'constructeur
+    ''' <summary>
+    ''' Constructeur initialisant les variables de la classe à leur valeur par défaut.
+    ''' </summary>
+    ''' <remarks></remarks>
     Public Sub New()
         InitializeComponent()
         rLog = False
         cOuv = False
     End Sub
 
+    ''' <summary>
+    ''' Méthode appelée au chargement de cette classe. Elle connecte l'objet refEdit à l'application Excel en cours
+    ''' d'exécution.
+    ''' </summary>
+    ''' <param name="sender">Non utilisé</param>
+    ''' <param name="e">Non utilisé</param>
+    ''' <remarks></remarks>
     Private Sub SelectionDatesEv_Load(sender As Object, e As EventArgs) Handles Me.Load
         Dim excelApp As Excel.Application = Nothing
 
-        ' Create an Excel App
+        'Create an Excel App
         Try
             excelApp = Marshal.GetActiveObject("Excel.Application")
         Catch ex As COMException
-            ' An exception is thrown if there is not an open excel instance.                    
+            'An exception is thrown if there is not an open excel instance.                    
         Finally
             If excelApp Is Nothing Then
                 excelApp = New Microsoft.Office.Interop.Excel.Application
@@ -35,6 +68,13 @@ Public Class ParamPreTraitPrix
         Me.datesEvRefEdit.Focus()
     End Sub
 
+    ''' <summary>
+    ''' Méthode associée au clic sur le bouton "Lancer prétraitement". Elle centre les prix, calcule les rentabilités pour 
+    ''' le marché et pour les entreprises et affiche ces rentabilités centrées
+    ''' </summary>
+    ''' <param name="sender">Non utilisé</param>
+    ''' <param name="e">Non utilisé</param>
+    ''' <remarks></remarks>
     Private Sub lancementPreT_Click(sender As Object, e As EventArgs) Handles lancementPreT.Click
         'On récupère la plage des dates et la feuille sur laquelle elle est
         Dim plage As String = ""
@@ -57,7 +97,6 @@ Public Class ParamPreTraitPrix
                                               maxPrixAbsent, rLog)
 
         'On stocke le tableaux des rentabilités de marché et des entreprises dont on va avoir besoin
-        'PB : où ? Dans nouveau module rentabilité ?
         UtilitaireRentabilites.tabRentaMarche = tabRentaMarche
         UtilitaireRentabilites.tabRenta = tabRenta
         UtilitaireRentabilites.tabRentaClassiquesMarche = tabRentaClassiquesMarche
@@ -69,14 +108,33 @@ Public Class ParamPreTraitPrix
 
     End Sub
 
+    ''' <summary>
+    ''' Méthode qui récupère le nom de la feuille contenant les cours
+    ''' </summary>
+    ''' <param name="sender">Non utilisé</param>
+    ''' <param name="e">Non utilisé</param>
+    ''' <remarks></remarks>
     Private Sub nomFeuilleBox_TextChanged(sender As Object, e As EventArgs) Handles nomFeuilleBox.TextChanged
         nomFeuille = nomFeuilleBox.Text
     End Sub
 
+    ''' <summary>
+    ''' Méthode qui récupère la valeur de la checkBox correspondant à la sélection du mode de calcul des rentabilités
+    ''' </summary>
+    ''' <param name="sender">Non utilisé</param>
+    ''' <param name="e">Non utilisé</param>
+    ''' <remarks></remarks>
     Private Sub rentaLog_CheckedChanged(sender As Object, e As EventArgs) Handles rentaLog.CheckedChanged
         rLog = rentaLog.Checked
     End Sub
 
+    ''' <summary>
+    ''' Méthode qui récupère la valeur de la checkBox correspondant à la sélection du type de cours fournis 
+    ''' (ouverture ou clôture)
+    ''' </summary>
+    ''' <param name="sender">Non utilisé</param>
+    ''' <param name="e">Non utilisé</param>
+    ''' <remarks></remarks>
     Private Sub coursOuverture_CheckedChanged(sender As Object, e As EventArgs) Handles coursOuverture.CheckedChanged
         cOuv = coursOuverture.Checked
     End Sub
