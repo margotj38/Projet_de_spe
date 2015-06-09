@@ -178,7 +178,7 @@ Module RentaAnormales
         Next
     End Sub
 
-    
+
     ''' <summary>
     ''' Estimation des AR à partir du modèle de marché classique : K = alpha + beta*Rm
     ''' </summary>
