@@ -5,7 +5,7 @@ Imports System.Net.Mime.MediaTypeNames
 Imports Microsoft.Office.Interop
 
 ''' <summary>
-''' Ruban de notre complément. Permet de sélectionner différentes méthodes et différents tests pour effectuer l'étude 
+''' Ruban de notre complément. Permet d'accéder aux différentes fonctionnalités du complément d'étude 
 ''' d'événements.
 ''' </summary>
 ''' <remarks></remarks>
