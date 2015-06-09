@@ -29,12 +29,13 @@ Partial Class SelectionFenetres
         Me.refEditEv = New LeafCreations.Excel2007RefEdit()
         Me.refEditEst = New LeafCreations.Excel2007RefEdit()
         Me.nomModele = New System.Windows.Forms.Label()
+        Me.nomTest = New System.Windows.Forms.Label()
         Me.SuspendLayout()
         '
         'Label1
         '
         Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(37, 99)
+        Me.Label1.Location = New System.Drawing.Point(37, 129)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(104, 13)
         Me.Label1.TabIndex = 22
@@ -42,7 +43,7 @@ Partial Class SelectionFenetres
         '
         'LancementEtEv
         '
-        Me.LancementEtEv.Location = New System.Drawing.Point(95, 263)
+        Me.LancementEtEv.Location = New System.Drawing.Point(86, 283)
         Me.LancementEtEv.Name = "LancementEtEv"
         Me.LancementEtEv.Size = New System.Drawing.Size(111, 23)
         Me.LancementEtEv.TabIndex = 20
@@ -52,7 +53,7 @@ Partial Class SelectionFenetres
         'FenetreText
         '
         Me.FenetreText.AutoSize = True
-        Me.FenetreText.Location = New System.Drawing.Point(37, 178)
+        Me.FenetreText.Location = New System.Drawing.Point(37, 201)
         Me.FenetreText.Name = "FenetreText"
         Me.FenetreText.Size = New System.Drawing.Size(151, 13)
         Me.FenetreText.TabIndex = 19
@@ -65,7 +66,7 @@ Partial Class SelectionFenetres
         Me.refEditEv.ExcelConnector = Nothing
         Me.refEditEv.ImageMaximized = CType(resources.GetObject("refEditEv.ImageMaximized"), System.Drawing.Image)
         Me.refEditEv.ImageMinimized = CType(resources.GetObject("refEditEv.ImageMinimized"), System.Drawing.Image)
-        Me.refEditEv.Location = New System.Drawing.Point(53, 208)
+        Me.refEditEv.Location = New System.Drawing.Point(53, 227)
         Me.refEditEv.Name = "refEditEv"
         Me.refEditEv.RefEditFont = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.refEditEv.Size = New System.Drawing.Size(195, 26)
@@ -78,7 +79,7 @@ Partial Class SelectionFenetres
         Me.refEditEst.ExcelConnector = Nothing
         Me.refEditEst.ImageMaximized = CType(resources.GetObject("refEditEst.ImageMaximized"), System.Drawing.Image)
         Me.refEditEst.ImageMinimized = CType(resources.GetObject("refEditEst.ImageMinimized"), System.Drawing.Image)
-        Me.refEditEst.Location = New System.Drawing.Point(53, 128)
+        Me.refEditEst.Location = New System.Drawing.Point(53, 154)
         Me.refEditEst.Name = "refEditEst"
         Me.refEditEst.RefEditFont = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.refEditEst.Size = New System.Drawing.Size(195, 26)
@@ -88,17 +89,28 @@ Partial Class SelectionFenetres
         '
         Me.nomModele.AutoSize = True
         Me.nomModele.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.nomModele.Location = New System.Drawing.Point(37, 35)
+        Me.nomModele.Location = New System.Drawing.Point(45, 33)
         Me.nomModele.Name = "nomModele"
         Me.nomModele.Size = New System.Drawing.Size(96, 16)
         Me.nomModele.TabIndex = 25
         Me.nomModele.Text = "Nom Modèle"
         '
+        'nomTest
+        '
+        Me.nomTest.AutoSize = True
+        Me.nomTest.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.5!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.nomTest.Location = New System.Drawing.Point(98, 75)
+        Me.nomTest.Name = "nomTest"
+        Me.nomTest.Size = New System.Drawing.Size(75, 16)
+        Me.nomTest.TabIndex = 33
+        Me.nomTest.Text = "Nom Test"
+        '
         'SelectionFenetres
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(306, 326)
+        Me.ClientSize = New System.Drawing.Size(301, 340)
+        Me.Controls.Add(Me.nomTest)
         Me.Controls.Add(Me.nomModele)
         Me.Controls.Add(Me.refEditEv)
         Me.Controls.Add(Me.refEditEst)
@@ -117,4 +129,5 @@ Partial Class SelectionFenetres
     Friend WithEvents LancementEtEv As System.Windows.Forms.Button
     Friend WithEvents FenetreText As System.Windows.Forms.Label
     Friend WithEvents nomModele As System.Windows.Forms.Label
+    Friend WithEvents nomTest As System.Windows.Forms.Label
 End Class

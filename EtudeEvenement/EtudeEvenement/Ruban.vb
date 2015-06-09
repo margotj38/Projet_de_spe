@@ -63,7 +63,8 @@ Public Class Ruban
     Private Sub testSimpleR_Click(sender As Object, e As RibbonControlEventArgs) Handles testSimpleR.Click
         selFenetres = New SelectionFenetres(0, 0)
         initSelFenetres(selFenetres)
-        selFenetres.nomModele.Text = "Test simple - Modèle moyenne des rentabilités"
+        selFenetres.nomModele.Text = "Modèle moyenne des rentabilités"
+        selFenetres.nomTest.Text = "Test simple"
         selFenetres.Visible = True
     End Sub
 
@@ -77,7 +78,8 @@ Public Class Ruban
     Private Sub TestPatellR_Click(sender As Object, e As RibbonControlEventArgs) Handles TestPatellR.Click
         selFenetres = New SelectionFenetres(0, 1)
         initSelFenetres(selFenetres)
-        selFenetres.nomModele.Text = "Test de Patell - Modèle moyenne des rentabilités"
+        selFenetres.nomModele.Text = "Modèle moyenne des rentabilités"
+        selFenetres.nomTest.Text = "Test de Patell"
         selFenetres.Visible = True
     End Sub
 
@@ -91,7 +93,8 @@ Public Class Ruban
     Private Sub testSigneR_Click(sender As Object, e As RibbonControlEventArgs) Handles testSigneR.Click
         selFenetres = New SelectionFenetres(0, 2)
         initSelFenetres(selFenetres)
-        selFenetres.nomModele.Text = "Test de signe - Modèle moyenne des rentabilités"
+        selFenetres.nomModele.Text = "Modèle moyenne des rentabilités"
+        selFenetres.nomTest.Text = "Test de signe"
         selFenetres.Visible = True
     End Sub
 
@@ -105,7 +108,8 @@ Public Class Ruban
     Private Sub testSimpleMS_Click(sender As Object, e As RibbonControlEventArgs) Handles testSimpleMS.Click
         selFenetres = New SelectionFenetres(1, 0)
         initSelFenetres(selFenetres)
-        selFenetres.nomModele.Text = "Test simple - Modèle de marché simplifié"
+        selFenetres.nomModele.Text = "Modèle de marché simplifié"
+        selFenetres.nomTest.Text = "Test simple"
         selFenetres.Visible = True
     End Sub
 
@@ -119,7 +123,8 @@ Public Class Ruban
     Private Sub testPatellMS_Click(sender As Object, e As RibbonControlEventArgs) Handles testPatellMS.Click
         selFenetres = New SelectionFenetres(1, 1)
         initSelFenetres(selFenetres)
-        selFenetres.nomModele.Text = "Test de Patell - Modèle de marché simplifié"
+        selFenetres.nomModele.Text = "Modèle de marché simplifié"
+        selFenetres.nomTest.Text = "Test de Patell"
         selFenetres.Visible = True
     End Sub
 
@@ -133,7 +138,8 @@ Public Class Ruban
     Private Sub testSigneMS_Click(sender As Object, e As RibbonControlEventArgs) Handles testSigneMS.Click
         selFenetres = New SelectionFenetres(1, 2)
         initSelFenetres(selFenetres)
-        selFenetres.nomModele.Text = "Test de signe - Modèle de marché simplifié"
+        selFenetres.nomModele.Text = "Modèle de marché simplifié"
+        selFenetres.nomTest.Text = "Test de signe"
         selFenetres.Visible = True
     End Sub
 
@@ -147,8 +153,8 @@ Public Class Ruban
     Private Sub testSimpleM_Click(sender As Object, e As RibbonControlEventArgs) Handles testSimpleM.Click
         selFenetres = New SelectionFenetres(2, 0)
         initSelFenetres(selFenetres)
-        selFenetres.nomModele.Text = "Test simple - Modèle de marché classique"
-        'seuilFenetreTaskPane.Visible = True
+        selFenetres.nomModele.Text = "Modèle de marché classique"
+        selFenetres.nomTest.Text = "Test simple"
         selFenetres.Visible = True
     End Sub
 
@@ -162,8 +168,8 @@ Public Class Ruban
     Private Sub testPatellM_Click(sender As Object, e As RibbonControlEventArgs) Handles testPatellM.Click
         selFenetres = New SelectionFenetres(2, 1)
         initSelFenetres(selFenetres)
-        selFenetres.nomModele.Text = "Test de Patell - Modèle de marché classique"
-        'seuilFenetreTaskPane.Visible = True
+        selFenetres.nomModele.Text = "Modèle de marché classique"
+        selFenetres.nomTest.Text = "Test de Patell"
         selFenetres.Visible = True
     End Sub
 
@@ -177,7 +183,8 @@ Public Class Ruban
     Private Sub testSigneM_Click(sender As Object, e As RibbonControlEventArgs) Handles testSigneM.Click
         selFenetres = New SelectionFenetres(2, 2)
         initSelFenetres(selFenetres)
-        selFenetres.nomModele.Text = "Test de signe - Modèle de marché classique"
+        selFenetres.nomModele.Text = "Modèle de marché classique"
+        selFenetres.nomTest.Text = "Test de signe"
         selFenetres.Visible = True
     End Sub
 
@@ -238,6 +245,8 @@ Public Class Ruban
         selAR.refEditEv.ShowColumnAbsoluteIndicator = False
         selAR.TopMost = True
 
+        selAR.nomTest.Text = "Test simple"
+
         selAR.Visible = True
     End Sub
 
@@ -258,6 +267,8 @@ Public Class Ruban
         selAR.refEditEv.ShowRowAbsoluteIndicator = False
         selAR.refEditEv.ShowColumnAbsoluteIndicator = False
         selAR.TopMost = True
+
+        selAR.nomTest.Text = "Test de signe"
 
         selAR.Visible = True
     End Sub
