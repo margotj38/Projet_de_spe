@@ -8,68 +8,57 @@ Module TestsStatistiques
 
     '***************************** T-Test *****************************
 
-    ''' <summary>
-    ''' Fonction calculant une moyenne sur un tableau en tenant compte de possible "Double.Nan".
-    ''' </summary>
-    ''' <param name="tab">Tableau dont on veut calculer la moyenne.</param>
-    ''' <returns>La moyenne des éléments du tableau.</returns>
-    ''' <remarks></remarks>
-    Function calcul_moyenne(tab() As Double) As Double
-        'tab() peut contenir des NaN
-        calcul_moyenne = 0
 
-        Dim nbNaN As Integer = 0
-        For i = 0 To tab.GetUpperBound(0)
-            If Double.IsNaN(tab(i)) Then
-                nbNaN = nbNaN + 1
-            Else
-                'Sinon on somme
-                calcul_moyenne = calcul_moyenne + tab(i)
-            End If
-        Next i
-        'On divise pour obtenir la moyenne en tenant compte des Nan
-        If Not (tab.GetLength(0) - nbNaN) = 0 Then
-            calcul_moyenne = calcul_moyenne / (tab.GetLength(0) - nbNaN)
-        End If
+    ''' <summary>
+    ''' Fonction qui calcule la statistique de test pour les AAR en chaque temps de la fenêtre d'événement
+    ''' </summary>
+    ''' <param name="tabEstAR"> AR calculés sur la fenêtre d'estimation. </param>
+    ''' <param name="tabEvAR"> AR calculés sur la fenêtre d'événement. </param>
+    ''' <returns> Tableau des statistiques de test en tout temps de la fenetre d'événement. </returns>
+    ''' <remarks></remarks>
+    Public Function calculStatStudentAAR(ByRef tabEstAR(,) As Double, ByRef tabEvAR As Double(,)) As Double()
+        Dim stat(tabEvAR.GetLength(0)) As Double
+        'Récupération des variances empiriques temporelles sur la fenêtre d'estimation
+        Dim tabVar() As Double = RentaAnormales.varEstAR(tabEstAR, RentaAnormales.moyEstAR(tabEstAR))
+        'Calcul de la somme des variances empiriques sur la période d'estimation
+        Dim sommeVar As Double = 0
+        For i = 0 To tabVar.GetUpperBound(0)
+            sommeVar = sommeVar + tabVar(i)
+        Next
+        'Récupération des moyennes des AR sur les entreprises en chaque temps
+        Dim tabAAR() As Double = RentaAnormales.moyAR(tabEvAR)
+        'Calcul des statistiques de test
+        For t = 0 To tabEvAR.GetUpperBound(0)
+            stat(t) = tabAAR(t) / (Math.Sqrt(sommeVar) / tabEvAR.GetLength(1))
+        Next
+        Return stat
     End Function
 
     ''' <summary>
-    ''' Fonction calculant une variance sur un tableau en tenant compte de possible "Double.Nan".
+    ''' Fonction qui calcule la statistique de test pour les CAAR en chaque temps de la fenêtre d'événement
     ''' </summary>
-    ''' <param name="tab">Tableau dont on veut calculer la variance.</param>
-    ''' <param name="moyenne">Moyenne du tableau.</param> 
-    ''' <returns>La variance des éléments du tableau.</returns>
+    ''' <param name="tabEstAR"> AR calculés sur la fenêtre d'estimation. </param>
+    ''' <param name="tabEvAR"> AR calculés sur la fenêtre d'événement. </param>
+    ''' <returns> Tableau des statistiques de test en tout temps de la fenetre d'événement. </returns>
     ''' <remarks></remarks>
-    Function calcul_variance(tab() As Double, moyenne As Double) As Double
-        'tab() peut contenir des NaN
-        calcul_variance = 0
-
-        Dim nbNaN As Integer = 0
-        For i = 0 To tab.GetUpperBound(0)
-            If Double.IsNaN(tab(i)) Then
-                nbNaN = nbNaN + 1
-            Else
-                Dim tmp As Double = tab(i) - moyenne
-                'On somme les différences au carré
-                calcul_variance = calcul_variance + tmp * tmp
-            End If
-        Next i
-        'On divise pour obtenir la variance en tenant compte des Nan
-        If Not (tab.GetLength(0) - 1 - nbNaN) = 0 Then
-            calcul_variance = calcul_variance / (tab.GetLength(0) - 1 - nbNaN)
-        End If
-    End Function
-
-    ''' <summary>
-    ''' Fonction qui calcule la statistique du test de Student.
-    ''' </summary>
-    ''' <param name="moy">Moyenne de l'échantillon.</param>
-    ''' <param name="ecart">Ecart-type de l'échantillon.</param>
-    ''' <param name="tailleEchant">Taille de l'échantillon.</param>
-    ''' <returns>La statistique du test de Student.</returns>
-    ''' <remarks></remarks>
-    Public Function calculStatStudent(moy As Double, ecart As Double, tailleEchant As Integer)
-        Return Math.Abs(Math.Sqrt(tailleEchant) * moy / ecart)
+    Public Function calculStatStudentCAAR(ByRef tabEstAR(,) As Double, ByRef tabEvAR As Double(,)) As Double()
+        Dim stat(tabEvAR.GetLength(0)) As Double
+        'Récupération des variances empiriques temporelles sur la fenêtre d'estimation
+        Dim tabVar() As Double = RentaAnormales.varEstAR(tabEstAR, RentaAnormales.moyEstAR(tabEstAR))
+        'Calcul de la somme des variances empiriques sur la période d'estimation
+        Dim sommeVar As Double = 0
+        For i = 0 To tabVar.GetUpperBound(0)
+            sommeVar = sommeVar + tabVar(i)
+        Next
+        'Récupération des moyennes des AR sur les entreprises en chaque temps
+        Dim tabAAR() As Double = RentaAnormales.moyAR(tabEvAR)
+        'Calcul des CAAR
+        Dim tabCAAR() As Double = RentaAnormales.CalculCAAR(tabAAR)
+        'Calcul des statistiques de test
+        For t = 0 To tabCAAR.GetUpperBound(0)
+            stat(t) = tabCAAR(t) / (Math.Sqrt(sommeVar) * (t + 1) / tabEvAR.GetLength(1))
+        Next
+        Return stat
     End Function
 
     ''' <summary>
@@ -80,7 +69,7 @@ Module TestsStatistiques
     ''' <returns>La P-Valeur du test de Student.</returns>
     ''' <remarks></remarks>
     Public Function calculPValeurStudent(testHyp As Double, tailleEchant As Integer) As Double
-        Return Globals.ThisAddIn.Application.WorksheetFunction.T_Dist_2T(testHyp, tailleEchant - 1)
+        Return Globals.ThisAddIn.Application.WorksheetFunction.T_Dist_2T(Math.Abs(testHyp), tailleEchant - 1)
     End Function
 
 

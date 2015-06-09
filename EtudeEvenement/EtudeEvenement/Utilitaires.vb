@@ -5,7 +5,62 @@
 
 Module Utilitaires
 
+    '***************************** Calcul *****************************
+
+    ''' <summary>
+    ''' Fonction calculant une moyenne sur un tableau en tenant compte de possible "Double.Nan".
+    ''' </summary>
+    ''' <param name="tab">Tableau dont on veut calculer la moyenne.</param>
+    ''' <returns>La moyenne des éléments du tableau.</returns>
+    ''' <remarks></remarks>
+    Function calcul_moyenne(tab() As Double) As Double
+        'tab() peut contenir des NaN
+        calcul_moyenne = 0
+
+        Dim nbNaN As Integer = 0
+        For i = 0 To tab.GetUpperBound(0)
+            If Double.IsNaN(tab(i)) Then
+                nbNaN = nbNaN + 1
+            Else
+                'Sinon on somme
+                calcul_moyenne = calcul_moyenne + tab(i)
+            End If
+        Next i
+        'On divise pour obtenir la moyenne en tenant compte des Nan
+        If Not (tab.GetLength(0) - nbNaN) = 0 Then
+            calcul_moyenne = calcul_moyenne / (tab.GetLength(0) - nbNaN)
+        End If
+    End Function
+
+    ''' <summary>
+    ''' Fonction calculant une variance sur un tableau en tenant compte de possible "Double.Nan".
+    ''' </summary>
+    ''' <param name="tab">Tableau dont on veut calculer la variance.</param>
+    ''' <param name="moyenne">Moyenne du tableau.</param> 
+    ''' <returns>La variance des éléments du tableau.</returns>
+    ''' <remarks></remarks>
+    Function calcul_variance(tab() As Double, moyenne As Double) As Double
+        'tab() peut contenir des NaN
+        calcul_variance = 0
+
+        Dim nbNaN As Integer = 0
+        For i = 0 To tab.GetUpperBound(0)
+            If Double.IsNaN(tab(i)) Then
+                nbNaN = nbNaN + 1
+            Else
+                Dim tmp As Double = tab(i) - moyenne
+                'On somme les différences au carré
+                calcul_variance = calcul_variance + tmp * tmp
+            End If
+        Next i
+        'On divise pour obtenir la variance en tenant compte des Nan
+        If Not (tab.GetLength(0) - 1 - nbNaN) = 0 Then
+            calcul_variance = calcul_variance / (tab.GetLength(0) - 1 - nbNaN)
+        End If
+    End Function
+
     '***************************** Pour parser les données de refEdit *****************************
+
     ''' <summary>
     ''' Extrait la première et dernière colonne d'une plage de données.
     ''' </summary>

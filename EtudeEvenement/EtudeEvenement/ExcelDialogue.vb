@@ -47,19 +47,16 @@ Module ExcelDialogue
     ''' <summary>
     ''' Affichage des résultats des tests statistiques sur les AR sur la période autour de l'événement.
     ''' </summary>
-    ''' <param name="tabMoyAR"> Moyenne des AR normalisés. </param>
-    ''' <param name="tabEcartAR"> Ecart-type des AR normalisés. </param>
     ''' <param name="datesEvAR"> Dates de la période d'événement sur laquelle les tests sont réalisés. </param>
-    ''' <param name="tailleEch"> Taille de l'échantillon i.e le nombre d'entreprises. </param>
+    ''' <param name="stat"> Statistiques de test des AR en chaque temps de la fenêtre d'événement. </param>
+    ''' <param name="tailleEch"> Taille de l'échantillon (i.e le nombre d'entreprises). </param>
     ''' <param name="nomFeuille"> Nom de la feuille où afficher les résultats. </param>
     ''' <remarks></remarks>
-    Public Sub afficheResAR(tabMoyAR() As Double, tabEcartAR() As Double, datesEvAR() As Integer, tailleEch As Integer, nomFeuille As String)
+    Public Sub afficheResAR(datesEvAR() As Integer, stat() As Double, tailleEch As Integer, nomFeuille As String)
 
         'Le nom de chaque colonne
-        nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("B1"), "Moyenne")
-        nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("C1"), "Ecart-type")
-        nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("D1"), "T-test")
-        nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("E1"), "P-valeur (%)")
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("B1"), "T-test")
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("C1"), "P-valeur (%)")
 
         'indice pour l'écriture dans les cellules
         Dim j As Integer
@@ -71,40 +68,31 @@ Module ExcelDialogue
             nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("A" & j), "AR(" & datesEvAR(i) & ")")
 
             'La colonne des moyennes
-            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("B" & j), tabMoyAR(i))
-
-            'La colonne des écart-types
-            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("C" & j), tabEcartAR(i))
-
-            'La statistique du test
-            Dim stat As Double = TestsStatistiques.calculStatStudent(tabMoyAR(i), tabEcartAR(i), tailleEch)
-            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("D" & j), stat)
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("B" & j), stat(i))
 
             'La colonne des p-valeurs
-            Dim pValeur As Double = TestsStatistiques.calculPValeurStudent(stat, tailleEch)
-            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("E" & j), pValeur * 100)
+            Dim pValeur As Double = TestsStatistiques.calculPValeurStudent(stat(i), tailleEch)
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("C" & j), pValeur * 100)
             'La signification du test
-            Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("F" & j).Value = signification(pValeur)
+            Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("D" & j).Value = signification(pValeur)
         Next i
     End Sub
 
+
     ''' <summary>
-    ''' Affichage des résultats des tests statistiques sur les AR sur la période autour de l'événement.
+    ''' Affichage des résultats des tests statistiques sur les CAR sur la période autour de l'événement.
     ''' </summary>
-    ''' <param name="tabMoyCAR"> Moyenne des CAR normalisés. </param>
-    ''' <param name="tabEcartCAR"> Ecart-type des AR normalisés. </param>
     ''' <param name="datesEvAR"> Dates de la période d'événement sur laquelle les tests sont réalisés. </param>
-    ''' <param name="tailleEch"> Taille de l'échantillon i.e le nombre d'entreprises. </param>
+    ''' <param name="stat"> Statistiques de test des CAR en chaque temps de la fenêtre d'événement. </param>
+    ''' <param name="tailleEch"> Taille de l'échantillon (i.e le nombre d'entreprises). </param>
     ''' <param name="nomFeuille"> Nom de la feuille où afficher les résultats. </param>
     ''' <remarks></remarks>
-    Public Sub afficheResCAR(tabMoyCAR() As Double, tabEcartCAR() As Double, datesEvAR() As Integer, tailleEch As Integer, nomFeuille As String)
+    Public Sub afficheResCAR(datesEvAR() As Integer, stat() As Double, tailleEch As Integer, nomFeuille As String)
 
         Dim tailleFenetreEv As Integer = datesEvAR.GetLength(0)
 
-        nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("B" & tailleFenetreEv + 4), "Moyenne")
-        nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("C" & tailleFenetreEv + 4), "Ecart-type")
-        nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("D" & tailleFenetreEv + 4), "T-test")
-        nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("E" & tailleFenetreEv + 4), "P-valeur (%)")
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("B" & tailleFenetreEv + 4), "T-test")
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("C" & tailleFenetreEv + 4), "P-valeur (%)")
 
         'indice pour l'écriture dans les cellules
         Dim j As Integer
@@ -114,20 +102,13 @@ Module ExcelDialogue
             nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("A" & j), "CAR(" & datesEvAR(i) & ")")
 
             'La colonne des moyennes
-            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("B" & j), tabMoyCAR(i))
-
-            'La colonne des écart-types
-            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("C" & j), tabEcartCAR(i))
-
-            'La statistique du test
-            Dim stat As Double = TestsStatistiques.calculStatStudent(tabMoyCAR(i), tabEcartCAR(i), tailleEch)
-            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("D" & j), stat)
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("B" & j), stat(i))
 
             'La colonne des p-valeurs
-            Dim pValeur As Double = TestsStatistiques.calculPValeurStudent(stat, tailleEch)
-            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("E" & j), pValeur * 100)
+            Dim pValeur As Double = TestsStatistiques.calculPValeurStudent(stat(i), tailleEch)
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("C" & j), pValeur * 100)
             'La signification du test
-            Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("F" & j).Value = signification(pValeur)
+            Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("D" & j).Value = signification(pValeur)
         Next i
     End Sub
 

@@ -127,7 +127,4 @@ Public Class SelectionAR
 
     End Sub
 
-    Private Sub refEditEst_Clicked(sender As Object, e As LeafCreations.EventArgs.BeforeResizeEventArgs) Handles refEditEst.Clicked
-        MsgBox("Affichons qqch")
-    End Sub
 End Class

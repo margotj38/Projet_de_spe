@@ -96,7 +96,7 @@ Module RentaAnormales
             prixPresent = 1
         Next colonne
 
-        'Calcul des AR sur la fenêtre sur la fenêtre d'estimation
+        'Calcul des AR sur la fenêtre d'estimation
         For colonne = 1 To tabRentaEst.GetUpperBound(1)
             For i = 0 To tabRentaEst.GetUpperBound(0)
                 If Double.IsNaN(tabRentaEst(i, colonne)) Then
@@ -108,7 +108,7 @@ Module RentaAnormales
             Next i
         Next colonne
 
-        'Calcul des AR sur la fenêtre sur la fenêtre d'événement
+        'Calcul des AR sur la fenêtre d'événement
         For colonne = 1 To tabRentaEv.GetUpperBound(1)
             For i = 0 To tabRentaEv.GetUpperBound(0)
                 If Double.IsNaN(tabRentaEv(i, colonne)) Then
@@ -270,198 +270,227 @@ Module RentaAnormales
 
 
     '***************************** Opérations sur les AR *****************************
+    ''' <summary>
+    ''' Fonction qui calcule les moyennes empiriques (sur le temps) des AR sur la fenêtre d'estimation.
+    ''' </summary>
+    ''' <param name="tabEstAR"> AR calculés sur la fenêtre d'estimation. </param>
+    ''' <returns> Tableau des moyennes des AR pour chaque entreprise. </returns>
+    ''' <remarks></remarks>
+    Public Function moyEstAR(ByRef tabEstAR(,) As Double) As Double()
+        Dim tabMoy(tabEstAR.GetUpperBound(1)) As Double
+        'Variable pour savoir si un #N/A précédait
+        Dim ArPresent As Integer = 1
+        For colonne = 0 To tabEstAR.GetUpperBound(1)
+            tabMoy(colonne) = 0
+            For i = 0 To tabEstAR.GetUpperBound(0)
+                'S'il y a un NA, on incrémente ArPresent
+                If Double.IsNaN(tabEstAR(i, colonne)) Then
+                    ArPresent = ArPresent + 1
+                Else
+                    'Sinon on somme en multipliant par le nombre de #N/A présents + 1 (ie prixPresent)
+                    tabMoy(colonne) = tabMoy(colonne) + tabEstAR(i, colonne) * ArPresent
+                    ArPresent = 1
+                End If
+            Next i
+            'On divise par la taille de la fenêtre d'estimation moins le nombre de #N/A finaux (ie prixPresent - 1)
+            If Not tabEstAR.GetLength(0) - (ArPresent - 1) = 0 Then
+                tabMoy(colonne) = tabMoy(colonne) / (tabEstAR.GetLength(0) - (ArPresent - 1))
+            End If
+            ArPresent = 1
+        Next colonne
+        Return tabMoy
+    End Function
 
     ''' <summary>
-    ''' Calcule la moyenne empirique après avoir normalisé les AR.
+    ''' Fonction qui calcule les variances empiriques (sur le temps) des AR sur la fenêtre d'estimation.
     ''' </summary>
-    ''' <param name="tabEstAR"> AR calculés sur la période d'estimation. </param>
-    ''' <param name="tabEvAR"> AR calculés sur la période d'événement. </param>
-    ''' <returns> Moyenne empirique des AR normalisés en chaque temps de la fenêtre d'événement. </returns>
+    ''' <param name="tabEstAR"> AR calculés sur la fenêtre d'estimation. </param>
+    ''' <param name="tabMoy"> Moyennes pour chaque entreprise calculées au préalable. </param>
+    ''' <returns> Tableau des variances empiriques des AR pour chaque entreprise. </returns>
     ''' <remarks></remarks>
-    Public Function moyNormAR(ByRef tabEstAR(,) As Double, ByRef tabEvAR(,) As Double) As Double()
+    Public Function varEstAR(ByRef tabEstAR(,) As Double, ByRef tabMoy As Double()) As Double()
+        'Calcul des variances sur la fenêtre d'estimation
+        Dim tabVar(tabEstAR.GetUpperBound(1)) As Double
+        'Variable pour savoir si un #N/A précédait
+        Dim ArPresent As Integer = 1
+        For colonne = 0 To tabEstAR.GetUpperBound(1)
+            tabVar(colonne) = 0
+            For i = 0 To tabEstAR.GetUpperBound(0)
+                'S'il y a un NA, on incrémente ArPresent
+                If Double.IsNaN(tabEstAR(i, colonne)) Then
+                    ArPresent = ArPresent + 1
+                Else
+                    'Sinon on somme en multipliant par le nombre de #N/A présents + 1 (ie prixPresent)
+                    tabVar(colonne) = tabVar(colonne) + Math.Pow(((tabEstAR(i, colonne) / ArPresent) - tabMoy(colonne)), 2) * ArPresent
+                    ArPresent = 1
+                End If
+            Next i
+            'On divise par la taille de la fenêtre d'estimation moins le nombre de #N/A finaux (ie prixPresent - 1) - 1
+            If Not tabEstAR.GetLength(0) - (ArPresent - 1) - 1 = 0 Then
+                tabVar(colonne) = tabVar(colonne) / (tabEstAR.GetLength(0) - (ArPresent - 1) - 1)
+            End If
+            ArPresent = 1
+        Next colonne
+        Return tabVar
+    End Function
+
+    ''' <summary>
+    ''' 
+    ''' </summary>
+    ''' <param name="tabEvAR"></param>
+    ''' <returns></returns>
+    ''' <remarks></remarks>
+    Public Function moyAR(ByRef tabEvAR(,) As Double) As Double()
         Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
         'tableau à retourner
-        Dim tabMoyNormAR(tailleFenetreEv - 1) As Double
-        'tableau des variances
-        Dim tabVarAR() As Double = calcVarEstAR(tabEstAR)
+        Dim tabMoyAR(tailleFenetreEv - 1) As Double
         'remplissage du tableau
-        For i = 0 To tabEvAR.GetUpperBound(0)
-            'tableau des ARi/si (i.e AR normalisés)
-            Dim tabNormAR(tabEvAR.GetLength(1) - 1) As Double
-            For e = 0 To tabEvAR.GetUpperBound(1)
-                'Gestion des NA dans le tableau des AR
-                If Double.IsNaN(tabEvAR(i, e)) Then
-                    tabNormAR(e) = Double.NaN
-                Else
-                    'normalisation
-                    tabNormAR(e) = tabEvAR(i, e) / Math.Sqrt(tabVarAR(e))
-                End If
+        For t = 0 To tabEvAR.GetUpperBound(0)
+            'tableau des ARi
+            Dim tabAR(tabEvAR.GetUpperBound(1)) As Double
+            For i = 0 To tabEvAR.GetUpperBound(1)
+                'extraction des ARi
+                tabAR(i) = tabEvAR(t, i)
             Next
             'moyenne sur les ARi/si
-            tabMoyNormAR(i) = TestsStatistiques.calcul_moyenne(tabNormAR)
+            tabMoyAR(t) = Utilitaires.calcul_moyenne(tabAR)
         Next
-        Return tabMoyNormAR
+        Return tabMoyAR
     End Function
 
-    ''' <summary>
-    ''' Calcule la variance empirique après avoir normalisé les AR.
-    ''' </summary>
-    ''' <param name="tabEstAR"> AR calculés sur la période d'estimation. </param>
-    ''' <param name="tabEvAR"> AR calculés sur la période d'événement. </param>
-    ''' <param name="tabMoyNormAR"> Moyenne des AR normalisés déjà calculée au préalable. </param>
-    ''' <returns> Variance empirique des AR normalisés en chaque temps de la fenêtre d'événement. </returns>
-    ''' <remarks></remarks>
-    Public Function ecartNormAR(ByRef tabEstAR(,) As Double, ByRef tabEvAR(,) As Double, ByRef tabMoyNormAR As Double()) As Double()
-        Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
-        'tableau à retourner
-        Dim tabEcartNormAR(tailleFenetreEv - 1) As Double
-        'tableau des variances
-        Dim tabVarAR() As Double = calcVarEstAR(tabEstAR)
-        'remplissage du tableau
-        For i = 0 To tabEvAR.GetUpperBound(0)
-            'tableau des ARi/si (i.e AR normalisés)
-            Dim tabNormAR(tabEvAR.GetLength(1) - 1) As Double
-            For e = 0 To tabEvAR.GetUpperBound(1)
-                'Gestion des NA dans le tableau des AR
-                If Double.IsNaN(tabEvAR(i, e)) Then
-                    tabNormAR(e) = Double.NaN
-                Else
-                    'normalisation
-                    tabNormAR(e) = tabEvAR(i, e) / Math.Sqrt(tabVarAR(e))
-                End If
-            Next
-            'écart-type sur les ARi/si
-            tabEcartNormAR(i) = Math.Sqrt(TestsStatistiques.calcul_variance(tabNormAR, tabMoyNormAR(i)))
-        Next
-        Return tabEcartNormAR
-    End Function
+    ' ''' <summary>
+    ' ''' Calcule la variance empirique après avoir normalisé les AR.
+    ' ''' </summary>
+    ' ''' <param name="tabEstAR"> AR calculés sur la période d'estimation. </param>
+    ' ''' <param name="tabEvAR"> AR calculés sur la période d'événement. </param>
+    ' ''' <param name="tabMoyNormAR"> Moyenne des AR normalisés déjà calculée au préalable. </param>
+    ' ''' <returns> Variance empirique des AR normalisés en chaque temps de la fenêtre d'événement. </returns>
+    ' ''' <remarks></remarks>
+    'Public Function ecartNormAR(ByRef tabEstAR(,) As Double, ByRef tabEvAR(,) As Double, ByRef tabMoyNormAR As Double()) As Double()
+    '    Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
+    '    'tableau à retourner
+    '    Dim tabEcartNormAR(tailleFenetreEv - 1) As Double
+    '    'tableau des variances
+    '    Dim tabVarAR() As Double = calcVarEstAR(tabEstAR)
+    '    'remplissage du tableau
+    '    For i = 0 To tabEvAR.GetUpperBound(0)
+    '        'tableau des ARi/si (i.e AR normalisés)
+    '        Dim tabNormAR(tabEvAR.GetLength(1) - 1) As Double
+    '        For e = 0 To tabEvAR.GetUpperBound(1)
+    '            'Gestion des NA dans le tableau des AR
+    '            If Double.IsNaN(tabEvAR(i, e)) Then
+    '                tabNormAR(e) = Double.NaN
+    '            Else
+    '                'normalisation
+    '                tabNormAR(e) = tabEvAR(i, e) / Math.Sqrt(tabVarAR(e))
+    '            End If
+    '        Next
+    '        'écart-type sur les ARi/si
+    '        tabEcartNormAR(i) = Math.Sqrt(TestsStatistiques.calcul_variance(tabNormAR, tabMoyNormAR(i)))
+    '    Next
+    '    Return tabEcartNormAR
+    'End Function
 
-    ''' <summary>
-    ''' Calcule la variance des AR par entreprise sur la période d'estimation.
-    ''' </summary>
-    ''' <param name="tabEstAR"> AR calculés sur la période d'estimation. </param>
-    ''' <returns> Variance empirique des AR sur la passé pour chaque entreprise. </returns>
-    ''' <remarks></remarks>
-    Public Function calcVarEstAR(ByRef tabEstAR(,) As Double) As Double()
-        'tableau à retourner
-        Dim tabVarAR(tabEstAR.GetLength(1) - 1) As Double
+    ' ''' <summary>
+    ' ''' Calcule la variance des AR par entreprise sur la période d'estimation.
+    ' ''' </summary>
+    ' ''' <param name="tabEstAR"> AR calculés sur la période d'estimation. </param>
+    ' ''' <returns> Variance empirique des AR sur la passé pour chaque entreprise. </returns>
+    ' ''' <remarks></remarks>
+    'Public Function calcVarEstAR(ByRef tabEstAR(,) As Double) As Double()
+    '    'tableau à retourner
+    '    Dim tabVarAR(tabEstAR.GetLength(1) - 1) As Double
 
-        'pour chaque entreprise...
-        For e = 0 To tabEstAR.GetUpperBound(1)
-            Dim vectAR(tabEstAR.GetLength(0) - 1) As Double
-            For t = 0 To tabEstAR.GetUpperBound(0)
-                vectAR(t) = CDbl(tabEstAR(t, e))
-            Next
-            tabVarAR(e) = TestsStatistiques.calcul_variance(vectAR, TestsStatistiques.calcul_moyenne(vectAR))
-        Next
-        Return tabVarAR
-    End Function
+    '    'pour chaque entreprise...
+    '    For e = 0 To tabEstAR.GetUpperBound(1)
+    '        Dim vectAR(tabEstAR.GetLength(0) - 1) As Double
+    '        For t = 0 To tabEstAR.GetUpperBound(0)
+    '            vectAR(t) = CDbl(tabEstAR(t, e))
+    '        Next
+    '        tabVarAR(e) = TestsStatistiques.calcul_variance(vectAR, TestsStatistiques.calcul_moyenne(vectAR))
+    '    Next
+    '    Return tabVarAR
+    'End Function
 
 
     '**********************************************Opérations sur les CAR
 
     ''' <summary>
-    ''' Calcule les CAR sur la fenêtre d'événement.
+    ''' Calcule les CAAR sur la fenêtre d'événement.
     ''' </summary>
-    ''' <param name="tabEvAR"> AR calculés sur la période d'événement. </param>
-    ''' <returns> CAR par entreprise en chaque temps cumulé sur la fenêtre d'événement. </returns>
+    ''' <param name="tabAAR"> Tableau des AAR sur la période d'événement. </param>
+    ''' <returns> CAAR en chaque temps cumulé sur la fenêtre d'événement. </returns>
     ''' <remarks></remarks>
-    Function CalculCar(ByRef tabEvAR(,) As Double) As Double(,)
-        Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
-        Dim N As Integer = tabEvAR.GetLength(1)
-
-        'tableau à retourner
-        Dim tabCAR(tailleFenetreEv - 1, N - 1) As Double
-
-        'Variable pour savoir si un #N/A précédait
-        Dim prixPresent As Integer = 1
-        For e = 0 To tabEvAR.GetUpperBound(1)
-            Dim somme As Double = 0
-            Dim onlyNan = True
-            For i = 0 To tabEvAR.GetUpperBound(0)
-                If Double.IsNaN(tabEvAR(i, e)) Then
-                    'S'il y a un NA, on incrémente prixPresent
-                    prixPresent = prixPresent + 1
-                Else
-                    onlyNan = False
-                    'Sinon on somme en multipliant par le nombre de #N/A présents + 1 (ie prixPresent)
-                    somme = somme + tabEvAR(i, e) * prixPresent
-                    prixPresent = 1
-                End If
-                'En fonction de si on a eu des données pour cumuler les AR...
-                If onlyNan Then
-                    tabCAR(i, e) = Double.NaN
-                Else
-                    tabCAR(i, e) = somme
-                End If
-            Next
-            prixPresent = 1
+    Function CalculCAAR(ByRef tabAAR() As Double) As Double()
+        Dim tabCAAR(tabAAR.GetUpperBound(0)) As Double
+        Dim somme As Double = 0
+        For i = 0 To tabAAR.GetUpperBound(0)
+            tabCAAR(i) = somme + tabAAR(i)
         Next
-
-        CalculCar = tabCAR
+        Return tabCAAR
     End Function
 
-    ''' <summary>
-    ''' Calcule la moyenne empirique après avoir normalisé les CAR.
-    ''' </summary>
-    ''' <param name="tabEstAR"> AR calculés sur la période d'estimation. </param>
-    ''' <param name="tabCAR"> CAR par entreprise en chaque temps cumulé sur la fenêtre d'événement. </param>
-    ''' <returns> Moyenne empirique des CAR normalisés en chaque temps cumulé de la fenêtre d'événement. </returns>
-    ''' <remarks></remarks>
-    Function moyNormCar(ByRef tabEstAR(,) As Double, ByRef tabCAR(,) As Double) As Double()
+    ' ''' <summary>
+    ' ''' Calcule la moyenne empirique après avoir normalisé les CAR.
+    ' ''' </summary>
+    ' ''' <param name="tabEstAR"> AR calculés sur la période d'estimation. </param>
+    ' ''' <param name="tabCAR"> CAR par entreprise en chaque temps cumulé sur la fenêtre d'événement. </param>
+    ' ''' <returns> Moyenne empirique des CAR normalisés en chaque temps cumulé de la fenêtre d'événement. </returns>
+    ' ''' <remarks></remarks>
+    'Function moyNormCar(ByRef tabEstAR(,) As Double, ByRef tabCAR(,) As Double) As Double()
 
-        Dim tailleFenetreEv As Integer = tabCAR.GetLength(0)
-        'tableau à retourner
-        Dim tabMoyNormCAR(tailleFenetreEv - 1) As Double
-        'tableau des variances
-        Dim tabVarAR() As Double = calcVarEstAR(tabEstAR)
+    '    Dim tailleFenetreEv As Integer = tabCAR.GetLength(0)
+    '    'tableau à retourner
+    '    Dim tabMoyNormCAR(tailleFenetreEv - 1) As Double
+    '    'tableau des variances
+    '    Dim tabVarAR() As Double = calcVarEstAR(tabEstAR)
 
-        For i = 0 To tabCAR.GetUpperBound(0)
-            Dim tabNormCAR(tabCAR.GetUpperBound(1)) As Double
-            For e = 0 To tabCAR.GetUpperBound(1)
-                'Gestion des NA dans le tableau des AR
-                If Double.IsNaN(tabCAR(i, e)) Then
-                    tabNormCAR(e) = Double.NaN
-                Else
-                    'normalisation du CAR sur i+1 périodes
-                    tabNormCAR(e) = tabCAR(i, e) / ((i + 1) * Math.Sqrt(tabVarAR(e)))
-                End If
-            Next
-            tabMoyNormCAR(i) = TestsStatistiques.calcul_moyenne(tabNormCAR)
-        Next
-        Return tabMoyNormCAR
-    End Function
+    '    For i = 0 To tabCAR.GetUpperBound(0)
+    '        Dim tabNormCAR(tabCAR.GetUpperBound(1)) As Double
+    '        For e = 0 To tabCAR.GetUpperBound(1)
+    '            'Gestion des NA dans le tableau des AR
+    '            If Double.IsNaN(tabCAR(i, e)) Then
+    '                tabNormCAR(e) = Double.NaN
+    '            Else
+    '                'normalisation du CAR sur i+1 périodes
+    '                tabNormCAR(e) = tabCAR(i, e) / ((i + 1) * Math.Sqrt(tabVarAR(e)))
+    '            End If
+    '        Next
+    '        tabMoyNormCAR(i) = TestsStatistiques.calcul_moyenne(tabNormCAR)
+    '    Next
+    '    Return tabMoyNormCAR
+    'End Function
 
-    ''' <summary>
-    ''' Calcule la variance empirique après avoir normalisé les CAR.
-    ''' </summary>
-    ''' <param name="tabEstAR"> AR calculés sur la période d'estimation. </param>
-    ''' <param name="tabCAR"> CAR par entreprise en chaque temps cumulé sur la fenêtre d'événement. </param>
-    ''' <param name="tabMoy"> Moyenne des CAR normalisés déjà calculée au préalable. </param>
-    ''' <returns> Variance empirique des CAR normalisés en chaque temps cumulé de la fenêtre d'événement. </returns>
-    ''' <remarks></remarks>
-    Function ecartNormCar(ByRef tabEstAR(,) As Double, tabCAR(,) As Double, tabMoy() As Double) As Double()
-        Dim tailleFenetreEv As Integer = tabCAR.GetLength(0)
-        Dim tabEcartNormCAR(tailleFenetreEv - 1) As Double
+    ' ''' <summary>
+    ' ''' Calcule la variance empirique après avoir normalisé les CAR.
+    ' ''' </summary>
+    ' ''' <param name="tabEstAR"> AR calculés sur la période d'estimation. </param>
+    ' ''' <param name="tabCAR"> CAR par entreprise en chaque temps cumulé sur la fenêtre d'événement. </param>
+    ' ''' <param name="tabMoy"> Moyenne des CAR normalisés déjà calculée au préalable. </param>
+    ' ''' <returns> Variance empirique des CAR normalisés en chaque temps cumulé de la fenêtre d'événement. </returns>
+    ' ''' <remarks></remarks>
+    'Function ecartNormCar(ByRef tabEstAR(,) As Double, tabCAR(,) As Double, tabMoy() As Double) As Double()
+    '    Dim tailleFenetreEv As Integer = tabCAR.GetLength(0)
+    '    Dim tabEcartNormCAR(tailleFenetreEv - 1) As Double
 
-        'tableau des variances
-        Dim tabVarAR() As Double = calcVarEstAR(tabEstAR)
+    '    'tableau des variances
+    '    Dim tabVarAR() As Double = calcVarEstAR(tabEstAR)
 
-        For i = 0 To tailleFenetreEv - 1
-            Dim tabNormCAR(tabCAR.GetLength(1) - 1) As Double
-            For e = 0 To tabCAR.GetUpperBound(1)
-                'Gestion des NA dans le tableau des AR
-                If Double.IsNaN(tabCAR(i, e)) Then
-                    tabNormCAR(e) = Double.NaN
-                Else
-                    'normalisation du CAR sur i+1 périodes
-                    tabNormCAR(e) = tabCAR(i, e) / ((i + 1) * Math.Sqrt(tabVarAR(e)))
-                End If
-            Next
-            tabEcartNormCAR(i) = Math.Sqrt(TestsStatistiques.calcul_variance(tabNormCAR, tabMoy(i)))
-        Next
-        Return tabEcartNormCAR
-    End Function
+    '    For i = 0 To tailleFenetreEv - 1
+    '        Dim tabNormCAR(tabCAR.GetLength(1) - 1) As Double
+    '        For e = 0 To tabCAR.GetUpperBound(1)
+    '            'Gestion des NA dans le tableau des AR
+    '            If Double.IsNaN(tabCAR(i, e)) Then
+    '                tabNormCAR(e) = Double.NaN
+    '            Else
+    '                'normalisation du CAR sur i+1 périodes
+    '                tabNormCAR(e) = tabCAR(i, e) / ((i + 1) * Math.Sqrt(tabVarAR(e)))
+    '            End If
+    '        Next
+    '        tabEcartNormCAR(i) = Math.Sqrt(TestsStatistiques.calcul_variance(tabNormCAR, tabMoy(i)))
+    '    Next
+    '    Return tabEcartNormCAR
+    'End Function
 
     ''' <summary>
     ''' Produit et affiche les résultats des tests statiques sur les AR et les CAR
@@ -480,26 +509,18 @@ Module RentaAnormales
         Globals.ThisAddIn.Application.Sheets.Add(After:=Globals.ThisAddIn.Application.Worksheets(Globals.ThisAddIn.Application.Worksheets.Count))
         Globals.ThisAddIn.Application.ActiveSheet.Name = nom
 
-        '----------------- AR -----------------
-        'tableau des AR moyen normalisés
-        Dim tabMoyAR() As Double = RentaAnormales.moyNormAR(tabEstAR, tabEvAR)
-        'tableau des écart-types des AR normalisés
-        Dim tabEcartAR() As Double = RentaAnormales.ecartNormAR(tabEstAR, tabEvAR, tabMoyAR)
-
         Dim N As Integer = tabEvAR.GetLength(1)
 
+        '----------------- AAR -----------------
+        Dim statAAR() As Double = TestsStatistiques.calculStatStudentAAR(tabEstAR, tabEvAR)
         'affichage des résultats des AR
-        ExcelDialogue.afficheResAR(tabMoyAR, tabEcartAR, datesEvAR, N, nom)
+        ExcelDialogue.afficheResAR(datesEvAR, statAAR, N, nom)
 
-        '----------------- CAR -----------------
-        Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
-        'Remplissage des tableaux : CAR, moyenne, variance
-        Dim tabCAR(,) As Double = RentaAnormales.CalculCar(tabEvAR)
-        Dim tabMoyCar() As Double = RentaAnormales.moyNormCar(tabEstAR, tabCAR)
-        Dim tabEcartCar() As Double = RentaAnormales.ecartNormCar(tabEstAR, tabCAR, tabMoyCar)
+        '----------------- CAAR -----------------
+        Dim statCAAR() As Double = TestsStatistiques.calculStatStudentCAAR(tabEstAR, tabEvAR)
 
-        'affichage des résultats des CAR
-        ExcelDialogue.afficheResCAR(tabMoyCar, tabEcartCar, datesEvAR, N, nom)
+        'affichage des résultats des AR
+        ExcelDialogue.afficheResCAR(datesEvAR, statCAAR, N, nom)
 
     End Sub
 
