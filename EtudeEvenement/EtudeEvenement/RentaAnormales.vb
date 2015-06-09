@@ -91,8 +91,8 @@
             'Variable pour savoir si des AR précédents sont manquants
             'Dim prixPresent As Integer = 1
             For i = 0 To tabRentaEst.GetUpperBound(0)
-                If tabRentaEst(i, colonne) = -2146826246 Then
-                    tabAREst(i, colonne - 1) = -2146826246
+                If Double.IsNaN(tabRentaEst(i, colonne)) Then
+                    tabAREst(i, colonne - 1) = Double.NaN
                     'prixPresent = prixPresent + 1
                 Else
                     tabAREst(i, colonne - 1) = (tabRentaEst(i, colonne) - (alpha + beta * tabRentaMarcheEst(i, colonne))) '* prixPresent
@@ -104,8 +104,8 @@
             'Variable pour savoir si des AR précédents sont manquants
             'Dim prixPresent As Integer = 1
             For i = 0 To tabRentaEv.GetUpperBound(0)
-                If tabRentaEv(i, colonne) = -2146826246 Then
-                    tabAREv(i, colonne - 1) = -2146826246
+                If Double.IsNaN(tabRentaEv(i, colonne)) Then
+                    tabAREv(i, colonne - 1) = Double.NaN
                     'prixPresent = prixPresent + 1
                 Else
                     tabAREv(i, colonne - 1) = (tabRentaEv(i, colonne) - (alpha + beta * tabRentaMarcheEv(i, colonne))) '* prixPresent
@@ -145,8 +145,8 @@
         For colonne = 1 To tabRentaEst.GetUpperBound(1)
             'remplissage des AR sur la fenetre d'estimation
             For i = 0 To tabRentaEst.GetUpperBound(0)
-                If tabRentaEst(i, colonne) = -2146826246 Then
-                    tabAREst(i, colonne - 1) = -2146826246
+                If Double.IsNaN(tabRentaEst(i, colonne)) Then
+                    tabAREst(i, colonne - 1) = Double.NaN
                 Else
                     tabAREst(i, colonne - 1) = tabRentaEst(i, colonne) - tabRentaMarcheEst(i, colonne)
                 End If
@@ -154,8 +154,8 @@
 
             'remplissage des AR sur la fenetre d'événement
             For i = 0 To tabRentaEv.GetUpperBound(0)
-                If tabRentaEv(i, colonne) = -2146826246 Then
-                    tabAREv(i, colonne - 1) = -2146826246
+                If Double.IsNaN(tabRentaEv(i, colonne)) Then
+                    tabAREv(i, colonne - 1) = Double.NaN
                 Else
                     tabAREv(i, colonne - 1) = tabRentaEv(i, colonne) - tabRentaMarcheEv(i, colonne)
                 End If
@@ -200,7 +200,7 @@
         For colonne = 1 To tabRentaEst.GetUpperBound(1)
             For i = 0 To tabRentaEst.GetUpperBound(0)
                 'S'il y a un NA, on incrémente prixPresent
-                If tabRentaEst(i, colonne) = -2146826246 Then
+                If Double.IsNaN(tabRentaEst(i, colonne)) Then
                     prixPresent = prixPresent + 1
                 Else
                     'Sinon on somme en multipliant par le nombre de #N/A présents + 1 (ie prixPresent)
@@ -218,8 +218,8 @@
         'Calcul des AR sur la fenêtre sur la fenêtre d'estimation
         For colonne = 1 To tabRentaEst.GetUpperBound(1)
             For i = 0 To tabRentaEst.GetUpperBound(0)
-                If tabRentaEst(i, colonne) = -2146826246 Then
-                    tabAREst(i, colonne - 1) = -2146826246
+                If Double.IsNaN(tabRentaEst(i, colonne)) Then
+                    tabAREst(i, colonne - 1) = Double.NaN
                 Else
                     'On obtient des AR sur une période
                     tabAREst(i, colonne - 1) = (tabRentaEst(i, colonne) - tabMoy(colonne - 1))
@@ -230,8 +230,8 @@
         'Calcul des AR sur la fenêtre sur la fenêtre d'événement
         For colonne = 1 To tabRentaEv.GetUpperBound(1)
             For i = 0 To tabRentaEv.GetUpperBound(0)
-                If tabRentaEv(i, colonne) = -2146826246 Then
-                    tabAREv(i, colonne - 1) = -2146826246
+                If Double.IsNaN(tabRentaEv(i, colonne)) Then
+                    tabAREv(i, colonne - 1) = Double.NaN
                 Else
                     'On obtient des AR sur une période
                     tabAREv(i, colonne - 1) = (tabRentaEv(i, colonne) - tabMoy(colonne - 1))
@@ -253,8 +253,8 @@
             'tableau des ARi/si
             Dim tabNormAR(tabEvAR.GetLength(1) - 1) As Double
             For e = 0 To tabEvAR.GetUpperBound(1)
-                If tabEvAR(i, e) = -2146826246 Then
-                    tabNormAR(e) = -2146826246
+                If Double.IsNaN(tabEvAR(i, e)) Then
+                    tabNormAR(e) = Double.NaN
                 Else
                     tabNormAR(e) = tabEvAR(i, e) / Math.Sqrt(tabVarAR(e))
                 End If
@@ -277,8 +277,8 @@
             Dim tabNormAR(tabEvAR.GetLength(1) - 1) As Double
             For e = 0 To tabEvAR.GetUpperBound(1)
                 'Gestion des NA dans le tableau des AR
-                If tabEvAR(i, e) = -2146826246 Then
-                    tabNormAR(e) = -2146826246
+                If Double.IsNaN(tabEvAR(i, e)) Then
+                    tabNormAR(e) = Double.NaN
                 Else
                     tabNormAR(e) = tabEvAR(i, e) / Math.Sqrt(tabVarAR(e))
                 End If
@@ -320,7 +320,7 @@
         For e = 0 To tabEvAR.GetUpperBound(1)
             Dim somme As Double = 0
             For i = 0 To tabEvAR.GetUpperBound(0)
-                If tabEvAR(i, e) = -2146826246 Then
+                If Double.IsNaN(tabEvAR(i, e)) Then
                     'S'il y a un NA, on incrémente prixPresent
                     prixPresent = prixPresent + 1
                 Else
@@ -354,8 +354,8 @@
             Dim tabNormCAR(tabCAR.GetUpperBound(1)) As Double
             For e = 0 To tabCAR.GetUpperBound(1)
                 'Gestion des NA dans le tableau des AR
-                If tabCAR(i, e) = -2146826246 Then
-                    tabNormCAR(e) = -2146826246
+                If Double.IsNaN(tabCAR(i, e)) Then
+                    tabNormCAR(e) = Double.NaN
                 Else
                     'normalisation du CAR sur i+1 périodes
                     tabNormCAR(e) = tabCAR(i, e) / ((i + 1) * Math.Sqrt(tabVarAR(e)))
@@ -377,8 +377,8 @@
             Dim tabNormCAR(tabCAR.GetLength(1) - 1) As Double
             For e = 0 To tabCAR.GetUpperBound(1)
                 'Gestion des NA dans le tableau des AR
-                If tabCAR(i, e) = -2146826246 Then
-                    tabNormCAR(e) = -2146826246
+                If Double.IsNaN(tabCAR(i, e)) Then
+                    tabNormCAR(e) = Double.NaN
                 Else
                     'normalisation du CAR sur i+1 périodes
                     tabNormCAR(e) = tabCAR(i, e) / ((i + 1) * Math.Sqrt(tabVarAR(e)))
