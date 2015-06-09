@@ -9,7 +9,16 @@ Imports System.Diagnostics
 
 Module ExcelDialogue
 
-    'Conversion d'une plage de données avec dates en un tableau de données et un tableau de dates
+    ''' <summary>
+    ''' Conversion d'une plage de données dont la première colonnes contient des dates 
+    ''' en un tableau de données et un tableau de dates.
+    ''' </summary>
+    ''' <param name="plage"> Plage des données Excel sous forme de chaine de caractères. </param>
+    ''' <param name="feuille"> Nom de la feuille où sélectionner la plage de données. </param>
+    ''' <param name="tabDonnees"> Tableau de données en sortie. </param>
+    ''' <param name="tabDates"> Tableau de dates en sortie. Attention les dates sont sous forme entières
+    ''' (dates relatives après centrage) et non de type Date. </param>
+    ''' <remarks></remarks>
     Public Sub convertPlageTab(plage As String, feuille As String, ByRef tabDonnees(,) As Double, ByRef tabDates() As Integer)
 
         Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets(feuille), Excel.Worksheet)
@@ -31,8 +40,15 @@ Module ExcelDialogue
         Next
     End Sub
 
-
-    '----------------------------------- affichage résultats AR
+    ''' <summary>
+    ''' Affichage des résultats des tests statistiques sur les AR sur la période autour de l'événement.
+    ''' </summary>
+    ''' <param name="tabMoyAR"> Moyenne des AR normalisés. </param>
+    ''' <param name="tabEcartAR"> Ecart-type des AR normalisés. </param>
+    ''' <param name="datesEvAR"> Dates de la période d'événement sur laquelle les tests sont réalisés. </param>
+    ''' <param name="tailleEch"> Taille de l'échantillon i.e le nombre d'entreprises. </param>
+    ''' <param name="nomFeuille"> Nom de la feuille où afficher les résultats. </param>
+    ''' <remarks></remarks>
     Public Sub afficheResAR(tabMoyAR() As Double, tabEcartAR() As Double, datesEvAR() As Integer, tailleEch As Integer, nomFeuille As String)
 
         'Le nom de chaque colonne
@@ -68,7 +84,15 @@ Module ExcelDialogue
         Next i
     End Sub
 
-    '----------------------------------- affichage résultats CAR
+    ''' <summary>
+    ''' Affichage des résultats des tests statistiques sur les AR sur la période autour de l'événement.
+    ''' </summary>
+    ''' <param name="tabMoyCAR"> Moyenne des CAR normalisés. </param>
+    ''' <param name="tabEcartCAR"> Ecart-type des AR normalisés. </param>
+    ''' <param name="datesEvAR"> Dates de la période d'événement sur laquelle les tests sont réalisés. </param>
+    ''' <param name="tailleEch"> Taille de l'échantillon i.e le nombre d'entreprises. </param>
+    ''' <param name="nomFeuille"> Nom de la feuille où afficher les résultats. </param>
+    ''' <remarks></remarks>
     Public Sub afficheResCAR(tabMoyCAR() As Double, tabEcartCAR() As Double, datesEvAR() As Integer, tailleEch As Integer, nomFeuille As String)
 
         Dim tailleFenetreEv As Integer = datesEvAR.GetLength(0)
@@ -103,42 +127,58 @@ Module ExcelDialogue
         Next i
     End Sub
 
-    'Associe un nom à une cellule avec une mise en forme
-    Private Sub nomCellule(r As Excel.Range, Valeur As String)
-        r.Value = Valeur
-        r.Font.Bold = True
-        r.Borders.Value = 1
-        r.Interior.ColorIndex = 27
+    ''' <summary>
+    ''' Assigne un texte à une cellule avec une mise en forme.
+    ''' </summary>
+    ''' <param name="cell"> Cellule à mettre en forme. </param>
+    ''' <param name="texte"> Texte à insérer dans la cellule. </param>
+    ''' <remarks></remarks>
+    Private Sub nomCellule(cell As Excel.Range, texte As String)
+        cell.Value = texte
+        cell.Font.Bold = True
+        cell.Borders.Value = 1
+        cell.Interior.ColorIndex = 27
     End Sub
 
-    'Associe une valeur à une cellule avec des bordures sur le tableau
-    Private Sub valeurCellule(r As Excel.Range, valeur As Double)
-        r.Value = valeur
-        r.Borders.Value = 1
+    ''' <summary>
+    ''' Assigne un texte à une cellule avec des bordures sur le tableau.
+    ''' </summary>
+    ''' <param name="cell"> Cellule à mettre en forme. </param>
+    ''' <param name="texte"> Texte à insérer dans la cellule. </param>
+    ''' <remarks></remarks>
+    Private Sub valeurCellule(cell As Excel.Range, texte As Double)
+        cell.Value = texte
+        cell.Borders.Value = 1
     End Sub
 
-    'Renvoie une chaine de caractère qui indique la signification d'un test
-    Function signification(seuil As Double) As String
-        Dim signifi As String
-        Select Case seuil
+    ''' <summary>
+    ''' Renvoie le nombre d'étoiles en fonction de la P-valeur (même convention qu'en R).
+    ''' </summary>
+    ''' <param name="pValeur"> P-Valeur du test. </param>
+    ''' <returns> Code de signification du test. </returns>
+    ''' <remarks></remarks>
+    Function signification(pValeur As Double) As String
+        Select Case pValeur
             Case Is < 0.001
-                signifi = "***"
+                signification = "***"
             Case Is < 0.01
-                signifi = "**"
+                signification = "**"
             Case Is < 0.05
-                signifi = "*"
+                signification = "*"
             Case Is < 0.1
-                signifi = "."
+                signification = "."
             Case Else
-                signifi = ""
+                signification = ""
         End Select
-
-        signification = signifi
     End Function
 
+    ''' <summary>
+    ''' Affichage des rentabilités des entreprises centrées autour de la date d'événement pour chaque entreprise.
+    ''' La date 0 correspond à la date d'événement.
+    ''' </summary>
+    ''' <param name="tabrenta"> Rentabilités des entreprises centrées. </param>
+    ''' <remarks></remarks>
     Public Sub affichageRentaCentrees(tabrenta(,) As Double)
-        'Perte du numéro des entreprises : pb ?
-
         'Création d'une nouvelle feuille
         Dim nom As String
         nom = InputBox("Entrer le nom de la feuille des rentabilités centrées : ")
@@ -167,6 +207,14 @@ Module ExcelDialogue
         Next colonne
     End Sub
 
+    ''' <summary>
+    ''' Affichage des AR sur les fenêtres d'estimation et d'événement.
+    ''' </summary>
+    ''' <param name="tabAREst"> AR sur la fenêtre d'estimation. </param>
+    ''' <param name="tabAREv"> AR sur la fenêtre d'événement. </param>
+    ''' <param name="tabDateEst"> Dates correspondantes sur la fenêtre d'estimation. </param>
+    ''' <param name="tabDateEv"> Dates correspondantes sur la fenêtre d'événement. </param>
+    ''' <remarks></remarks>
     Public Sub affichageAR(ByRef tabAREst(,) As Double, ByRef tabAREv(,) As Double, _
                            ByRef tabDateEst() As Integer, ByRef tabDateEv() As Integer)
         'Création d'une nouvelle feuille
@@ -241,7 +289,13 @@ Module ExcelDialogue
 
     End Sub
 
-
+    ''' <summary>
+    ''' Affichage des résultats du test de Patell.
+    ''' </summary>
+    ''' <param name="tabDateEv"> Dates correspondant à la fenêtre d'événement. </param>
+    ''' <param name="testHypAAR"> Statistiques de test pour les AAR. </param>
+    ''' <param name="testHypCAAR"> Statistiques de test pour les CAAR. </param>
+    ''' <remarks></remarks>
     Public Sub affichagePatell(ByRef tabDateEv() As Integer, ByRef testHypAAR() As Double, ByRef testHypCAAR() As Double)
         'Création d'une nouvelle feuille
         Dim nom As String
@@ -291,6 +345,13 @@ Module ExcelDialogue
 
     End Sub
 
+    ''' <summary>
+    ''' Affichage des résultats du test de signe.
+    ''' </summary>
+    ''' <param name="tabDateEv"> Dates correspondant à la fenêtre d'événement. </param>
+    ''' <param name="tabEstAR"> AR sur la fenêtre d'estimation. </param>
+    ''' <param name="tabEvAR"> AR sur la fenêntre d'événement. </param>
+    ''' <remarks></remarks>
     Public Sub affichageSigne(ByRef tabDateEv() As Integer, ByRef tabEstAR(,) As Double, ByRef tabEvAR(,) As Double)
         Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
 
