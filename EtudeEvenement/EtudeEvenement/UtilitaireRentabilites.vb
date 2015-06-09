@@ -1,4 +1,9 @@
-﻿Module UtilitaireRentabilites
+﻿
+''' <summary>
+''' Module de gestion des opérations sur les prix et les rentabilités.
+''' </summary>
+''' <remarks></remarks>
+Module UtilitaireRentabilites
 
     'Variables globales
 
@@ -97,7 +102,7 @@
     End Sub
 
     ''' <summary>
-    ''' Méthode calculant les rentabilités des entreprises et du marché.
+    ''' Méthode calculant les rentabilités des entreprises et du marché à partir des cours.
     ''' </summary>
     ''' <param name="tabPrixCentres">Tableau des cours des entreprises, centrés autour de l'événement.</param>
     ''' <param name="tabMarcheCentre">Tableau des prix du marché, centrés autour de l'événement.</param>
@@ -188,7 +193,7 @@
     End Sub
 
     ''' <summary>
-    ''' Construit le tableau des rentabilités spécifique au modèle de marché.
+    ''' Fonction qui construit le tableau des rentabilités spécifique au modèle de marché.
     ''' </summary>
     ''' <param name="maxRentAbsent"> Nombre maximum de données manquantes consécutives dans les rentabilités. </param>
     ''' <param name="tabRentaEst"> Rentabilités sur la période d'estimation. </param>
@@ -249,10 +254,10 @@
     End Function
 
     ''' <summary>
-    ''' Calcule le nombre de #NA consécutifs maximal présent dans les rentabilités.
+    ''' Fonction qui calcule le nombre de #NA consécutifs maximal présent dans les rentabilités.
     ''' </summary>
     ''' <param name="tabRenta"> Tableau des rentabilités à analyser. </param>
-    ''' <returns></returns>
+    ''' <returns> Nombre de #NA consécutifs maximal présent dans les rentabilités. </returns>
     ''' <remarks></remarks>
     Public Function calculMaxRentAbs(tabRenta(,) As Double) As Integer
         Dim prixPresent As Integer = 1

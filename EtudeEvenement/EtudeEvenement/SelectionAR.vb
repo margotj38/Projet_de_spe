@@ -4,7 +4,7 @@ Imports Microsoft.Office.Interop
 Imports System.Runtime.InteropServices
 
 ''' <summary>
-''' Windows Form permettant la gestion du lancement de l'étude d'événement à partir de AR
+''' Windows Form permettant la gestion du lancement de l'étude d'événement à partir de AR.
 ''' </summary>
 ''' <remarks>L'interface graphique de cette Windows Form contient deux objets de type refEdit (un pour sélectionner la 
 ''' plage correspondant à la période d'estimation, un second pour la sélection de la période d'événement) et un bouton 
