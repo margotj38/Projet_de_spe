@@ -35,7 +35,11 @@ Module ExcelDialogue
         ReDim tabDonnees(0 To tmpRange.Rows.Count - 1, 0 To tmpRange.Columns.Count - 2)
         For ligne = 0 To tabDonnees.GetUpperBound(0)
             For colonne = 0 To tabDonnees.GetUpperBound(1)
-                tabDonnees(ligne, colonne) = tmpRange.Cells(ligne + 1, colonne + 2).Value
+                If Globals.ThisAddIn.Application.WorksheetFunction.IsNA(tmpRange.Cells(ligne + 1, colonne + 2)) Then
+                    tabDonnees(ligne, colonne) = Double.NaN
+                Else
+                    tabDonnees(ligne, colonne) = tmpRange.Cells(ligne + 1, colonne + 2).Value
+                End If
             Next
         Next
     End Sub
@@ -202,7 +206,11 @@ Module ExcelDialogue
         'Affichage des rentabilités
         For colonne = 1 To tabrenta.GetUpperBound(1)
             For i = 0 To tabrenta.GetUpperBound(0)
-                Globals.ThisAddIn.Application.Worksheets(nom).Cells(i + 2, colonne + 1).Value = tabrenta(i, colonne)
+                If Double.IsNaN(tabrenta(i, colonne)) Then
+                    Globals.ThisAddIn.Application.Worksheets(nom).Cells(i + 2, colonne + 1).Value = "#N/A"
+                Else
+                    Globals.ThisAddIn.Application.Worksheets(nom).Cells(i + 2, colonne + 1).Value = tabrenta(i, colonne)
+                End If
             Next i
         Next colonne
     End Sub
@@ -248,8 +256,8 @@ Module ExcelDialogue
         'Affichage des données pour la période d'estimation
         For colonne = 0 To tabAREst.GetUpperBound(1)
             For i = 0 To tabAREst.GetUpperBound(0)
-                If tabAREst(i, colonne) = -2146826246 Then
-                    currentSheet.Cells(i + 4, colonne + 2).Value = -2146826246
+                If Double.IsNaN(tabAREst(i, colonne)) Then
+                    currentSheet.Cells(i + 4, colonne + 2).Value = "#N/A"
                     currentSheet.Cells(i + 4, colonne + 2).Borders.Value = 1
                 Else
                     valeurCellule(currentSheet.Cells(i + 4, colonne + 2), tabAREst(i, colonne))
@@ -278,8 +286,8 @@ Module ExcelDialogue
         'Affichage des données pour la période d'événement
         For colonne = 0 To tabAREv.GetUpperBound(1)
             For i = 0 To tabAREv.GetUpperBound(0)
-                If tabAREv(i, colonne) = -2146826246 Then
-                    currentSheet.Cells(9 + tabDateEst.GetLength(0) + i, colonne + 2).Value = -2146826246
+                If Double.IsNaN(tabAREv(i, colonne)) Then
+                    currentSheet.Cells(9 + tabDateEst.GetLength(0) + i, colonne + 2).Value = "#N/A"
                     currentSheet.Cells(9 + tabDateEst.GetLength(0) + i, colonne + 2).Borders.Value = 1
                 Else
                     valeurCellule(currentSheet.Cells(9 + tabDateEst.GetLength(0) + i, colonne + 2), tabAREv(i, colonne))

@@ -83,17 +83,17 @@
                 If prixPresent = 0 Then
                     'Si on est sur le premier prix
                     '(-2146826246 est la valeur obtenue lorsqu'un ".Value" est fait sur une cellule #N/A)
-                    If Not (tabPrixCentres(indDate, titre) = -2146826246) Then
+                    If Not (Double.IsNaN(tabPrixCentres(indDate, titre))) Then
                         prixPresent = prixPresent + 1
                         If prixPresent > maxPrixAbsent Then
                             maxPrixAbsent = prixPresent
                         End If
                     End If
-                ElseIf tabPrixCentres(indDate, titre) = -2146826246 Then
+                ElseIf Double.IsNaN(tabPrixCentres(indDate, titre)) Then
                     'Si il n'y a pas de prix à cette date
                     'On met un équivalent de #N/A dans les tableaux
-                    tabRenta(indDate - 1, titre) = -2146826246
-                    tabRentaMarche(indDate - 1, titre) = -2146826246
+                    tabRenta(indDate - 1, titre) = Double.NaN
+                    tabRentaMarche(indDate - 1, titre) = Double.NaN
                     'Dans tabRentaClassiquesMarche, on fait le calcul classique selon le mode
                     If rentaLog Then
                         tabRentaClassiquesMarche(indDate - 1, titre) = Math.Log(tabMarcheCentre(indDate, titre) / _
@@ -157,7 +157,7 @@
             'Tableau permettant de savoir si un redimensionnement est nécessaire
             Dim tabRedimEst(maxPrixAbsent - 1) As Integer
             For indDate = 0 To tabRentaEst.GetUpperBound(0)
-                If tabRentaEst(indDate, titre) = -2146826246 Then
+                If Double.IsNaN(tabRentaEst(indDate, titre)) Then
                     'Si il n'y a pas de prix à cette date
                     prixPresent = prixPresent + 1
                 Else
@@ -282,8 +282,13 @@
             marche = currentSheet.Range(currentSheet.Cells(fenetreInf, 2), currentSheet.Cells(fenetreSup, 2))
 
             For i = -minUp To minDown
-                tabEntreprisesCentre(i + minUp, tabInd(colonne - 1)) = data.Cells(i + minUp + 1, 1).Value
-                tabMarcheCentre(i + minUp, tabInd(colonne - 1)) = marche.Cells(i + minUp + 1, 1).Value
+                If Globals.ThisAddIn.Application.WorksheetFunction.IsNA(data.Cells(i + minUp + 1, 1)) Then
+                    tabEntreprisesCentre(i + minUp, tabInd(colonne - 1)) = Double.NaN
+                    tabMarcheCentre(i + minUp, tabInd(colonne - 1)) = Double.NaN
+                Else
+                    tabEntreprisesCentre(i + minUp, tabInd(colonne - 1)) = data.Cells(i + minUp + 1, 1).Value
+                    tabMarcheCentre(i + minUp, tabInd(colonne - 1)) = marche.Cells(i + minUp + 1, 1).Value
+                End If
             Next i
         Next
     End Sub

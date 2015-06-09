@@ -45,9 +45,12 @@
         Me.EtudeEvenement = Me.Factory.CreateRibbonTab
         Me.Group2 = Me.Factory.CreateRibbonGroup
         Me.Group1 = Me.Factory.CreateRibbonGroup
+        Me.Separator1 = Me.Factory.CreateRibbonSeparator
         Me.EtudeAR = Me.Factory.CreateRibbonMenu
         Me.testSimplAR = Me.Factory.CreateRibbonButton
         Me.testSignAR = Me.Factory.CreateRibbonButton
+        Me.preTraitPrix = Me.Factory.CreateRibbonButton
+        Me.preTraitRenta = Me.Factory.CreateRibbonButton
         Me.ModeleMoy = Me.Factory.CreateRibbonMenu
         Me.testSimpleR = Me.Factory.CreateRibbonButton
         Me.TestPatellR = Me.Factory.CreateRibbonButton
@@ -60,9 +63,6 @@
         Me.testSimpleM = Me.Factory.CreateRibbonButton
         Me.testPatellM = Me.Factory.CreateRibbonButton
         Me.testSigneM = Me.Factory.CreateRibbonButton
-        Me.preTraitPrix = Me.Factory.CreateRibbonButton
-        Me.preTraitRenta = Me.Factory.CreateRibbonButton
-        Me.Separator1 = Me.Factory.CreateRibbonSeparator
         Me.EtudeEvenement.SuspendLayout()
         Me.Group2.SuspendLayout()
         Me.Group1.SuspendLayout()
@@ -91,6 +91,10 @@
         Me.Group1.Label = "Etude complète"
         Me.Group1.Name = "Group1"
         '
+        'Separator1
+        '
+        Me.Separator1.Name = "Separator1"
+        '
         'EtudeAR
         '
         Me.EtudeAR.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
@@ -112,6 +116,16 @@
         Me.testSignAR.Label = "Test de signe"
         Me.testSignAR.Name = "testSignAR"
         Me.testSignAR.ShowImage = True
+        '
+        'preTraitPrix
+        '
+        Me.preTraitPrix.Label = "Prétraitement prix"
+        Me.preTraitPrix.Name = "preTraitPrix"
+        '
+        'preTraitRenta
+        '
+        Me.preTraitRenta.Label = "Prétraitement rentabilités"
+        Me.preTraitRenta.Name = "preTraitRenta"
         '
         'ModeleMoy
         '
@@ -199,20 +213,6 @@
         Me.testSigneM.Label = "Test de signe"
         Me.testSigneM.Name = "testSigneM"
         Me.testSigneM.ShowImage = True
-        '
-        'preTraitPrix
-        '
-        Me.preTraitPrix.Label = "Prétraitement prix"
-        Me.preTraitPrix.Name = "preTraitPrix"
-        '
-        'preTraitRenta
-        '
-        Me.preTraitRenta.Label = "Prétraitement rentabilités"
-        Me.preTraitRenta.Name = "preTraitRenta"
-        '
-        'Separator1
-        '
-        Me.Separator1.Name = "Separator1"
         '
         'Ruban
         '

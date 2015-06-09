@@ -14,7 +14,7 @@ Module TestsStatistiques
         'Variable pour savoir si un #N/A précédait
         Dim prixPresent As Integer = 1
         For i = 0 To tab.GetUpperBound(0)
-            If tab(i) = -2146826246 Then
+            If Double.IsNaN(tab(i)) Then
                 prixPresent = prixPresent + 1
             Else
                 'Sinon on somme en multipliant par le nombre de #N/A présents + 1 (ie prixPresent)
@@ -35,7 +35,7 @@ Module TestsStatistiques
         'Variable pour savoir si un #N/A précédait
         Dim prixPresent As Integer = 1
         For i = 0 To tab.GetUpperBound(0)
-            If tab(i) = -2146826246 Then
+            If Double.IsNaN(tab(i)) Then
                 prixPresent = prixPresent + 1
             Else
                 Dim tmp As Double = tab(i) - moyenne
@@ -67,7 +67,7 @@ Module TestsStatistiques
             Dim nbMR As Integer = 0
             For i = 0 To tabAREst.GetUpperBound(0)
                 'On compte le nombre d'AR manquants
-                If tabAREst(i, colonne) = -2146826246 Then
+                If Double.IsNaN(tabAREst(i, colonne)) Then
                     nbMR = nbMR + 1
                 End If
             Next i
@@ -119,8 +119,8 @@ Module TestsStatistiques
         Dim SAR(tabAREv.GetUpperBound(0), tabAREv.GetUpperBound(1)) As Double
         For i = 0 To tabAREv.GetUpperBound(0)
             For j = 0 To tabAREv.GetUpperBound(1)
-                If tabAREv(i, j) = -2146826246 Then
-                    SAR(i, j) = -2146826246
+                If Double.IsNaN(tabAREv(i, j)) Then
+                    SAR(i, j) = Double.NaN
                 Else
                     SAR(i, j) = tabAREv(i, j) / Math.Sqrt(sAtjCarre(i, j))
                 End If
@@ -139,7 +139,7 @@ Module TestsStatistiques
         For colonne = 0 To tabAREst.GetUpperBound(1)
             sAjCarre(colonne) = 0
             For i = 0 To tabAREst.GetUpperBound(0)
-                If Not tabAREst(i, colonne) = -2146826246 Then
+                If Not Double.IsNaN(tabAREst(i, colonne)) Then
                     sAjCarre(colonne) = sAjCarre(colonne) + tabAREst(i, colonne) * tabAREst(i, colonne)
                 End If
             Next i
@@ -181,7 +181,7 @@ Module TestsStatistiques
                 Dim zj As Double = 0
                 Dim nbVal = datesCum + 1
                 For t = 0 To datesCum
-                    If SAR(t, colonne) = -2146826246 Then
+                    If Double.IsNaN(SAR(t, colonne)) Then
                         nbVal = nbVal - 1
                     Else
                         zj = zj + SAR(t, colonne)
@@ -202,7 +202,7 @@ Module TestsStatistiques
         Dim ASAR(SAR.GetUpperBound(0)) As Double
         For i = 0 To SAR.GetUpperBound(0)
             For colonne = 0 To SAR.GetUpperBound(1)
-                If Not SAR(i, colonne) = -2146826246 Then
+                If Not Double.IsNaN(SAR(i, colonne)) Then
                     ASAR(i) = ASAR(i) + SAR(i, colonne)
                 End If
             Next colonne

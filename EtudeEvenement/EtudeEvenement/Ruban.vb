@@ -152,4 +152,5 @@ Public Class Ruban
 
         selAR.Visible = True
     End Sub
+
 End Class
