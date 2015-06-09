@@ -88,15 +88,15 @@ Module UtilitaireRentabilites
         For colonne = premiereCol To derniereCol
             'On remplit le tableau d'estimation
             For i = debutEst To finEst
-                tabRentaEst(i - debutEst, colonne - premiereCol) = tabRenta(i - debutEst, colonne - premiereCol)
-                tabRentaMarcheEst(i - debutEst, colonne - premiereCol) = tabRentaMarche(i - debutEst, colonne - premiereCol)
-                tabRentaClassiquesMarcheEst(i - debutEst, colonne - premiereCol) = tabRentaClassiquesMarche(i - debutEst, colonne - premiereCol)
+                tabRentaEst(i - debutEst, colonne - premiereCol) = tabRenta(i - 2, colonne - 1)
+                tabRentaMarcheEst(i - debutEst, colonne - premiereCol) = tabRentaMarche(i - 2, colonne - 1)
+                tabRentaClassiquesMarcheEst(i - debutEst, colonne - premiereCol) = tabRentaClassiquesMarche(i - 2, colonne - 1)
             Next i
             'Et celui d'événement
             For i = debutEv To finEv
-                tabRentaEv(i - debutEv, colonne - premiereCol) = tabRenta(i - debutEst, colonne - premiereCol)
-                tabRentaMarcheEv(i - debutEv, colonne - premiereCol) = tabRentaMarche(i - debutEst, colonne - premiereCol)
-                tabRentaClassiquesMarcheEv(i - debutEv, colonne - premiereCol) = tabRentaClassiquesMarche(i - debutEst, colonne - premiereCol)
+                tabRentaEv(i - debutEv, colonne - premiereCol) = tabRenta(i - 2, colonne - 1)
+                tabRentaMarcheEv(i - debutEv, colonne - premiereCol) = tabRentaMarche(i - 2, colonne - 1)
+                tabRentaClassiquesMarcheEv(i - debutEv, colonne - premiereCol) = tabRentaClassiquesMarche(i - 2, colonne - 1)
             Next i
         Next colonne
     End Sub
