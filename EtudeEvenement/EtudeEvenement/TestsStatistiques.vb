@@ -8,45 +8,41 @@ Module TestsStatistiques
     '***************************** T-Test *****************************
 
     Function calcul_moyenne(tab() As Double) As Double
-        'tab() peut contenir des #N/A
+        'tab() peut contenir des NaN
         calcul_moyenne = 0
 
-        'Variable pour savoir si un #N/A précédait
-        Dim prixPresent As Integer = 1
+        Dim nbNaN As Integer = 0
         For i = 0 To tab.GetUpperBound(0)
             If Double.IsNaN(tab(i)) Then
-                prixPresent = prixPresent + 1
+                nbNaN = nbNaN + 1
             Else
-                'Sinon on somme en multipliant par le nombre de #N/A présents + 1 (ie prixPresent)
-                calcul_moyenne = calcul_moyenne + tab(i) * prixPresent
-                prixPresent = 1
+                'Sinon on somme
+                calcul_moyenne = calcul_moyenne + tab(i)
             End If
         Next i
-        'On divise par la taille de la fenêtre d'estimation moins le nombre de #N/A finaux (ie prixPresent - 1)
-        If Not (tab.GetLength(0) - (prixPresent - 1)) = 0 Then
-            calcul_moyenne = calcul_moyenne / (tab.GetLength(0) - (prixPresent - 1))
+        'On divise pour obtenir la moyenne en tenant compte des Nan
+        If Not (tab.GetLength(0) - nbNaN) = 0 Then
+            calcul_moyenne = calcul_moyenne / (tab.GetLength(0) - nbNaN)
         End If
     End Function
 
     Function calcul_variance(tab() As Double, moyenne As Double) As Double
-        'tab() peut contenir des #N/A
+        'tab() peut contenir des NaN
         calcul_variance = 0
 
-        'Variable pour savoir si un #N/A précédait
-        Dim prixPresent As Integer = 1
+        Dim nbNaN As Integer = 0
         For i = 0 To tab.GetUpperBound(0)
             If Double.IsNaN(tab(i)) Then
-                prixPresent = prixPresent + 1
+                nbNaN = nbNaN + 1
             Else
                 Dim tmp As Double = tab(i) - moyenne
-                'On somme en multipliant par le nombre de #N/A présents + 1 (ie prixPresent)
-                calcul_variance = calcul_variance + tmp * tmp * prixPresent
-                prixPresent = 1
+                'On somme les différences au carré
+                calcul_variance = calcul_variance + tmp * tmp
             End If
         Next i
-        'On divise par la taille de la fenêtre d'estimation - 1, moins le nombre de #N/A finaux (ie prixPresent - 1)
-        If Not tab.GetLength(0) - prixPresent = 0 Then
-            calcul_variance = calcul_variance / (tab.GetLength(0) - prixPresent)
+        'On divise pour obtenir la variance en tenant compte des Nan
+        If Not (tab.GetLength(0) - 1 - nbNaN) = 0 Then
+            calcul_variance = calcul_variance / (tab.GetLength(0) - 1 - nbNaN)
         End If
     End Function
 
