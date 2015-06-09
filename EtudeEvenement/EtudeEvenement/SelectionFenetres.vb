@@ -115,8 +115,25 @@ Public Class SelectionFenetres
         Dim plageEst As String = ""
         Dim plageEv As String = ""
         Dim feuille As String = ""
+        'Si une des deux plages n'a pas été sélectionnée, on lève une erreur
+        If Me.refEditEst.Address = "" Or Me.refEditEv.Address = "" Then
+            MsgBox("Erreur : Une plage de données n'a pas été renseignée", 16)
+            Return
+        End If
         Utilitaires.recupererFeuillePlage(Me.refEditEst.Address, feuille, plageEst)
         Utilitaires.recupererFeuillePlage(Me.refEditEv.Address, feuille, plageEv)
+
+        'On compte le nombre de colonnes de chaque plage
+        Dim premColEst As Integer = 0, dernColEst As Integer = 0
+        Utilitaires.parserPlageColonnes(plageEst, premColEst, dernColEst)
+        Dim premColEv As Integer = 0, dernColEv As Integer = 0
+        Utilitaires.parserPlageColonnes(plageEv, premColEv, dernColEv)
+        'Si le nombre de colonnes n'est pas le même, on lève une erreur
+        If Not dernColEst - premColEst = dernColEv - premColEv Then
+            MsgBox("Erreur : Le nombre de colonnes sélectionnées pour la période d'estimation n'est pas le même que " &
+                   "pour la période d'événement", 16)
+            Return
+        End If
 
         'On construit les 4 tableaux des rentabilités (entreprises et marché, période d'estimation et d'événement)
         Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets(feuille), Excel.Worksheet)

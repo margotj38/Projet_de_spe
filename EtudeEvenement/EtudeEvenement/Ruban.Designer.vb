@@ -44,13 +44,13 @@
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Ruban))
         Me.EtudeEvenement = Me.Factory.CreateRibbonTab
         Me.Group2 = Me.Factory.CreateRibbonGroup
-        Me.Group1 = Me.Factory.CreateRibbonGroup
-        Me.Separator1 = Me.Factory.CreateRibbonSeparator
         Me.EtudeAR = Me.Factory.CreateRibbonMenu
         Me.testSimplAR = Me.Factory.CreateRibbonButton
         Me.testSignAR = Me.Factory.CreateRibbonButton
+        Me.Group1 = Me.Factory.CreateRibbonGroup
         Me.preTraitPrix = Me.Factory.CreateRibbonButton
         Me.preTraitRenta = Me.Factory.CreateRibbonButton
+        Me.Separator1 = Me.Factory.CreateRibbonSeparator
         Me.ModeleMoy = Me.Factory.CreateRibbonMenu
         Me.testSimpleR = Me.Factory.CreateRibbonButton
         Me.TestPatellR = Me.Factory.CreateRibbonButton
@@ -69,8 +69,8 @@
         '
         'EtudeEvenement
         '
-        Me.EtudeEvenement.Groups.Add(Me.Group2)
         Me.EtudeEvenement.Groups.Add(Me.Group1)
+        Me.EtudeEvenement.Groups.Add(Me.Group2)
         Me.EtudeEvenement.Label = "Etude d'événements"
         Me.EtudeEvenement.Name = "EtudeEvenement"
         '
@@ -79,21 +79,6 @@
         Me.Group2.Items.Add(Me.EtudeAR)
         Me.Group2.Label = "Etude à partir des AR"
         Me.Group2.Name = "Group2"
-        '
-        'Group1
-        '
-        Me.Group1.Items.Add(Me.preTraitPrix)
-        Me.Group1.Items.Add(Me.preTraitRenta)
-        Me.Group1.Items.Add(Me.Separator1)
-        Me.Group1.Items.Add(Me.ModeleMoy)
-        Me.Group1.Items.Add(Me.ModeleMS)
-        Me.Group1.Items.Add(Me.ModeleM)
-        Me.Group1.Label = "Etude complète"
-        Me.Group1.Name = "Group1"
-        '
-        'Separator1
-        '
-        Me.Separator1.Name = "Separator1"
         '
         'EtudeAR
         '
@@ -117,6 +102,17 @@
         Me.testSignAR.Name = "testSignAR"
         Me.testSignAR.ShowImage = True
         '
+        'Group1
+        '
+        Me.Group1.Items.Add(Me.preTraitPrix)
+        Me.Group1.Items.Add(Me.preTraitRenta)
+        Me.Group1.Items.Add(Me.Separator1)
+        Me.Group1.Items.Add(Me.ModeleMoy)
+        Me.Group1.Items.Add(Me.ModeleMS)
+        Me.Group1.Items.Add(Me.ModeleM)
+        Me.Group1.Label = "Etude complète"
+        Me.Group1.Name = "Group1"
+        '
         'preTraitPrix
         '
         Me.preTraitPrix.Label = "Prétraitement prix"
@@ -126,6 +122,10 @@
         '
         Me.preTraitRenta.Label = "Prétraitement rentabilités"
         Me.preTraitRenta.Name = "preTraitRenta"
+        '
+        'Separator1
+        '
+        Me.Separator1.Name = "Separator1"
         '
         'ModeleMoy
         '
