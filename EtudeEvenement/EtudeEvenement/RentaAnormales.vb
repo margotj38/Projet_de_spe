@@ -1,173 +1,54 @@
-﻿Module RentaAnormales
+﻿
+''' <summary>
+''' Module de gestion des opérations (création et traitement) sur les AR.
+''' </summary>
+''' <remarks></remarks>
+Module RentaAnormales
 
-    'Calcule les AR avec le modèle considéré
+    ''' <summary>
+    ''' Calcule les AR avec le modèle considéré.
+    ''' </summary>
+    ''' <param name="tabRentaMarcheEst"> Rentabilités de marché sur la période d'estimation. </param>
+    ''' <param name="tabRentaMarcheEv"> Rentabilités de marché sur la période d'événement. </param>
+    ''' <param name="tabRentaEst"> Rentabilités des entreprises sur la période d'estimation. </param>
+    ''' <param name="tabRentaEv"> Rentabilités des entreprises sur la période d'événement. </param>
+    ''' <param name="tabAREst"> (Sortie) AR sur la période d'estimation. </param>
+    ''' <param name="tabAREv"> (Sortie) AR sur la période d'événement. </param>
+    ''' <param name="tabDateEst"> (Sortie) Dates correspondantes sur la période d'estimation. </param>
+    ''' <param name="tabDateEv"> (Sortie) Dates correspondantes sur la période d'événement. </param>
+    ''' <remarks></remarks>
     Public Sub calculAR(ByRef tabRentaMarcheEst(,) As Double, ByRef tabRentaMarcheEv(,) As Double, ByRef tabRentaEst(,) As Double, _
                              ByRef tabRentaEv(,) As Double, ByRef tabAREst(,) As Double, ByRef tabAREv(,) As Double, _
                              ByRef tabDateEst() As Integer, ByRef tabDateEv() As Integer)
 
-        'appelle une fonction pour chaque modèle
+        'On appelle une fonction selon le modèle choisi
         Select Case Globals.Ribbons.Ruban.selFenetres.modele
             Case 0
                 modeleMoyenne(tabRentaEst, tabRentaEv, tabAREst, tabAREv, tabDateEst, tabDateEv)
             Case 1
-                modeleMarcheSimple(tabRentaEst, tabRentaEv, tabRentaMarcheEst, tabRentaMarcheEv, tabAREst, tabAREv, tabDateEst, tabDateEv)
+                modeleMarcheSimple(tabRentaMarcheEst, tabRentaMarcheEv, tabRentaEst, tabRentaEv, tabAREst, tabAREv, tabDateEst, tabDateEv)
             Case 2
-                'Création des tableaux pour pouvoir faire les régressions en fonction des N/A
-                Dim tabRentaReg(,,)() = UtilitaireRentabilites.constructionTableauxReg(UtilitaireRentabilites.maxPrixAbs, tabRentaEst, tabRentaMarcheEst)
-                modeleMarche(tabRentaEst, tabRentaEv, tabRentaReg, tabRentaMarcheEst, tabRentaMarcheEv, tabAREst, tabAREv, tabDateEst, tabDateEv)
+                'Création des tableaux pour pouvoir faire les régressions en tenant compte des N/A
+                Dim tabRentaReg(,,)() = UtilitaireRentabilites.constructionTableauxReg(UtilitaireRentabilites.maxRentAbs, tabRentaEst, tabRentaMarcheEst)
+                modeleMarche(tabRentaMarcheEst, tabRentaMarcheEv, tabRentaEst, tabRentaEv, tabRentaReg, tabAREst, tabAREv, tabDateEst, tabDateEv)
             Case Else
                 MsgBox("Erreur interne : numero de modèle incorrect dans ChoixSeuilFenetre", 16)
         End Select
 
     End Sub
 
+    '***************************** Les différents modèles d'estimation des AR *****************************
 
-    '***************************** Modèle de marché *****************************
-
-    'Estimation des AR à partir du modèle de marché : K = alpha + beta*Rm
-    'Premiere colonne de tabRentaEst et tabRentaEv : dates
-    Public Sub modeleMarche(ByRef tabRentaEst(,) As Double, ByRef tabRentaEv(,) As Double, ByRef tabRentaReg(,,)() As Double, _
-                             ByRef tabRentaMarcheEst(,) As Double, ByRef tabRentaMarcheEv(,) As Double, ByRef tabAREst(,) As Double, _
-                             ByRef tabAREv(,) As Double, ByRef tabDateEst() As Integer, ByRef tabDateEv() As Integer)
-
-        'On dimensionne les tableaux de AR
-        'On ne range pas les dates d'événement dans les tableaux de AR
-        ReDim tabAREst(tabRentaEst.GetUpperBound(0), tabRentaEst.GetUpperBound(1) - 1)
-        ReDim tabAREv(tabRentaEv.GetUpperBound(0), tabRentaEv.GetUpperBound(1) - 1)
-
-        'Et ceux de dates
-        ReDim tabDateEst(tabRentaEst.GetUpperBound(0))
-        ReDim tabDateEv(tabRentaEv.GetUpperBound(0))
-
-        'On range les dates dans les tableaux de dates
-        'Pour la période d'estimation
-        For indDate = 0 To tabRentaEst.GetUpperBound(0)
-            tabDateEst(indDate) = tabRentaEst(indDate, 0)
-        Next indDate
-        'Puis pour la période d'événement
-        For indDate = 0 To tabRentaEv.GetUpperBound(0)
-            tabDateEv(indDate) = tabRentaEv(indDate, 0)
-        Next indDate
-
-        'nombre de différentes régressions
-        Dim nbReg = tabRentaReg.GetLength(1)
-        'déclaration des tableaux contenant les alpha et beta de la régression
-        Dim a(nbReg) As Double
-        Dim b(nbReg) As Double
-        'moyenne pondérée pour obtenir les véritables alpha et beta
-        Dim alpha As Double = 0
-        Dim beta As Double = 0
-        'pour chaque entreprise...
-        For colonne = 1 To tabRentaReg.GetUpperBound(0)
-            'nombre de rentabilités totale (sans NA)
-            Dim nbRent As Integer = 0
-            'pour chaque tableau
-            For reg = 0 To nbReg - 1
-                If Not tabRentaReg(colonne - 1, reg, 0).GetLength(0) = 0 Then
-                    'extraction des Rt
-                    Dim Y() As Double = tabRentaReg(colonne - 1, reg, 0)
-                    Dim X() As Double = tabRentaReg(colonne - 1, reg, 1)
-                    'Dim Y(rentaEst(reg, colonne).GetUpperBound(1)) As Double
-                    'Dim X(rentaEst(reg, colonne).GetUpperBound(1)) As Double
-                    'For t = 0 To rentaEst(reg, colonne).GetUpperBound(1)
-                    '    Y(t) = rentaEst(reg, colonne)(1, t)
-                    '    'extraction des Rm
-                    '    X(t) = rentaEst(reg, colonne)(0, t)
-                    'Next
-                    'calcul des coefficients des différentes régressions
-                    a(reg) = Globals.ThisAddIn.Application.WorksheetFunction.Index(Globals.ThisAddIn.Application.WorksheetFunction.LinEst(Y, X), 2) / (reg + 1)
-                    b(reg) = Globals.ThisAddIn.Application.WorksheetFunction.Index(Globals.ThisAddIn.Application.WorksheetFunction.LinEst(Y, X), 1) / (reg + 1)
-                    'somme pondérée
-                    alpha = alpha + a(reg) * tabRentaReg(colonne - 1, reg, 1).GetLength(0)
-                    beta = beta + b(reg) * tabRentaReg(colonne - 1, reg, 1).GetLength(0)
-                    nbRent = nbRent + tabRentaReg(colonne - 1, reg, 1).GetLength(0)
-                End If
-            Next
-            'moyenne pondérée
-            alpha = alpha / nbRent
-            beta = beta / nbRent
-
-            'remplissage des AR sur la fenetre d'estimation
-            'Variable pour savoir si des AR précédents sont manquants
-            'Dim prixPresent As Integer = 1
-            For i = 0 To tabRentaEst.GetUpperBound(0)
-                If Double.IsNaN(tabRentaEst(i, colonne)) Then
-                    tabAREst(i, colonne - 1) = Double.NaN
-                    'prixPresent = prixPresent + 1
-                Else
-                    tabAREst(i, colonne - 1) = (tabRentaEst(i, colonne) - (alpha + beta * tabRentaMarcheEst(i, colonne))) '* prixPresent
-                    'prixPresent = 1
-                End If
-            Next i
-
-            'remplissage des AR sur la fenetre d'événement
-            'Variable pour savoir si des AR précédents sont manquants
-            'Dim prixPresent As Integer = 1
-            For i = 0 To tabRentaEv.GetUpperBound(0)
-                If Double.IsNaN(tabRentaEv(i, colonne)) Then
-                    tabAREv(i, colonne - 1) = Double.NaN
-                    'prixPresent = prixPresent + 1
-                Else
-                    tabAREv(i, colonne - 1) = (tabRentaEv(i, colonne) - (alpha + beta * tabRentaMarcheEv(i, colonne))) '* prixPresent
-                    'prixPresent = 1
-                End If
-            Next i
-        Next
-    End Sub
-
-
-    '***************************** Modèle de marché simplifié *****************************
-
-    'Estimation des AR à partir du modèle de marché simplifié : K = moyenne des rentabilités
-    Public Sub modeleMarcheSimple(ByRef tabRentaEst(,) As Double, ByRef tabRentaEv(,) As Double, _
-                             ByRef tabRentaMarcheEst(,) As Double, ByRef tabRentaMarcheEv(,) As Double, ByRef tabAREst(,) As Double, _
-                             ByRef tabAREv(,) As Double, ByRef tabDateEst() As Integer, ByRef tabDateEv() As Integer)
-
-        'On dimensionne les tableaux de AR
-        'On ne range pas les dates d'événement dans les tableaux de AR
-        ReDim tabAREst(tabRentaEst.GetUpperBound(0), tabRentaEst.GetUpperBound(1) - 1)
-        ReDim tabAREv(tabRentaEv.GetUpperBound(0), tabRentaEv.GetUpperBound(1) - 1)
-
-        'Et ceux de dates
-        ReDim tabDateEst(tabRentaEst.GetUpperBound(0))
-        ReDim tabDateEv(tabRentaEv.GetUpperBound(0))
-
-        'On range les dates dans les tableaux de dates
-        'Pour la période d'estimation
-        For indDate = 0 To tabRentaEst.GetUpperBound(0)
-            tabDateEst(indDate) = tabRentaEst(indDate, 0)
-        Next indDate
-        'Puis pour la période d'événement
-        For indDate = 0 To tabRentaEv.GetUpperBound(0)
-            tabDateEv(indDate) = tabRentaEv(indDate, 0)
-        Next indDate
-
-        For colonne = 1 To tabRentaEst.GetUpperBound(1)
-            'remplissage des AR sur la fenetre d'estimation
-            For i = 0 To tabRentaEst.GetUpperBound(0)
-                If Double.IsNaN(tabRentaEst(i, colonne)) Then
-                    tabAREst(i, colonne - 1) = Double.NaN
-                Else
-                    tabAREst(i, colonne - 1) = tabRentaEst(i, colonne) - tabRentaMarcheEst(i, colonne)
-                End If
-            Next i
-
-            'remplissage des AR sur la fenetre d'événement
-            For i = 0 To tabRentaEv.GetUpperBound(0)
-                If Double.IsNaN(tabRentaEv(i, colonne)) Then
-                    tabAREv(i, colonne - 1) = Double.NaN
-                Else
-                    tabAREv(i, colonne - 1) = tabRentaEv(i, colonne) - tabRentaMarcheEv(i, colonne)
-                End If
-            Next i
-        Next
-    End Sub
-
-
-    '***************************** Modèle des rentabilités moyennes *****************************
-
-    'Estimation des AR à partir du modèle de la moyenne : K = R
-    'Premiere colonne de tabRentaEst et tabRentaEv : dates
+    ''' <summary>
+    ''' Estimation des AR à partir du modèle des rentabilités moyennes : K = moyenne des rentabilités
+    ''' </summary>
+    ''' <param name="tabRentaEst"> Rentabilités des entreprises sur la période d'estimation. </param>
+    ''' <param name="tabRentaEv"> Rentabilités des entreprises sur la période d'événement. </param>
+    ''' <param name="tabAREst"> (Sortie) AR sur la période d'estimation. </param>
+    ''' <param name="tabAREv"> (Sortie) AR sur la période d'événement. </param>
+    ''' <param name="tabDateEst"> (Sortie) Dates correspondantes sur la période d'estimation. </param>
+    ''' <param name="tabDateEv"> (Sortie) Dates correspondantes sur la période d'événement. </param>
+    ''' <remarks> Attention : la premiere colonne de tabRentaEst et de tabRentaEv sont les dates. </remarks>
     Public Sub modeleMoyenne(ByRef tabRentaEst(,) As Double, ByRef tabRentaEv(,) As Double, _
                              ByRef tabAREst(,) As Double, ByRef tabAREv(,) As Double, _
                              ByRef tabDateEst() As Integer, ByRef tabDateEv() As Integer)
@@ -240,8 +121,163 @@
         Next colonne
     End Sub
 
+    ''' <summary>
+    ''' Estimation des AR à partir du modèle de marché simplifié : K = Rm
+    ''' </summary>
+    ''' <param name="tabRentaMarcheEst"> Rentabilités de marché sur la période d'estimation. </param>
+    ''' <param name="tabRentaMarcheEv"> Rentabilités de marché sur la période d'événement. </param>
+    ''' <param name="tabRentaEst"> Rentabilités des entreprises sur la période d'estimation. </param>
+    ''' <param name="tabRentaEv"> Rentabilités des entreprises sur la période d'événement. </param>
+    ''' <param name="tabAREst"> (Sortie) AR sur la période d'estimation. </param>
+    ''' <param name="tabAREv"> (Sortie) AR sur la période d'événement. </param>
+    ''' <param name="tabDateEst"> (Sortie) Dates correspondantes sur la période d'estimation. </param>
+    ''' <param name="tabDateEv"> (Sortie) Dates correspondantes sur la période d'événement. </param>
+    ''' <remarks> Attention : la premiere colonne de tabRentaEst et de tabRentaEv sont les dates. </remarks>
+    Public Sub modeleMarcheSimple(ByRef tabRentaMarcheEst(,) As Double, ByRef tabRentaMarcheEv(,) As Double, _
+                                ByRef tabRentaEst(,) As Double, ByRef tabRentaEv(,) As Double, _
+                                ByRef tabAREst(,) As Double, ByRef tabAREv(,) As Double, _
+                                ByRef tabDateEst() As Integer, ByRef tabDateEv() As Integer)
+
+        'On dimensionne les tableaux de AR
+        'On ne range pas les dates d'événement dans les tableaux de AR
+        ReDim tabAREst(tabRentaEst.GetUpperBound(0), tabRentaEst.GetUpperBound(1) - 1)
+        ReDim tabAREv(tabRentaEv.GetUpperBound(0), tabRentaEv.GetUpperBound(1) - 1)
+
+        'Et ceux de dates
+        ReDim tabDateEst(tabRentaEst.GetUpperBound(0))
+        ReDim tabDateEv(tabRentaEv.GetUpperBound(0))
+
+        'On range les dates dans les tableaux de dates
+        'Pour la période d'estimation
+        For indDate = 0 To tabRentaEst.GetUpperBound(0)
+            tabDateEst(indDate) = tabRentaEst(indDate, 0)
+        Next indDate
+        'Puis pour la période d'événement
+        For indDate = 0 To tabRentaEv.GetUpperBound(0)
+            tabDateEv(indDate) = tabRentaEv(indDate, 0)
+        Next indDate
+
+        For colonne = 1 To tabRentaEst.GetUpperBound(1)
+            'remplissage des AR sur la fenetre d'estimation
+            For i = 0 To tabRentaEst.GetUpperBound(0)
+                If Double.IsNaN(tabRentaEst(i, colonne)) Then
+                    tabAREst(i, colonne - 1) = Double.NaN
+                Else
+                    tabAREst(i, colonne - 1) = tabRentaEst(i, colonne) - tabRentaMarcheEst(i, colonne)
+                End If
+            Next i
+
+            'remplissage des AR sur la fenetre d'événement
+            For i = 0 To tabRentaEv.GetUpperBound(0)
+                If Double.IsNaN(tabRentaEv(i, colonne)) Then
+                    tabAREv(i, colonne - 1) = Double.NaN
+                Else
+                    tabAREv(i, colonne - 1) = tabRentaEv(i, colonne) - tabRentaMarcheEv(i, colonne)
+                End If
+            Next i
+        Next
+    End Sub
+
+    
+    ''' <summary>
+    ''' Estimation des AR à partir du modèle de marché classique : K = alpha + beta*Rm
+    ''' </summary>
+    ''' <param name="tabRentaMarcheEst"> Rentabilités de marché sur la période d'estimation. </param>
+    ''' <param name="tabRentaMarcheEv"> Rentabilités de marché sur la période d'événement. </param>
+    ''' <param name="tabRentaEst"> Rentabilités des entreprises sur la période d'estimation. </param>
+    ''' <param name="tabRentaEv"> Rentabilités des entreprises sur la période d'événement. </param>
+    ''' <param name="tabRentaReg"> Structure de données particulière pour organiser les données de rentabilités
+    ''' de façon à pouvoir réaliser différentes régressions linéaires cohérentes. </param>
+    ''' <param name="tabAREst"> (Sortie) AR sur la période d'estimation. </param>
+    ''' <param name="tabAREv"> (Sortie) AR sur la période d'événement. </param>
+    ''' <param name="tabDateEst"> (Sortie) Dates correspondantes sur la période d'estimation. </param>
+    ''' <param name="tabDateEv"> (Sortie) Dates correspondantes sur la période d'événement. </param>
+    ''' <remarks> Attention : la premiere colonne de tabRentaEst et de tabRentaEv sont les dates. </remarks>
+    Public Sub modeleMarche(ByRef tabRentaMarcheEst(,) As Double, ByRef tabRentaMarcheEv(,) As Double, _
+                                ByRef tabRentaEst(,) As Double, ByRef tabRentaEv(,) As Double, ByRef tabRentaReg(,,)() As Double, _
+                                ByRef tabAREst(,) As Double, ByRef tabAREv(,) As Double, _
+                                ByRef tabDateEst() As Integer, ByRef tabDateEv() As Integer)
+
+        'On dimensionne les tableaux de AR
+        'On ne range pas les dates d'événement dans les tableaux de AR
+        ReDim tabAREst(tabRentaEst.GetUpperBound(0), tabRentaEst.GetUpperBound(1) - 1)
+        ReDim tabAREv(tabRentaEv.GetUpperBound(0), tabRentaEv.GetUpperBound(1) - 1)
+
+        'Et ceux de dates
+        ReDim tabDateEst(tabRentaEst.GetUpperBound(0))
+        ReDim tabDateEv(tabRentaEv.GetUpperBound(0))
+
+        'On range les dates dans les tableaux de dates
+        'Pour la période d'estimation
+        For indDate = 0 To tabRentaEst.GetUpperBound(0)
+            tabDateEst(indDate) = tabRentaEst(indDate, 0)
+        Next indDate
+        'Puis pour la période d'événement
+        For indDate = 0 To tabRentaEv.GetUpperBound(0)
+            tabDateEv(indDate) = tabRentaEv(indDate, 0)
+        Next indDate
+
+        'nombre de différentes régressions
+        Dim nbReg = tabRentaReg.GetLength(1)
+        'déclaration des tableaux contenant les alpha et beta de la régression
+        Dim a(nbReg) As Double
+        Dim b(nbReg) As Double
+        'moyenne pondérée pour obtenir les véritables alpha et beta
+        Dim alpha As Double = 0
+        Dim beta As Double = 0
+        'pour chaque entreprise...
+        For colonne = 1 To tabRentaReg.GetUpperBound(0)
+            'nombre de rentabilités totale (sans NA)
+            Dim nbRent As Integer = 0
+            'pour chaque tableau
+            For reg = 0 To nbReg - 1
+                If Not tabRentaReg(colonne - 1, reg, 0).GetLength(0) = 0 Then
+                    'extraction des Rt
+                    Dim Y() As Double = tabRentaReg(colonne - 1, reg, 0)
+                    Dim X() As Double = tabRentaReg(colonne - 1, reg, 1)
+                    'calcul des coefficients des différentes régressions
+                    a(reg) = Globals.ThisAddIn.Application.WorksheetFunction.Index(Globals.ThisAddIn.Application.WorksheetFunction.LinEst(Y, X), 2) / (reg + 1)
+                    b(reg) = Globals.ThisAddIn.Application.WorksheetFunction.Index(Globals.ThisAddIn.Application.WorksheetFunction.LinEst(Y, X), 1) / (reg + 1)
+                    'somme pondérée
+                    alpha = alpha + a(reg) * tabRentaReg(colonne - 1, reg, 1).GetLength(0)
+                    beta = beta + b(reg) * tabRentaReg(colonne - 1, reg, 1).GetLength(0)
+                    nbRent = nbRent + tabRentaReg(colonne - 1, reg, 1).GetLength(0)
+                End If
+            Next
+            'moyenne pondérée
+            alpha = alpha / nbRent
+            beta = beta / nbRent
+
+            'remplissage des AR sur la fenetre d'estimation
+            For i = 0 To tabRentaEst.GetUpperBound(0)
+                If Double.IsNaN(tabRentaEst(i, colonne)) Then
+                    tabAREst(i, colonne - 1) = Double.NaN
+                Else
+                    tabAREst(i, colonne - 1) = (tabRentaEst(i, colonne) - (alpha + beta * tabRentaMarcheEst(i, colonne)))
+                End If
+            Next i
+
+            'remplissage des AR sur la fenetre d'événement
+            For i = 0 To tabRentaEv.GetUpperBound(0)
+                If Double.IsNaN(tabRentaEv(i, colonne)) Then
+                    tabAREv(i, colonne - 1) = Double.NaN
+                Else
+                    tabAREv(i, colonne - 1) = (tabRentaEv(i, colonne) - (alpha + beta * tabRentaMarcheEv(i, colonne)))
+                End If
+            Next i
+        Next
+    End Sub
+
+
     '***************************** Opérations sur les AR *****************************
 
+    ''' <summary>
+    ''' Calcule la moyenne empirique après avoir normalisé les AR.
+    ''' </summary>
+    ''' <param name="tabEstAR"> AR calculés sur la période d'estimation. </param>
+    ''' <param name="tabEvAR"> AR calculés sur la période d'événement. </param>
+    ''' <returns> Moyenne empirique des AR normalisés en chaque temps de la fenêtre d'événement. </returns>
+    ''' <remarks></remarks>
     Public Function moyNormAR(ByRef tabEstAR(,) As Double, ByRef tabEvAR(,) As Double) As Double()
         Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
         'tableau à retourner
@@ -250,12 +286,14 @@
         Dim tabVarAR() As Double = calcVarEstAR(tabEstAR)
         'remplissage du tableau
         For i = 0 To tabEvAR.GetUpperBound(0)
-            'tableau des ARi/si
+            'tableau des ARi/si (i.e AR normalisés)
             Dim tabNormAR(tabEvAR.GetLength(1) - 1) As Double
             For e = 0 To tabEvAR.GetUpperBound(1)
+                'Gestion des NA dans le tableau des AR
                 If Double.IsNaN(tabEvAR(i, e)) Then
                     tabNormAR(e) = Double.NaN
                 Else
+                    'normalisation
                     tabNormAR(e) = tabEvAR(i, e) / Math.Sqrt(tabVarAR(e))
                 End If
             Next
@@ -265,6 +303,14 @@
         Return tabMoyNormAR
     End Function
 
+    ''' <summary>
+    ''' Calcule la variance empirique après avoir normalisé les AR.
+    ''' </summary>
+    ''' <param name="tabEstAR"> AR calculés sur la période d'estimation. </param>
+    ''' <param name="tabEvAR"> AR calculés sur la période d'événement. </param>
+    ''' <param name="tabMoyNormAR"> Moyenne des AR normalisés déjà calculée au préalable. </param>
+    ''' <returns> Variance empirique des AR normalisés en chaque temps de la fenêtre d'événement. </returns>
+    ''' <remarks></remarks>
     Public Function ecartNormAR(ByRef tabEstAR(,) As Double, ByRef tabEvAR(,) As Double, ByRef tabMoyNormAR As Double()) As Double()
         Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
         'tableau à retourner
@@ -273,13 +319,14 @@
         Dim tabVarAR() As Double = calcVarEstAR(tabEstAR)
         'remplissage du tableau
         For i = 0 To tabEvAR.GetUpperBound(0)
-            'tableau des ARi/si
+            'tableau des ARi/si (i.e AR normalisés)
             Dim tabNormAR(tabEvAR.GetLength(1) - 1) As Double
             For e = 0 To tabEvAR.GetUpperBound(1)
                 'Gestion des NA dans le tableau des AR
                 If Double.IsNaN(tabEvAR(i, e)) Then
                     tabNormAR(e) = Double.NaN
                 Else
+                    'normalisation
                     tabNormAR(e) = tabEvAR(i, e) / Math.Sqrt(tabVarAR(e))
                 End If
             Next
@@ -289,7 +336,12 @@
         Return tabEcartNormAR
     End Function
 
-    'calcule la variance des AR par entreprise sur la période d'estimation pour toutes les entreprises
+    ''' <summary>
+    ''' Calcule la variance des AR par entreprise sur la période d'estimation.
+    ''' </summary>
+    ''' <param name="tabEstAR"> AR calculés sur la période d'estimation. </param>
+    ''' <returns> Variance empirique des AR sur la passé pour chaque entreprise. </returns>
+    ''' <remarks></remarks>
     Public Function calcVarEstAR(ByRef tabEstAR(,) As Double) As Double()
         'tableau à retourner
         Dim tabVarAR(tabEstAR.GetLength(1) - 1) As Double
@@ -305,9 +357,15 @@
         Return tabVarAR
     End Function
 
+
     '**********************************************Opérations sur les CAR
 
-    'Fonction qui calcule les CAR sur la fenetre d'événements
+    ''' <summary>
+    ''' Calcule les CAR sur la fenêtre d'événement.
+    ''' </summary>
+    ''' <param name="tabEvAR"> AR calculés sur la période d'événement. </param>
+    ''' <returns> CAR par entreprise en chaque temps cumulé sur la fenêtre d'événement. </returns>
+    ''' <remarks></remarks>
     Function CalculCar(ByRef tabEvAR(,) As Double) As Double(,)
         Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
         Dim N As Integer = tabEvAR.GetLength(1)
@@ -319,21 +377,22 @@
         Dim prixPresent As Integer = 1
         For e = 0 To tabEvAR.GetUpperBound(1)
             Dim somme As Double = 0
+            Dim onlyNan = True
             For i = 0 To tabEvAR.GetUpperBound(0)
                 If Double.IsNaN(tabEvAR(i, e)) Then
                     'S'il y a un NA, on incrémente prixPresent
                     prixPresent = prixPresent + 1
                 Else
+                    onlyNan = False
                     'Sinon on somme en multipliant par le nombre de #N/A présents + 1 (ie prixPresent)
                     somme = somme + tabEvAR(i, e) * prixPresent
                     prixPresent = 1
                 End If
-                tabCAR(i, e) = somme
-                'debug
-                'Sélection de la feuille contenant les Rt
-                Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets("DateEvt"), Excel.Worksheet)
-                If i = 0 Then
-                    currentSheet.Cells(1, e + 4) = somme
+                'En fonction de si on a eu des données pour cumuler les AR...
+                If onlyNan Then
+                    tabCAR(i, e) = Double.NaN
+                Else
+                    tabCAR(i, e) = somme
                 End If
             Next
             prixPresent = 1
@@ -342,6 +401,13 @@
         CalculCar = tabCAR
     End Function
 
+    ''' <summary>
+    ''' Calcule la moyenne empirique après avoir normalisé les CAR.
+    ''' </summary>
+    ''' <param name="tabEstAR"> AR calculés sur la période d'estimation. </param>
+    ''' <param name="tabCAR"> CAR par entreprise en chaque temps cumulé sur la fenêtre d'événement. </param>
+    ''' <returns> Moyenne empirique des CAR normalisés en chaque temps cumulé de la fenêtre d'événement. </returns>
+    ''' <remarks></remarks>
     Function moyNormCar(ByRef tabEstAR(,) As Double, ByRef tabCAR(,) As Double) As Double()
 
         Dim tailleFenetreEv As Integer = tabCAR.GetLength(0)
@@ -366,6 +432,14 @@
         Return tabMoyNormCAR
     End Function
 
+    ''' <summary>
+    ''' Calcule la variance empirique après avoir normalisé les CAR.
+    ''' </summary>
+    ''' <param name="tabEstAR"> AR calculés sur la période d'estimation. </param>
+    ''' <param name="tabCAR"> CAR par entreprise en chaque temps cumulé sur la fenêtre d'événement. </param>
+    ''' <param name="tabMoy"> Moyenne des CAR normalisés déjà calculée au préalable. </param>
+    ''' <returns> Variance empirique des CAR normalisés en chaque temps cumulé de la fenêtre d'événement. </returns>
+    ''' <remarks></remarks>
     Function ecartNormCar(ByRef tabEstAR(,) As Double, tabCAR(,) As Double, tabMoy() As Double) As Double()
         Dim tailleFenetreEv As Integer = tabCAR.GetLength(0)
         Dim tabEcartNormCAR(tailleFenetreEv - 1) As Double
@@ -389,7 +463,13 @@
         Return tabEcartNormCAR
     End Function
 
-    'Traitement des ARs à partir des deux tableaux des AR
+    ''' <summary>
+    ''' Produit et affiche les résultats des tests statiques sur les AR et les CAR
+    ''' </summary>
+    ''' <param name="tabEvAR"> AR calculés sur la période d'estimation. </param>
+    ''' <param name="tabEstAR"> AR calculés sur la période d'événement. </param>
+    ''' <param name="datesEvAR"> Dates correspondantes sur la période d'événement. </param>
+    ''' <remarks></remarks>
     Public Sub traitementTabAR(tabEvAR(,) As Double, tabEstAR(,) As Double, datesEvAR() As Integer)
 
         'La création d'une nouvelle feuille

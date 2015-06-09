@@ -101,7 +101,7 @@ Public Class ParamPreTraitPrix
         UtilitaireRentabilites.tabRenta = tabRenta
         UtilitaireRentabilites.tabRentaClassiquesMarche = tabRentaClassiquesMarche
         'Idem pour maxPrixAbsent
-        UtilitaireRentabilites.maxPrixAbs = maxPrixAbsent
+        UtilitaireRentabilites.maxRentAbs = maxPrixAbsent
 
         'On affiche ces rentabilités centrées
         ExcelDialogue.affichageRentaCentrees(tabRenta)

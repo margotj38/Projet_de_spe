@@ -1,24 +1,44 @@
 ﻿''' <summary>
-''' bla bla bla
+''' Module regroupant des fonctions annexes diverses.
 ''' </summary>
 ''' <remarks></remarks>
 
 Module Utilitaires
 
     '***************************** Pour parser les données de refEdit *****************************
-
+    ''' <summary>
+    ''' Extrait la première et dernière colonne d'une plage de données.
+    ''' </summary>
+    ''' <param name="plage"> Plage de données Excel sous forme de chaine de caractères. </param>
+    ''' <param name="premiereCol"> Indice de la première colonne de la plage de données. </param>
+    ''' <param name="derniereCol"> Indice de la dernière colonne de la plage de données. </param>
+    ''' <remarks></remarks>
     Public Sub parserPlageColonnes(plage As String, ByRef premiereCol As Integer, ByRef derniereCol As Integer)
         Dim rangePlage As Excel.Range = Globals.ThisAddIn.Application.Range(plage)
         premiereCol = rangePlage.Cells(1, 1).Column()
         derniereCol = rangePlage.Cells(1, rangePlage.Columns.Count).Column()
     End Sub
 
-    Public Sub parserPlageLignes(plage As String, ByRef debut As Integer, ByRef fin As Integer)
+    ''' <summary>
+    ''' Extrait la première et dernière ligne d'une plage de données.
+    ''' </summary>
+    ''' <param name="plage"> Plage de données Excel sous forme de chaine de caractères. </param>
+    ''' <param name="premiereLigne"> Indice de la première ligne de la plage de données. </param>
+    ''' <param name="derniereLigne"> Indice de la dernière ligne de la plage de données. </param>
+    ''' <remarks></remarks>
+    Public Sub parserPlageLignes(plage As String, ByRef premiereLigne As Integer, ByRef derniereLigne As Integer)
         Dim rangePlage As Excel.Range = Globals.ThisAddIn.Application.Range(plage)
-        debut = rangePlage.Cells(1, 1).Row()
-        fin = rangePlage.Cells(rangePlage.Rows.Count, 1).Row()
+        premiereLigne = rangePlage.Cells(1, 1).Row()
+        derniereLigne = rangePlage.Cells(rangePlage.Rows.Count, 1).Row()
     End Sub
 
+    ''' <summary>
+    ''' Sépare le nom de la feuille et la plage de données à partir de la sélection avec RefEdit.
+    ''' </summary>
+    ''' <param name="textRefEdit"> Chaine de caractères renvoyée par RefEdit. </param>
+    ''' <param name="feuille"> Nom de la feuille associé à la sélection avec RefEdit. </param>
+    ''' <param name="plage"> Plage de données sous forme de chaine de caractères associée à la sélection avec RefEdit. </param>
+    ''' <remarks></remarks>
     Public Sub recupererFeuillePlage(textRefEdit As String, ByRef feuille As String, ByRef plage As String)
         Dim tabString() As String = Split(textRefEdit, "'")
         feuille = tabString(1)
@@ -30,6 +50,14 @@ Module Utilitaires
 
     '***************************** Algo de tri *****************************
 
+    ''' <summary>
+    ''' Tri (Quick sort) deux tableaux une dimension selon l'ordre chronologique sur le premier tableau de dates.
+    ''' </summary>
+    ''' <param name="tabDate"> Tableau de dates. </param>
+    ''' <param name="tabInd"> (Entrée-sortie) Tableau de permutations. </param>
+    ''' <param name="gauche"> Indice inférieur du tableau. </param>
+    ''' <param name="droite"> Indice supérieur du tableau. </param>
+    ''' <remarks> Il s'agit d'une fonction récursive d'où les deux derniers paramètres. </remarks>
     Sub TriDoubleTab(tabDate() As Date, tabInd() As Integer, gauche As Integer, droite As Integer) ' Quick sort
         Dim ref As Date = tabDate((gauche + droite) \ 2)
         Dim g As Integer = gauche
@@ -51,28 +79,5 @@ Module Utilitaires
         If g < droite Then TriDoubleTab(tabDate, tabInd, g, droite)
         If gauche < d Then TriDoubleTab(tabDate, tabInd, gauche, d)
     End Sub
-
-    Sub Tri(a(,) As Object, ColTri As Integer, gauche As Integer, droite As Integer) ' Quick sort
-        Dim ref As Date = a((gauche + droite) \ 2, ColTri)
-        Dim g As Integer = gauche
-        Dim d As Integer = droite
-        Do
-            Do While a(g, ColTri) < ref : g = g + 1 : Loop
-            Do While ref < a(d, ColTri) : d = d - 1 : Loop
-            If g <= d Then
-                Dim tempDate As Date = a(g, 2)
-                a(g, 2) = a(d, 2)
-                a(d, 2) = tempDate
-                Dim temp As String = a(g, 1)
-                a(g, 1) = a(d, 1)
-                a(d, 1) = temp
-                g = g + 1
-                d = d - 1
-            End If
-        Loop While g <= d
-        If g < droite Then Tri(a, ColTri, g, droite)
-        If gauche < d Then Tri(a, ColTri, gauche, d)
-    End Sub
-
 
 End Module

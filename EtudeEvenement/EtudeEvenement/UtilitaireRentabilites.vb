@@ -1,17 +1,31 @@
 ﻿Module UtilitaireRentabilites
 
     'Variables globales
-    'Le tableau des rentabilités est nécessaire car on ne les affiche pas et on ne peut donc pas les récupérer
-    'lorsque l'utilisateur fait sa sélection des rentabilités des entreprises
+
+    ''' <summary>
+    ''' Rentabilités de marché.
+    ''' </summary>
+    ''' <remarks> Le tableau des rentabilités est nécessaire car on ne les affiche pas et on ne peut donc pas les récupérer 
+    ''' lorsque l'utilisateur fait sa sélection des rentabilités des entreprises</remarks>
     Public tabRentaMarche(,) As Double = Nothing
-    'De même pour les entreprises
+
+    ''' <summary>
+    ''' Rentabilités des entreprises.
+    ''' </summary>
+    ''' <remarks> On conserve le tableau des rentabilités des entreprises après l'affichage pour ne pas avoir à récupérer 
+    ''' de nouveau les données de l'affichage par la suite. </remarks>
     Public tabRenta(,) As Double = Nothing
-    'Le nombre maximum de #N/A présents à la suite sont nécessaires pouvoir construire les tableaux de rentabilités
-    'spécifiques à la régression
-    Public maxPrixAbs As Integer = 0
-    'Tableau des rentabilités de marché calculé simplement 
-    '(ie pas de la même façon que les rentabilités d'entreprises en fonction des N/A)
-    'Utilisé pour le test de Patell
+
+    ''' <summary>
+    ''' Le nombre maximum de #N/A présents à la suite dans les rentabilités.
+    ''' </summary>
+    ''' <remarks> Ce nombre est nécessaire pour construire le tableau des rentabilité spécifique au modèle de marché. </remarks>
+    Public maxRentAbs As Integer = 0
+
+    ''' <summary>
+    ''' Tableau des rentabilités de marché calculé simplement sur chaque date.
+    ''' </summary>
+    ''' <remarks> Utilisé pour le test de Patell. </remarks>
     Public tabRentaClassiquesMarche(,) As Double = Nothing
 
 
@@ -139,13 +153,25 @@
         Next titre
     End Sub
 
-    Public Function constructionTableauxReg(maxPrixAbsent As Integer, ByRef tabRentaEst(,) As Double, _
+    ''' <summary>
+    ''' Construit le tableau des rentabilités spécifique au modèle de marché.
+    ''' </summary>
+    ''' <param name="maxRentAbsent"> Nombre maximum de données manquantes consécutives dans les rentabilités. </param>
+    ''' <param name="tabRentaEst"> Rentabilités sur la période d'estimation. </param>
+    ''' <param name="tabRentaMarcheEst"> Rentabilités de marché sur la période d'estimation. </param>
+    ''' <returns> Tableau de rentabilités spécifiques au modèle de marché. Détail de chacune des dimensions : 
+    ''' la 1ère dimension correspond aux entreprises, la 2ème dimension correspond au nombre de données manquantes
+    ''' consécutives précédent une certaine rentabilité, la 3ème dimension correspond au type de rentabilité (indice 0 pour 
+    ''' les entreprises et 1 pour le marché). Chaque élément de ce tableau est un tableau de rentabilités. </returns>
+    ''' <remarks> Exemple d'accès au données : tabDeRetour(3, 2, 1)() est la tableau des rentabilités de marché précédées par deux données 
+    ''' manquantes pour la quatrième entreprise. </remarks>
+    Public Function constructionTableauxReg(maxRentAbsent As Integer, ByRef tabRentaEst(,) As Double, _
                                            ByRef tabRentaMarcheEst(,) As Double) As Double(,,)()
 
         'Déclaration du tableau à retourner
-        Dim tabRentaReg(tabRentaEst.GetUpperBound(1), maxPrixAbsent - 1, 1)() As Double
+        Dim tabRentaReg(tabRentaEst.GetUpperBound(1), maxRentAbsent - 1, 1)() As Double
         For i = 0 To tabRentaEst.GetUpperBound(1)
-            For j = 0 To maxPrixAbsent - 1
+            For j = 0 To maxRentAbsent - 1
                 For k = 0 To 1
                     tabRentaReg(i, j, k) = New Double(tabRentaEst.GetUpperBound(0)) {}
                 Next
@@ -155,7 +181,7 @@
         Dim prixPresent As Integer = 1
         For titre = 0 To tabRentaEst.GetUpperBound(1)
             'Tableau permettant de savoir si un redimensionnement est nécessaire
-            Dim tabRedimEst(maxPrixAbsent - 1) As Integer
+            Dim tabRedimEst(maxRentAbsent - 1) As Integer
             For indDate = 0 To tabRentaEst.GetUpperBound(0)
                 If Double.IsNaN(tabRentaEst(indDate, titre)) Then
                     'Si il n'y a pas de prix à cette date
@@ -175,7 +201,7 @@
                 End If
             Next indDate
             'A la fin, on redimensionne les tableaux pour qu'ils ne contiennent que des valeurs utiles
-            For prixPres = 0 To maxPrixAbsent - 1
+            For prixPres = 0 To maxRentAbsent - 1
                 'Si la taille du tableau et le nombre de valeurs qu'il contient sont différents
                 If Not tabRentaReg(titre, prixPres, 0).GetLength(0) = tabRedimEst(prixPres) Then
                     'On redimensionne pour ne garder que ce qui est utile
@@ -188,7 +214,13 @@
         Return tabRentaReg
     End Function
 
-    Public Function calculMaxPrixAbs(tabRenta(,) As Double) As Integer
+    ''' <summary>
+    ''' Calcule le nombre de #NA consécutifs maximal présent dans les rentabilités.
+    ''' </summary>
+    ''' <param name="tabRenta"> Tableau des rentabilités à analyser. </param>
+    ''' <returns></returns>
+    ''' <remarks></remarks>
+    Public Function calculMaxRentAbs(tabRenta(,) As Double) As Integer
         Dim prixPresent As Integer = 1
         Dim maxPrixAbsent As Integer = 1
 
@@ -212,8 +244,19 @@
 
     '***************************** Pour centrer les prix/rentabilités autour des dates d'événement *****************************
 
+    ''' <summary>
+    ''' Centre des données de prix ou de rentabilités autour de la date d'événement pour chaque entreprise.
+    ''' </summary>
+    ''' <param name="plageDate"> Plage des données Excel des dates d'événement pour chaque entreprise. </param>
+    ''' <param name="feuilleDates"> Nom de la feuille contenant les dates. </param>
+    ''' <param name="feuilleDonnees"> Nom de la feuille contenant les données de prix ou de rentabilités. </param>
+    ''' <param name="tabEntreprisesCentre"> (Sortie) Données centrées pour les entreprises. </param>
+    ''' <param name="tabMarcheCentre"> (Sortie) Données centrées correspondantes (pour chaque entreprise) au niveau du marché. </param>
+    ''' <param name="coursOuv"> Booléen indiquant s'il s'agit de cours d'ouverture. Attention : ne peut valoir 
+    ''' true que si les données à centrer sont des prix ! </param>
+    ''' <remarks></remarks>
     Sub donneesCentrees(plageDate As String, feuilleDates As String, feuilleDonnees As String, ByRef tabEntreprisesCentre(,) As Double, _
-                        ByRef tabMarcheCentre(,) As Double, coursOuv As Boolean)
+                        ByRef tabMarcheCentre(,) As Double, Optional coursOuv As Boolean = False)
 
         Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets(feuilleDates), Excel.Worksheet)
 
