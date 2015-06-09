@@ -195,6 +195,7 @@ Public Class Ruban
         paramPrix.datesEvRefEdit.IncludeSheetName = True
         paramPrix.datesEvRefEdit.ShowRowAbsoluteIndicator = False
         paramPrix.datesEvRefEdit.ShowColumnAbsoluteIndicator = False
+
         paramPrix.TopMost = True
         paramPrix.Visible = True
         paramPrix.nomFeuilleBox.Text = "Prix"

@@ -28,12 +28,13 @@ Partial Class SelectionAR
         Me.FenetreText = New System.Windows.Forms.Label()
         Me.refEditEv = New LeafCreations.Excel2007RefEdit()
         Me.refEditEst = New LeafCreations.Excel2007RefEdit()
+        Me.titre = New System.Windows.Forms.Label()
         Me.SuspendLayout()
         '
         'Label1
         '
         Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(27, 36)
+        Me.Label1.Location = New System.Drawing.Point(27, 70)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(104, 13)
         Me.Label1.TabIndex = 27
@@ -41,7 +42,7 @@ Partial Class SelectionAR
         '
         'LancementEtEv
         '
-        Me.LancementEtEv.Location = New System.Drawing.Point(77, 201)
+        Me.LancementEtEv.Location = New System.Drawing.Point(77, 226)
         Me.LancementEtEv.Name = "LancementEtEv"
         Me.LancementEtEv.Size = New System.Drawing.Size(111, 23)
         Me.LancementEtEv.TabIndex = 26
@@ -51,7 +52,7 @@ Partial Class SelectionAR
         'FenetreText
         '
         Me.FenetreText.AutoSize = True
-        Me.FenetreText.Location = New System.Drawing.Point(27, 115)
+        Me.FenetreText.Location = New System.Drawing.Point(27, 141)
         Me.FenetreText.Name = "FenetreText"
         Me.FenetreText.Size = New System.Drawing.Size(151, 13)
         Me.FenetreText.TabIndex = 25
@@ -64,7 +65,7 @@ Partial Class SelectionAR
         Me.refEditEv.ExcelConnector = Nothing
         Me.refEditEv.ImageMaximized = CType(resources.GetObject("refEditEv.ImageMaximized"), System.Drawing.Image)
         Me.refEditEv.ImageMinimized = CType(resources.GetObject("refEditEv.ImageMinimized"), System.Drawing.Image)
-        Me.refEditEv.Location = New System.Drawing.Point(43, 147)
+        Me.refEditEv.Location = New System.Drawing.Point(43, 169)
         Me.refEditEv.Name = "refEditEv"
         Me.refEditEv.RefEditFont = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.refEditEv.Size = New System.Drawing.Size(195, 26)
@@ -77,24 +78,35 @@ Partial Class SelectionAR
         Me.refEditEst.ExcelConnector = Nothing
         Me.refEditEst.ImageMaximized = CType(resources.GetObject("refEditEst.ImageMaximized"), System.Drawing.Image)
         Me.refEditEst.ImageMinimized = CType(resources.GetObject("refEditEst.ImageMinimized"), System.Drawing.Image)
-        Me.refEditEst.Location = New System.Drawing.Point(43, 65)
+        Me.refEditEst.Location = New System.Drawing.Point(43, 96)
         Me.refEditEst.Name = "refEditEst"
         Me.refEditEst.RefEditFont = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.refEditEst.Size = New System.Drawing.Size(195, 26)
         Me.refEditEst.TabIndex = 28
         '
+        'titre
+        '
+        Me.titre.AutoSize = True
+        Me.titre.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.5!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.titre.Location = New System.Drawing.Point(90, 23)
+        Me.titre.Name = "titre"
+        Me.titre.Size = New System.Drawing.Size(98, 16)
+        Me.titre.TabIndex = 31
+        Me.titre.Text = "Paramétrage"
+        '
         'SelectionAR
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(284, 261)
+        Me.ClientSize = New System.Drawing.Size(280, 269)
+        Me.Controls.Add(Me.titre)
         Me.Controls.Add(Me.refEditEv)
         Me.Controls.Add(Me.refEditEst)
         Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.LancementEtEv)
         Me.Controls.Add(Me.FenetreText)
         Me.Name = "SelectionAR"
-        Me.Text = "SelectionAR"
+        Me.Text = "Etude d'événement AR"
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -104,4 +116,5 @@ Partial Class SelectionAR
     Friend WithEvents LancementEtEv As System.Windows.Forms.Button
     Friend WithEvents FenetreText As System.Windows.Forms.Label
     Friend WithEvents refEditEv As LeafCreations.Excel2007RefEdit
+    Friend WithEvents titre As System.Windows.Forms.Label
 End Class

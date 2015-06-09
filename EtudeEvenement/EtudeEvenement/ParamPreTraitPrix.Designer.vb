@@ -30,27 +30,28 @@ Partial Class ParamPreTraitPrix
         Me.datesEvRefEdit = New LeafCreations.Excel2007RefEdit()
         Me.rentaLog = New System.Windows.Forms.CheckBox()
         Me.coursOuverture = New System.Windows.Forms.CheckBox()
+        Me.titre = New System.Windows.Forms.Label()
         Me.SuspendLayout()
         '
         'LabelFeuille
         '
         Me.LabelFeuille.AutoSize = True
-        Me.LabelFeuille.Location = New System.Drawing.Point(29, 124)
+        Me.LabelFeuille.Location = New System.Drawing.Point(29, 158)
         Me.LabelFeuille.Name = "LabelFeuille"
-        Me.LabelFeuille.Size = New System.Drawing.Size(230, 13)
+        Me.LabelFeuille.Size = New System.Drawing.Size(171, 13)
         Me.LabelFeuille.TabIndex = 10
-        Me.LabelFeuille.Text = "Nom de la feuille où trouver les données de prix"
+        Me.LabelFeuille.Text = "Nom de la feuille contenant les prix"
         '
         'nomFeuilleBox
         '
-        Me.nomFeuilleBox.Location = New System.Drawing.Point(45, 160)
+        Me.nomFeuilleBox.Location = New System.Drawing.Point(120, 184)
         Me.nomFeuilleBox.Name = "nomFeuilleBox"
         Me.nomFeuilleBox.Size = New System.Drawing.Size(137, 20)
         Me.nomFeuilleBox.TabIndex = 9
         '
         'lancementPreT
         '
-        Me.lancementPreT.Location = New System.Drawing.Point(133, 296)
+        Me.lancementPreT.Location = New System.Drawing.Point(144, 307)
         Me.lancementPreT.Name = "lancementPreT"
         Me.lancementPreT.Size = New System.Drawing.Size(88, 58)
         Me.lancementPreT.TabIndex = 8
@@ -60,11 +61,11 @@ Partial Class ParamPreTraitPrix
         'LabelDatesEv
         '
         Me.LabelDatesEv.AutoSize = True
-        Me.LabelDatesEv.Location = New System.Drawing.Point(29, 29)
+        Me.LabelDatesEv.Location = New System.Drawing.Point(29, 80)
         Me.LabelDatesEv.Name = "LabelDatesEv"
-        Me.LabelDatesEv.Size = New System.Drawing.Size(211, 13)
+        Me.LabelDatesEv.Size = New System.Drawing.Size(152, 13)
         Me.LabelDatesEv.TabIndex = 7
-        Me.LabelDatesEv.Text = "Plage de données des dates d'événements"
+        Me.LabelDatesEv.Text = "Plage des dates d'événements"
         '
         'datesEvRefEdit
         '
@@ -73,7 +74,7 @@ Partial Class ParamPreTraitPrix
         Me.datesEvRefEdit.ExcelConnector = Nothing
         Me.datesEvRefEdit.ImageMaximized = CType(resources.GetObject("datesEvRefEdit.ImageMaximized"), System.Drawing.Image)
         Me.datesEvRefEdit.ImageMinimized = CType(resources.GetObject("datesEvRefEdit.ImageMinimized"), System.Drawing.Image)
-        Me.datesEvRefEdit.Location = New System.Drawing.Point(45, 65)
+        Me.datesEvRefEdit.Location = New System.Drawing.Point(117, 106)
         Me.datesEvRefEdit.Name = "datesEvRefEdit"
         Me.datesEvRefEdit.RefEditFont = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.datesEvRefEdit.Size = New System.Drawing.Size(195, 26)
@@ -82,7 +83,7 @@ Partial Class ParamPreTraitPrix
         'rentaLog
         '
         Me.rentaLog.AutoSize = True
-        Me.rentaLog.Location = New System.Drawing.Point(45, 228)
+        Me.rentaLog.Location = New System.Drawing.Point(30, 261)
         Me.rentaLog.Name = "rentaLog"
         Me.rentaLog.Size = New System.Drawing.Size(151, 17)
         Me.rentaLog.TabIndex = 11
@@ -92,18 +93,29 @@ Partial Class ParamPreTraitPrix
         'coursOuverture
         '
         Me.coursOuverture.AutoSize = True
-        Me.coursOuverture.Location = New System.Drawing.Point(235, 228)
+        Me.coursOuverture.Location = New System.Drawing.Point(221, 261)
         Me.coursOuverture.Name = "coursOuverture"
         Me.coursOuverture.Size = New System.Drawing.Size(109, 17)
         Me.coursOuverture.TabIndex = 12
         Me.coursOuverture.Text = "Cours d'ouverture"
         Me.coursOuverture.UseVisualStyleBackColor = True
         '
+        'titre
+        '
+        Me.titre.AutoSize = True
+        Me.titre.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.5!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.titre.Location = New System.Drawing.Point(141, 29)
+        Me.titre.Name = "titre"
+        Me.titre.Size = New System.Drawing.Size(98, 16)
+        Me.titre.TabIndex = 13
+        Me.titre.Text = "Paramétrage"
+        '
         'ParamPreTraitPrix
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(382, 406)
+        Me.ClientSize = New System.Drawing.Size(371, 423)
+        Me.Controls.Add(Me.titre)
         Me.Controls.Add(Me.coursOuverture)
         Me.Controls.Add(Me.rentaLog)
         Me.Controls.Add(Me.LabelFeuille)
@@ -112,7 +124,7 @@ Partial Class ParamPreTraitPrix
         Me.Controls.Add(Me.LabelDatesEv)
         Me.Controls.Add(Me.datesEvRefEdit)
         Me.Name = "ParamPreTraitPrix"
-        Me.Text = "ParamPreTraitPrix"
+        Me.Text = "Prétraitement prix"
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -124,4 +136,5 @@ Partial Class ParamPreTraitPrix
     Friend WithEvents datesEvRefEdit As LeafCreations.Excel2007RefEdit
     Friend WithEvents rentaLog As System.Windows.Forms.CheckBox
     Friend WithEvents coursOuverture As System.Windows.Forms.CheckBox
+    Friend WithEvents titre As System.Windows.Forms.Label
 End Class

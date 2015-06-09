@@ -42,7 +42,7 @@ Partial Class SelectionFenetres
         '
         'LancementEtEv
         '
-        Me.LancementEtEv.Location = New System.Drawing.Point(104, 263)
+        Me.LancementEtEv.Location = New System.Drawing.Point(95, 263)
         Me.LancementEtEv.Name = "LancementEtEv"
         Me.LancementEtEv.Size = New System.Drawing.Size(111, 23)
         Me.LancementEtEv.TabIndex = 20
@@ -88,7 +88,7 @@ Partial Class SelectionFenetres
         '
         Me.nomModele.AutoSize = True
         Me.nomModele.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.nomModele.Location = New System.Drawing.Point(37, 31)
+        Me.nomModele.Location = New System.Drawing.Point(37, 35)
         Me.nomModele.Name = "nomModele"
         Me.nomModele.Size = New System.Drawing.Size(96, 16)
         Me.nomModele.TabIndex = 25
@@ -106,7 +106,7 @@ Partial Class SelectionFenetres
         Me.Controls.Add(Me.LancementEtEv)
         Me.Controls.Add(Me.FenetreText)
         Me.Name = "SelectionFenetres"
-        Me.Text = "SelectionFenetres"
+        Me.Text = "Etude d'événement"
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
