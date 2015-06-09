@@ -117,28 +117,6 @@ Public Class SelectionFenetres
                 'test de signe
                 ExcelDialogue.affichageSigne(tabDateEv, tabAREst, tabAREv)
         End Select
-
-        'Dim pValeur As Double
-        'Select Case test
-        '    Case 0
-        '        'test simple'
-        '        Dim tabCAR As Double()
-        '        tabCAR = TestsStatistiques.calculCAR(tabAR, premiereDate + 1, fenetreEstDebut, fenetreEstFin, fenetreEvDebut, fenetreEvFin)
-        '        Dim testHyp As Double = TestsStatistiques.calculStatStudent(tabCAR)
-        '        pValeur = TestsStatistiques.calculPValeur(tailleEchant, testHyp) * 100
-        '    Case 1
-        '        'test de Patell'
-        '        Dim testHyp As Double = TestsStatistiques.patellTest(tabAR, fenetreEstDebut, fenetreEstFin, fenetreEvDebut, fenetreEvFin)
-        '        pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHyp), True)) * 100
-        '    Case 2
-        '        'test de signe'
-        '        Dim testHyp As Double = TestsStatistiques.statTestSigne(tabAR, fenetreEstDebut, fenetreEstFin, fenetreEvDebut, fenetreEvFin)
-        '        pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHyp), True)) * 100
-        'End Select
-
-        'MsgBox("P-Valeur : " & pValeur.ToString("0.0000") & "%")
-        'Globals.Ribbons.Ruban.seuilFenetreTaskPane.Visible = False
     End Sub
-
 
 End Class

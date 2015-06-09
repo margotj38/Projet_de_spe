@@ -11,22 +11,8 @@ Public Class Ruban
     Public paramRenta As ParamPreTraitRenta
     Public paramPrix As ParamPreTraitPrix
 
-    Public graphPVal As GraphiquePValeur
-
     Private Sub Ruban_Load(ByVal sender As System.Object, ByVal e As RibbonUIEventArgs) Handles MyBase.Load
 
-    End Sub
-
-    Private Sub initialisationGraphPVal()
-        graphPVal = New GraphiquePValeur()
-        graphPVal.Visible = False
-
-        graphPVal.GraphiqueChart.Series.Add("Series1")
-
-        graphPVal.GraphiqueChart.Series("Series1").ChartType = SeriesChartType.Line
-        graphPVal.GraphiqueChart.Series("Series1").IsValueShownAsLabel = True
-        graphPVal.GraphiqueChart.ChartAreas(0).AxisX.MajorGrid.Enabled = False
-        graphPVal.GraphiqueChart.ChartAreas(0).AxisY.MajorGrid.Enabled = False
     End Sub
 
     Private Sub initSelFenetres(selFenetres As SelectionFenetres)
@@ -37,100 +23,74 @@ Public Class Ruban
         selFenetres.refEditEv.IncludeSheetName = True
         selFenetres.refEditEv.ShowRowAbsoluteIndicator = False
         selFenetres.refEditEv.ShowColumnAbsoluteIndicator = False
-
         'selFenetres.TopMost = True
     End Sub
 
     Private Sub testSimpleR_Click(sender As Object, e As RibbonControlEventArgs) Handles testSimpleR.Click
-        initialisationGraphPVal()
         selFenetres = New SelectionFenetres(0, 0)
         initSelFenetres(selFenetres)
-        'selFenetres.modele = 0
-        'selFenetres.test = 0
         selFenetres.nomModele.Text = "Test simple - Modèle moyenne des rentabilités"
         'seuilFenetreTaskPane.Visible = True
         selFenetres.Visible = True
     End Sub
 
     Private Sub TestPatellR_Click(sender As Object, e As RibbonControlEventArgs) Handles TestPatellR.Click
-        initialisationGraphPVal()
         selFenetres = New SelectionFenetres(0, 1)
         initSelFenetres(selFenetres)
-        'selFenetres.modele = 0
-        'selFenetres.test = 1
         selFenetres.nomModele.Text = "Test de Patell - Modèle moyenne des rentabilités"
         'seuilFenetreTaskPane.Visible = True
         selFenetres.Visible = True
     End Sub
 
     Private Sub testSigneR_Click(sender As Object, e As RibbonControlEventArgs) Handles testSigneR.Click
-        initialisationGraphPVal()
         selFenetres = New SelectionFenetres(0, 2)
         initSelFenetres(selFenetres)
-        'selFenetres.modele = 0
-        'selFenetres.test = 2
         selFenetres.nomModele.Text = "Test de signe - Modèle moyenne des rentabilités"
         'seuilFenetreTaskPane.Visible = True
         selFenetres.Visible = True
     End Sub
 
     Private Sub testSimpleMS_Click(sender As Object, e As RibbonControlEventArgs) Handles testSimpleMS.Click
-        initialisationGraphPVal()
         selFenetres = New SelectionFenetres(1, 0)
         initSelFenetres(selFenetres)
-        'selFenetres.modele = 1
-        'selFenetres.test = 0
         selFenetres.nomModele.Text = "Test simple - Modèle de marché simplifié"
         'seuilFenetreTaskPane.Visible = True
         selFenetres.Visible = True
     End Sub
 
     Private Sub testPatellMS_Click(sender As Object, e As RibbonControlEventArgs) Handles testPatellMS.Click
-        initialisationGraphPVal()
         selFenetres = New SelectionFenetres(1, 1)
         initSelFenetres(selFenetres)
-        'selFenetres.modele = 1
-        'selFenetres.test = 1
         selFenetres.nomModele.Text = "Test de Patell - Modèle de marché simplifié"
         'seuilFenetreTaskPane.Visible = True
         selFenetres.Visible = True
     End Sub
 
     Private Sub testSigneMS_Click(sender As Object, e As RibbonControlEventArgs) Handles testSigneMS.Click
-        initialisationGraphPVal()
         selFenetres = New SelectionFenetres(1, 2)
         initSelFenetres(selFenetres)
-        'selFenetres.modele = 1
-        'selFenetres.test = 2
         selFenetres.nomModele.Text = "Test de signe - Modèle de marché simplifié"
         'seuilFenetreTaskPane.Visible = True
         selFenetres.Visible = True
     End Sub
 
     Private Sub testSimpleM_Click(sender As Object, e As RibbonControlEventArgs) Handles testSimpleM.Click
-        initialisationGraphPVal()
         selFenetres = New SelectionFenetres(2, 0)
         initSelFenetres(selFenetres)
-        'selFenetres.modele = 2
-        'selFenetres.test = 0
         selFenetres.nomModele.Text = "Test simple - Modèle de marché classique"
         'seuilFenetreTaskPane.Visible = True
         selFenetres.Visible = True
     End Sub
 
     Private Sub testPatellM_Click(sender As Object, e As RibbonControlEventArgs) Handles testPatellM.Click
-        initialisationGraphPVal()
         selFenetres = New SelectionFenetres(2, 1)
         initSelFenetres(selFenetres)
-        'selFenetres.modele = 2
-        'selFenetres.test = 1
         selFenetres.nomModele.Text = "Test de Patell - Modèle de marché classique"
         'seuilFenetreTaskPane.Visible = True
         selFenetres.Visible = True
     End Sub
 
     Private Sub testSigneM_Click(sender As Object, e As RibbonControlEventArgs) Handles testSigneM.Click
-        initialisationGraphPVal()
         selFenetres = New SelectionFenetres(2, 2)
         initSelFenetres(selFenetres)
         selFenetres.nomModele.Text = "Test de signe - Modèle de marché classique"

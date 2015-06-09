@@ -57,12 +57,11 @@ Module ExcelDialogue
             valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("C" & j), tabEcartAR(i))
 
             'La statistique du test
-            Dim stat As Double = Math.Abs(Math.Sqrt(tailleEch) * tabMoyAR(i) / tabEcartAR(i))
+            Dim stat As Double = TestsStatistiques.calculStatStudent(tabMoyAR(i), tabEcartAR(i), tailleEch)
             valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("D" & j), stat)
 
             'La colonne des p-valeurs
-            'A Décommenter après
-            Dim pValeur As Double = Globals.ThisAddIn.Application.WorksheetFunction.T_Dist_2T(stat, tailleEch - 1)
+            Dim pValeur As Double = TestsStatistiques.calculPValeurStudent(stat, tailleEch)
             valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("E" & j), pValeur * 100)
             'La signification du test
             Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("F" & j).Value = signification(pValeur)
@@ -93,11 +92,11 @@ Module ExcelDialogue
             valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("C" & j), tabEcartCAR(i))
 
             'La statistique du test
-            Dim stat As Double = Math.Abs(Math.Sqrt(tailleEch) * tabMoyCAR(i) / Math.Sqrt(tabEcartCAR(i)))
+            Dim stat As Double = TestsStatistiques.calculStatStudent(tabMoyCAR(i), tabEcartCAR(i), tailleEch)
             valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("D" & j), stat)
 
             'La colonne des p-valeurs
-            Dim pValeur As Double = Globals.ThisAddIn.Application.WorksheetFunction.T_Dist_2T(stat, tailleEch - 1)
+            Dim pValeur As Double = TestsStatistiques.calculPValeurStudent(stat, tailleEch)
             valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("E" & j), pValeur * 100)
             'La signification du test
             Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("F" & j).Value = signification(pValeur)
@@ -317,7 +316,7 @@ Module ExcelDialogue
             valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + 2, 2), stat(i))
             Dim pValeur As Double
             'Calcul de la p-valeur
-            pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(stat(i)), True))
+            pValeur = TestsStatistiques.calculPValeurTestSigne(stat(i))
             valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + 2, 3), pValeur * 100)
             'La signification du test
             Globals.ThisAddIn.Application.Worksheets(nom).Cells(i + 2, 4).Value = signification(pValeur)

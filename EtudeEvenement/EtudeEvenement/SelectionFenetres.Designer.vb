@@ -24,7 +24,6 @@ Partial Class SelectionFenetres
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(SelectionFenetres))
         Me.Label1 = New System.Windows.Forms.Label()
-        Me.PValeurFenetre = New System.Windows.Forms.Button()
         Me.LancementEtEv = New System.Windows.Forms.Button()
         Me.FenetreText = New System.Windows.Forms.Label()
         Me.refEditEv = New LeafCreations.Excel2007RefEdit()
@@ -40,15 +39,6 @@ Partial Class SelectionFenetres
         Me.Label1.Size = New System.Drawing.Size(104, 13)
         Me.Label1.TabIndex = 22
         Me.Label1.Text = "Fenêtre d'estimation "
-        '
-        'PValeurFenetre
-        '
-        Me.PValeurFenetre.Location = New System.Drawing.Point(82, 341)
-        Me.PValeurFenetre.Name = "PValeurFenetre"
-        Me.PValeurFenetre.Size = New System.Drawing.Size(133, 49)
-        Me.PValeurFenetre.TabIndex = 21
-        Me.PValeurFenetre.Text = "Tracer la P-Valeur en fonction de la fenêtre d'événement"
-        Me.PValeurFenetre.UseVisualStyleBackColor = True
         '
         'LancementEtEv
         '
@@ -108,12 +98,11 @@ Partial Class SelectionFenetres
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(314, 418)
+        Me.ClientSize = New System.Drawing.Size(306, 326)
         Me.Controls.Add(Me.nomModele)
         Me.Controls.Add(Me.refEditEv)
         Me.Controls.Add(Me.refEditEst)
         Me.Controls.Add(Me.Label1)
-        Me.Controls.Add(Me.PValeurFenetre)
         Me.Controls.Add(Me.LancementEtEv)
         Me.Controls.Add(Me.FenetreText)
         Me.Name = "SelectionFenetres"
@@ -125,7 +114,6 @@ Partial Class SelectionFenetres
     Friend WithEvents refEditEv As LeafCreations.Excel2007RefEdit
     Friend WithEvents refEditEst As LeafCreations.Excel2007RefEdit
     Friend WithEvents Label1 As System.Windows.Forms.Label
-    Friend WithEvents PValeurFenetre As System.Windows.Forms.Button
     Friend WithEvents LancementEtEv As System.Windows.Forms.Button
     Friend WithEvents FenetreText As System.Windows.Forms.Label
     Friend WithEvents nomModele As System.Windows.Forms.Label
