@@ -31,9 +31,32 @@
 
     '***************************** Construction des rentabilités *****************************
 
-    'Entrée : plages des rentabilités pour les entreprises pour les période d'événement et d'estimation, 
-    'tableaux des rentabilités du marché et des entreprises
-    'Sortie : tableaux des rentabilités des entreprises et du marché pour les période d'événement et d'estimation
+    ''' <summary>
+    ''' Méthode qui construit les six tableaux de rentabilités : rentabilités des entreprises, rentabilités de marché 
+    ''' calculées de la même façon que les rentabilités d'entreprises, rentabilités de marché calculées normalement 
+    ''' (sans tenir compte des #N/A des rentabilités d'entreprise). A chacune de ces rentabilités est associé un tableau 
+    ''' pour la période d'estimation et un autre pour la période d'événement.
+    ''' </summary>
+    ''' <param name="plageEst">Plage contenant les données de la période d'estimation.</param>
+    ''' <param name="plageEv">Plage contenant les données de la période d'événement.</param>
+    ''' <param name="tabRentaMarche">Tableau des rentabilités de marché (la première colonne étant les dates).</param>
+    ''' <param name="tabRenta">Tableau des rentabilités des entreprises calculées de la même façon que les rentabilités 
+    ''' des entreprises (la première colonne étant les dates).</param>
+    ''' <param name="tabRentaClassiquesMarche">Tableau des rentabilité de marché calculées classiquement 
+    ''' (la première colonne étant les dates).</param>
+    ''' <param name="tabRentaMarcheEst">(Sortie) Tableau des rentabilités de marché sur la période d'estimation, 
+    ''' calculées de la même façon que les rentabilités des entreprises (la première colonne étant les dates).</param>
+    ''' <param name="tabRentaMarcheEv">(Sortie) Tableau des rentabilités de marché sur la période d'événement, 
+    ''' calculées de la même façon que les rentabilités des entreprises (la première colonne étant les dates).</param>
+    ''' <param name="tabRentaEst">(Sortie) Tableau des rentabilités des entreprises sur la période d'estimation 
+    ''' (la première colonne étant les dates).</param>
+    ''' <param name="tabRentaEv">(Sortie) Tableau des rentabilités des entreprises sur la période d'événement 
+    ''' (la première colonne étant les dates).</param>
+    ''' <param name="tabRentaClassiquesMarcheEst">(Sortie) Tableau des rentabilités de marché sur la période d'estimation, 
+    ''' calculées classiquement (la première colonne étant les dates).</param>
+    ''' <param name="tabRentaClassiquesMarcheEv">(Sortie) Tableau des rentabilités de marché sur la période d'événement, 
+    ''' calculées classiquement (la première colonne étant les dates).</param>
+    ''' <remarks></remarks>
     Public Sub constructionTabRenta(plageEst As String, plageEv As String, _
                                     ByRef tabRentaMarche(,) As Double, ByRef tabRenta(,) As Double, _
                                     ByRef tabRentaClassiquesMarche(,) As Double, _
@@ -75,9 +98,22 @@
 
     'Entrée : tableaux centrés des cours et du marché (1ère colonne : dates)
     'Sortie : tableaux des rentabilités des entreprises et du marché (1ère colonne : dates) + maxPrixAbsent
+    ''' <summary>
+    ''' Méthode calculant les rentabilités des entreprises et du marché.
+    ''' </summary>
+    ''' <param name="tabPrixCentres">Tableau des cours des entreprises, centrés autour de l'événement.</param>
+    ''' <param name="tabMarcheCentre">Tableau des prix du marché, centrés autour de l'événement.</param>
+    ''' <param name="tabRenta">(Sortie) Tableau des rentabilités des entreprises.</param>
+    ''' <param name="tabRentaMarche">(Sortie) Tableau des rentabilités de marché calculées de la même façon que les 
+    ''' rentabilités des entreprises.</param>
+    ''' <param name="tabRentaClassiquesMarche">(Sortie) Tableau des rentabilités de marché calculées classiquement.</param>
+    ''' <param name="maxPrixAbsent">(Sortie) Nombre maximal de données manquantes consécutives + 1.</param>
+    ''' <param name="rentaLog">Valeur déterminant le type de calcul des rentabilités (False : calcul arithmétique, 
+    ''' True : calcul logarithmique).</param>
+    ''' <remarks></remarks>
     Public Sub calculTabRenta(ByRef tabPrixCentres(,) As Double, ByRef tabMarcheCentre(,) As Double, _
-                              ByRef tabRenta(,) As Double, ByRef tabRentaMarche(,) As Double, ByRef tabRentaClassiquesMarche(,) As Double, _
-                              ByRef maxPrixAbsent As Integer, _
+                              ByRef tabRenta(,) As Double, ByRef tabRentaMarche(,) As Double, _
+                              ByRef tabRentaClassiquesMarche(,) As Double, ByRef maxPrixAbsent As Integer, _
                               rentaLog As Boolean)
 
         'On recopie la colonne des dates dans les tableaux

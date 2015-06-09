@@ -1,5 +1,6 @@
 ﻿''' <summary>
-''' MODULE STATS
+''' Modules contenant toutes les fonctions relatives aux différents tests statistiques (test de Student, test de Patell et 
+''' test de signe.
 ''' </summary>
 ''' <remarks></remarks>
 ''' 
@@ -7,6 +8,12 @@ Module TestsStatistiques
 
     '***************************** T-Test *****************************
 
+    ''' <summary>
+    ''' Fonction calculant une moyenne sur un tableau en tenant compte de possible "Double.Nan".
+    ''' </summary>
+    ''' <param name="tab">Tableau dont on veut calculer la moyenne.</param>
+    ''' <returns>La moyenne des éléments du tableau.</returns>
+    ''' <remarks></remarks>
     Function calcul_moyenne(tab() As Double) As Double
         'tab() peut contenir des NaN
         calcul_moyenne = 0
@@ -26,6 +33,13 @@ Module TestsStatistiques
         End If
     End Function
 
+    ''' <summary>
+    ''' Fonction calculant une variance sur un tableau en tenant compte de possible "Double.Nan".
+    ''' </summary>
+    ''' <param name="tab">Tableau dont on veut calculer la variance.</param>
+    ''' <param name="moyenne">Moyenne du tableau.</param> 
+    ''' <returns>La variance des éléments du tableau.</returns>
+    ''' <remarks></remarks>
     Function calcul_variance(tab() As Double, moyenne As Double) As Double
         'tab() peut contenir des NaN
         calcul_variance = 0
@@ -46,10 +60,25 @@ Module TestsStatistiques
         End If
     End Function
 
+    ''' <summary>
+    ''' Fonction qui calcule la statistique du test de Student.
+    ''' </summary>
+    ''' <param name="moy">Moyenne de l'échantillon.</param>
+    ''' <param name="ecart">Ecart-type de l'échantillon.</param>
+    ''' <param name="tailleEchant">Taille de l'échantillon.</param>
+    ''' <returns>La statistique du test de Student.</returns>
+    ''' <remarks></remarks>
     Public Function calculStatStudent(moy As Double, ecart As Double, tailleEchant As Integer)
         Return Math.Abs(Math.Sqrt(tailleEchant) * moy / ecart)
     End Function
 
+    ''' <summary>
+    ''' Fonction qui calcule la P-Valeur d'un test de Student.
+    ''' </summary>
+    ''' <param name="testHyp">La statistique d'un test de Student.</param>
+    ''' <param name="tailleEchant">La taille de l'échantillon.</param>
+    ''' <returns>La P-Valeur du test de Student.</returns>
+    ''' <remarks></remarks>
     Public Function calculPValeurStudent(testHyp As Double, tailleEchant As Integer) As Double
         Return Globals.ThisAddIn.Application.WorksheetFunction.T_Dist_2T(testHyp, tailleEchant - 1)
     End Function
@@ -57,6 +86,12 @@ Module TestsStatistiques
 
     '***************************** Test de Patell *****************************
 
+    ''' <summary>
+    ''' Fonction qui calcule, pour chaque entreprise, le nombre de jours où elle est côtée sur la période d'estimation.
+    ''' </summary>
+    ''' <param name="tabAREst">Tableau des AR sur la période d'estimation.</param>
+    ''' <returns>Pour chaque entreprise, le nombre de jours de cotation sur la période d'estimation.</returns>
+    ''' <remarks></remarks>
     Public Function calculNbNonMissingReturn(ByRef tabAREst(,) As Double) As Integer()
         Dim nbNMR(tabAREst.GetUpperBound(1)) As Integer
         For colonne = 0 To tabAREst.GetUpperBound(1)
@@ -73,24 +108,26 @@ Module TestsStatistiques
     End Function
 
     ''' <summary>
-    ''' PATELL
+    ''' Procédure qui calcule les statistiques associées au test de Patell.
     ''' </summary>
-    ''' <param name="tabAREst"></param>
-    ''' <param name="tabAREv"></param>
-    ''' <param name="tabDateEst"></param>
-    ''' <param name="tabDateEv"></param>
-    ''' <param name="tabRentaClassiquesMarcheEst"></param>
-    ''' <param name="tabRentaClassiquesMarcheEv"></param>
-    ''' <param name="Mj"></param>
-    ''' <param name="testHypAAR"></param>
-    ''' <param name="testHypCAAR"></param>
+    ''' <param name="tabAREst">Tableau des AR sur la période d'estimation.</param>
+    ''' <param name="tabAREv">Tableau des AR sur la période d'événement.</param>
+    ''' <param name="tabDateEst">Tableau des dates de la période d'estimation.</param>
+    ''' <param name="tabDateEv">Tableau des dates sur la période d'événement.</param>
+    ''' <param name="tabRentaClassiquesMarcheEst">Tableau des rentabilités calculées classiquement (ie pas de la même façon 
+    ''' que les rentabilités des entreprises) sur la période d'estimation.</param>
+    ''' <param name="tabRentaClassiquesMarcheEv">Tableau des rentabilités calculées classiquement (ie pas de la même façon 
+    ''' que les rentabilités des entreprises) sur la période d'événement.</param>
+    ''' <param name="Mj">Tableau du nombre de jours de cotation pour chaque entreprise.</param>
+    ''' <param name="testHypAAR">(Sortie) Statistiques associées au test d'hypothèse "H0 : AAR = 0" pour chaque date 
+    ''' sur la période d'événement.</param>
+    ''' <param name="testHypCAAR">(Sortie) Statistiques associées au test d'hypothèse "H0 : CAAR = 0" pour chaque date 
+    ''' sur la période d'événement.</param>
     ''' <remarks></remarks>
     Public Sub patellTest(ByRef tabAREst(,) As Double, ByRef tabAREv(,) As Double, _
                                ByRef tabDateEst() As Integer, ByRef tabDateEv() As Integer, _
                                ByRef tabRentaClassiquesMarcheEst(,) As Double, ByRef tabRentaClassiquesMarcheEv(,) As Double, _
                                ByRef Mj() As Integer, ByRef testHypAAR() As Double, ByRef testHypCAAR() As Double)
-        'La formule utilisée est donnée page 80 de "Eventus-Guide"
-
         '(s_Atj)² uniquement pour la période d'événement
         Dim sAtjCarre(tabAREv.GetUpperBound(0), tabAREv.GetUpperBound(1)) As Double
 
@@ -130,6 +167,14 @@ Module TestsStatistiques
         testHypCAAR = patellCalcZ(SAR, Mj)
     End Sub
 
+    ''' <summary>
+    ''' Fonction calculant la variance sur la période d'estimation pour chaque titre (variance qui doit être ajustée 
+    ''' pour être incorporée dans la formule du test de Patell).
+    ''' </summary>
+    ''' <param name="tabAREst">Tableau des AR sur la période d'estimation.</param>
+    ''' <param name="Mj">Tableau du nombre de jours de cotation pour chaque entreprise.</param>
+    ''' <returns>Pour chaque titre, la variance sur la période d'estimation.</returns>
+    ''' <remarks></remarks>
     Private Function patellCalcSAj(ByRef tabAREst(,) As Double, ByRef Mj() As Integer) As Double()
         Dim sAjCarre(tabAREst.GetUpperBound(1)) As Double
         For colonne = 0 To tabAREst.GetUpperBound(1)
@@ -144,6 +189,13 @@ Module TestsStatistiques
         Return sAjCarre
     End Function
 
+    ''' <summary>
+    ''' Fonction qui calcule la moyenne des rentabilités de marché sur la période d'estimation, et ce, pour chaque titre.
+    ''' </summary>
+    ''' <param name="tabRentaClassiquesMarcheEst">Tableau des rentabilités calculées classiquement (ie pas de la même façon 
+    ''' que les rentabilités des entreprises) sur la période d'estimation.</param>
+    ''' <returns>Pour chaque entreprise, la moyenne des rentabilités de marché sur la période d'estimation.</returns>
+    ''' <remarks></remarks>
     Private Function patellCalcRmEst(ByRef tabRentaClassiquesMarcheEst(,) As Double) As Double()
         Dim rmEst(tabRentaClassiquesMarcheEst.GetUpperBound(1) - 1) As Double
         'La première colonne contient les dates, on ne l'utilise donc pas
@@ -157,6 +209,16 @@ Module TestsStatistiques
         Return rmEst
     End Function
 
+    ''' <summary>
+    ''' Fonction calculant la somme au carré des rentabilités de marché moins leur moyenne, sur la période d'estimation, et ce, 
+    ''' pour chaque entreprise.
+    ''' </summary>
+    ''' <param name="tabRentaClassiquesMarcheEst">Tableau des rentabilités calculées classiquement (ie pas de la même façon 
+    ''' que les rentabilités des entreprises) sur la période d'estimation.</param>
+    ''' <param name="rmEst">Moyenne des rentabilités de marché sur la période d'estimation pour chaque entreprise.</param>
+    ''' <returns>Pour chaque entreprise, la somme au carré des rentabilités de marché moins leur moyenne sur la période 
+    ''' d'estimation.</returns>
+    ''' <remarks></remarks>
     Private Function patellCalcSommeDenom(ByRef tabRentaClassiquesMarcheEst(,) As Double, ByRef rmEst As Double()) As Double()
         Dim sommeDenom(tabRentaClassiquesMarcheEst.GetUpperBound(1) - 1) As Double
 
@@ -170,6 +232,13 @@ Module TestsStatistiques
         Return sommeDenom
     End Function
 
+    ''' <summary>
+    ''' Fonction qui calcule la statistique du test de Patell (H0 : CAAR = 0).
+    ''' </summary>
+    ''' <param name="SAR">Tableau des AR normalisés pour chaque entreprise, à chaque date de la période d'événement.</param>
+    ''' <param name="Mj">Tableau du nombre de jours de cotation pour chaque entreprise.</param>
+    ''' <returns>Les statistiques du test de Patell (H0 : CAAR = 0), à chaque date de la période d'événement</returns>
+    ''' <remarks></remarks>
     Private Function patellCalcZ(SAR As Double(,), Mj() As Integer) As Double()
         Dim z(SAR.GetUpperBound(0)) As Double
         For datesCum = 0 To SAR.GetUpperBound(0)
@@ -193,6 +262,13 @@ Module TestsStatistiques
         Return z
     End Function
 
+    ''' <summary>
+    ''' Fonction qui calcule la statistique du test de Patell (H0 : AAR = 0).
+    ''' </summary>
+    ''' <param name="SAR">Tableau des AR normalisés pour chaque entreprise, à chaque date de la période d'événement.</param>
+    ''' <param name="Mj">Tableau du nombre de jours de cotation pour chaque entreprise.</param>
+    ''' <returns>Les statistiques du test de Patell (H0 : AAR = 0), à chaque date de la période d'événement</returns>
+    ''' <remarks></remarks>
     Private Function patellCalcStatAAR(ByRef SAR(,) As Double, ByRef Mj() As Integer) As Double()
         'Calcul de ASAR (event study tools)
         Dim ASAR(SAR.GetUpperBound(0)) As Double
@@ -221,6 +297,13 @@ Module TestsStatistiques
 
     '***************************** Test de signe *****************************
 
+    ''' <summary>
+    ''' Fonction qui calcule la statistique du test de signe pour chaque date de la période d'événement.
+    ''' </summary>
+    ''' <param name="tabEstAR">Tableau des AR sur la période d'estimation.</param>
+    ''' <param name="tabEvAR">Tableau des AR sur la période d'événement.</param>
+    ''' <returns>Pour chaque date de la période d'événement, la statistique du test de signe.</returns>
+    ''' <remarks></remarks>
     Function statTestSigne(ByRef tabEstAR(,) As Double, ByRef tabEvAR(,) As Double) As Double()
         Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
         Dim tailleFenetreEst As Integer = tabEstAR.GetLength(0)
@@ -257,7 +340,6 @@ Module TestsStatistiques
         Next e
         p = p / N
 
-
         'Calcul de la statistique du test
         Dim tabStatSigne(tailleFenetreEv - 1) As Double
         For t = 0 To tabEvAR.GetUpperBound(0)
@@ -269,10 +351,14 @@ Module TestsStatistiques
 
     End Function
 
-
+    ''' <summary>
+    ''' Fonction calculant la P-Valeur du test de signe.
+    ''' </summary>
+    ''' <param name="stat">Statistique du test de signe.</param>
+    ''' <returns>La P-Valeur du test de signe.</returns>
+    ''' <remarks></remarks>
     Public Function calculPValeurTestSigne(stat As Double) As Double
         Return 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(stat), True))
     End Function
-
 
 End Module
