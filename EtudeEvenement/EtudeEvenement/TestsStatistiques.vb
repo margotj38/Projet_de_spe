@@ -9,6 +9,15 @@ Module TestsStatistiques
     '***************************** T-Test *****************************
 
 
+    Public Function calculStatStudent(ByRef tabMoy() As Double, ByRef tabEcart As Double(), tailleEch As Integer) As Double()
+        Dim stat(tabMoy.GetUpperBound(0)) As Double
+        For i = 0 To tabMoy.GetUpperBound(0)
+            stat(i) = Math.Sqrt(tailleEch) * tabMoy(i) / tabEcart(i)
+        Next
+        Return stat
+    End Function
+
+
     ''' <summary>
     ''' Fonction qui calcule la statistique de test pour les AAR en chaque temps de la fenêtre d'événement
     ''' </summary>

@@ -45,70 +45,143 @@ Module ExcelDialogue
     End Sub
 
     ''' <summary>
-    ''' Affichage des résultats des tests statistiques sur les AR sur la période autour de l'événement.
+    ''' Affichage des résultats des tests statistiques sur les CAR sur la période autour de l'événement.
     ''' </summary>
     ''' <param name="datesEvAR"> Dates de la période d'événement sur laquelle les tests sont réalisés. </param>
-    ''' <param name="stat"> Statistiques de test des AR en chaque temps de la fenêtre d'événement. </param>
+    ''' <param name="statAAR"> Statistiques de test des AAR en chaque temps de la fenêtre d'événement. </param>
+    ''' <param name="statCAAR"> Statistiques de test des CAAR en chaque temps de la fenêtre d'événement. </param>
     ''' <param name="tailleEch"> Taille de l'échantillon (i.e le nombre d'entreprises). </param>
     ''' <param name="nomFeuille"> Nom de la feuille où afficher les résultats. </param>
+    ''' <param name="decal"> Décalage du nombre de colonnes pour l'affichage.  </param>
     ''' <remarks></remarks>
-    Public Sub afficheResAR(datesEvAR() As Integer, stat() As Double, tailleEch As Integer, nomFeuille As String)
+    Public Sub afficheResAsympt(datesEvAR() As Integer, tabMoyAR() As Double, tabEcartAR() As Double, statAR() As Double, _
+                                tabMoyCAR() As Double, tabEcartCAR() As Double, statCAR() As Double, _
+                                tailleEch As Integer, nomFeuille As String, decal As Integer)
 
-        'Le nom de chaque colonne
-        nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("B1"), "T-test")
-        nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("C1"), "P-valeur (%)")
+        'Affichage en-tête
+        Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(1, decal + 1).Value = "Résultats du T-test asymptotique"
+        Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(1, decal + 1).Font.Bold = True
+        Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(1, decal + 1).Interior.ColorIndex = 50
+        Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(1, decal + 2).Interior.ColorIndex = 50
+        Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(1, decal + 3).Interior.ColorIndex = 50
 
+        Dim tailleFenetreEv As Integer = datesEvAR.GetLength(0)
         'indice pour l'écriture dans les cellules
         Dim j As Integer
-        For i = 0 To datesEvAR.GetUpperBound(0)
 
-            j = i + 2
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(3, decal + 2), "Moyenne")
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(3, decal + 3), "Ecart-type")
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(3, decal + 4), "T-statistique")
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(3, decal + 5), "P-valeur (%)")
 
-            'entête des lignes
-            nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("A" & j), "AR(" & datesEvAR(i) & ")")
+        'affichage des résultats sur les AR
+        For i = 0 To tailleFenetreEv - 1
+            j = i + 4
+
+            nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(j, decal + 1), "AR(" & datesEvAR(i) & ")")
 
             'La colonne des moyennes
-            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("B" & j), stat(i))
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(j, decal + 2), tabMoyAR(i))
+
+            'La colonne des écart-type
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(j, decal + 3), tabEcartAR(i))
+
+            'La colonne des T-statistiques
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(j, decal + 4), statAR(i))
 
             'La colonne des p-valeurs
-            Dim pValeur As Double = TestsStatistiques.calculPValeurStudent(stat(i), tailleEch)
-            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("C" & j), pValeur * 100)
+            Dim pValeur As Double = TestsStatistiques.calculPValeurStudent(statAR(i), tailleEch)
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(j, decal + 5), pValeur * 100)
             'La signification du test
-            Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("D" & j).Value = signification(pValeur)
+            Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(j, decal + 6).Value = signification(pValeur)
+        Next i
+
+        'affichage des résultats sur les CAR
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(tailleFenetreEv + 6, decal + 2), "Moyenne")
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(tailleFenetreEv + 6, decal + 3), "Ecart-type")
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(tailleFenetreEv + 6, decal + 4), "T-statistique")
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(tailleFenetreEv + 6, decal + 5), "P-valeur (%)")
+
+        For i = 0 To tailleFenetreEv - 1
+            j = i + tailleFenetreEv + 7
+
+            nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(j, decal + 1), "CAR(" & datesEvAR(i) & ")")
+
+            'La colonne des moyennes
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(j, decal + 2), tabMoyCAR(i))
+
+            'La colonne des écart-type
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(j, decal + 3), tabEcartCAR(i))
+
+            'La colonne des T-statistiques
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(j, decal + 4), statCAR(i))
+
+            'La colonne des p-valeurs
+            Dim pValeur As Double = TestsStatistiques.calculPValeurStudent(statCAR(i), tailleEch)
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(j, decal + 5), pValeur * 100)
+            'La signification du test
+            Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(j, decal + 6).Value = signification(pValeur)
         Next i
     End Sub
-
 
     ''' <summary>
     ''' Affichage des résultats des tests statistiques sur les CAR sur la période autour de l'événement.
     ''' </summary>
     ''' <param name="datesEvAR"> Dates de la période d'événement sur laquelle les tests sont réalisés. </param>
-    ''' <param name="stat"> Statistiques de test des CAR en chaque temps de la fenêtre d'événement. </param>
+    ''' <param name="statAAR"> Statistiques de test des AAR en chaque temps de la fenêtre d'événement. </param>
+    ''' <param name="statCAAR"> Statistiques de test des CAAR en chaque temps de la fenêtre d'événement. </param>
     ''' <param name="tailleEch"> Taille de l'échantillon (i.e le nombre d'entreprises). </param>
     ''' <param name="nomFeuille"> Nom de la feuille où afficher les résultats. </param>
+    ''' <param name="decal"> Décalage du nombre de colonnes pour l'affichage.  </param>
     ''' <remarks></remarks>
-    Public Sub afficheResCAR(datesEvAR() As Integer, stat() As Double, tailleEch As Integer, nomFeuille As String)
+    Public Sub afficheResExact(datesEvAR() As Integer, statAAR() As Double, statCAAR() As Double, tailleEch As Integer, nomFeuille As String, decal As Integer)
+
+        'Affichage en-tête
+        Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(1, decal + 1).Value = "Résultats du T-test exact"
+        Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(1, decal + 1).Font.Bold = True
+        Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(1, decal + 1).Interior.ColorIndex = 50
+        Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(1, decal + 2).Interior.ColorIndex = 50
 
         Dim tailleFenetreEv As Integer = datesEvAR.GetLength(0)
-
-        nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("B" & tailleFenetreEv + 4), "T-test")
-        nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("C" & tailleFenetreEv + 4), "P-valeur (%)")
-
         'indice pour l'écriture dans les cellules
         Dim j As Integer
-        For i = 0 To tailleFenetreEv - 1
-            j = i + tailleFenetreEv + 5
 
-            nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("A" & j), "CAR(" & datesEvAR(i) & ")")
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(3, decal + 2), "T-statistique")
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(3, decal + 3), "P-valeur (%)")
+
+        'affichage des résultats sur les AR
+        For i = 0 To tailleFenetreEv - 1
+            j = i + 4
+
+            nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(j, decal + 1), "AR(" & datesEvAR(i) & ")")
 
             'La colonne des moyennes
-            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("B" & j), stat(i))
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(j, decal + 2), statAAR(i))
 
             'La colonne des p-valeurs
-            Dim pValeur As Double = TestsStatistiques.calculPValeurStudent(stat(i), tailleEch)
-            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("C" & j), pValeur * 100)
+            Dim pValeur As Double = TestsStatistiques.calculPValeurStudent(statAAR(i), tailleEch)
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(j, decal + 3), pValeur * 100)
             'La signification du test
-            Globals.ThisAddIn.Application.Worksheets(nomFeuille).Range("D" & j).Value = signification(pValeur)
+            Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(j, decal + 4).Value = signification(pValeur)
+        Next i
+
+        'affichage des résultats sur les CAR
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(tailleFenetreEv + 6, decal + 2), "T-statistique")
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(tailleFenetreEv + 6, decal + 3), "P-valeur (%)")
+
+        For i = 0 To tailleFenetreEv - 1
+            j = i + tailleFenetreEv + 7
+
+            nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(j, decal + 1), "CAR(" & datesEvAR(i) & ")")
+
+            'La colonne des moyennes
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(j, decal + 2), statCAAR(i))
+
+            'La colonne des p-valeurs
+            Dim pValeur As Double = TestsStatistiques.calculPValeurStudent(statCAAR(i), tailleEch)
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(j, decal + 3), pValeur * 100)
+            'La signification du test
+            Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(j, decal + 4).Value = signification(pValeur)
         Next i
     End Sub
 
@@ -294,36 +367,41 @@ Module ExcelDialogue
         Globals.ThisAddIn.Application.Sheets.Add(After:=Globals.ThisAddIn.Application.Worksheets(Globals.ThisAddIn.Application.Worksheets.Count))
         Globals.ThisAddIn.Application.ActiveSheet.Name = nom
 
+        'Affichage en-tête
+        Globals.ThisAddIn.Application.Worksheets(nom).Cells(1, 1).Value = "Résultats du test de Patell"
+        Globals.ThisAddIn.Application.Worksheets(nom).Cells(1, 1).Font.Bold = True
+        Globals.ThisAddIn.Application.Worksheets(nom).Cells(1, 1).Interior.ColorIndex = 50
+        Globals.ThisAddIn.Application.Worksheets(nom).Cells(1, 2).Interior.ColorIndex = 50
+        Globals.ThisAddIn.Application.Worksheets(nom).Cells(1, 3).Interior.ColorIndex = 50
+
         '*** Test AAR = 0 ***
 
         'Le nom de chaque colonne
-        nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("A1"), "AAR")
-        nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("B1"), "Test Patell")
-        nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("C1"), "P-valeur (%)")
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("B3"), "Test Patell")
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("C3"), "P-valeur (%)")
 
         'Affichage des dates et des statistiques du test de Patell et de la P-Valeur
         For i = 0 To tabDateEv.GetUpperBound(0)
-            nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + 2, 1), tabDateEv(i))
-            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + 2, 2), testHypAAR(i))
+            nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + 4, 1), "AR(" & tabDateEv(i) & ")")
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + 4, 2), testHypAAR(i))
             Dim pValeur As Double
             pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHypAAR(i)), True))
-            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + 2, 3), pValeur * 100)
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + 4, 3), pValeur * 100)
             'La signification du test
-            Globals.ThisAddIn.Application.Worksheets(nom).Cells(i + 2, 4).Value = signification(pValeur)
+            Globals.ThisAddIn.Application.Worksheets(nom).Cells(i + 4, 4).Value = signification(pValeur)
         Next i
 
         '*** Test CAAR = 0 ***
 
-        Dim debutAffichage As Integer = tabDateEv.GetLength(0) + 4
+        Dim debutAffichage As Integer = tabDateEv.GetLength(0) + 6
 
         'Le nom de chaque colonne
-        nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Cells(debutAffichage, 1), "CAAR")
         nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Cells(debutAffichage, 2), "Test Patell")
         nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Cells(debutAffichage, 3), "P-valeur (%)")
 
         'Affichage des dates et des statistiques du test de Patell et de la P-Valeur
         For i = 0 To tabDateEv.GetUpperBound(0)
-            nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + debutAffichage + 1, 1), "[" & tabDateEv(0) & "; " & tabDateEv(i) & "]")
+            nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + debutAffichage + 1, 1), "CAR(" & tabDateEv(i) & ")")
             valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + debutAffichage + 1, 2), testHypCAAR(i))
             Dim pValeur As Double
             pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHypCAAR(i)), True))
@@ -353,23 +431,29 @@ Module ExcelDialogue
         Globals.ThisAddIn.Application.ActiveSheet.Name = nom
 
 
+        'Affichage en-tête
+        Globals.ThisAddIn.Application.Worksheets(nom).Cells(1, 1).Value = "Résultats du test de signe"
+        Globals.ThisAddIn.Application.Worksheets(nom).Cells(1, 1).Font.Bold = True
+        Globals.ThisAddIn.Application.Worksheets(nom).Cells(1, 1).Interior.ColorIndex = 50
+        Globals.ThisAddIn.Application.Worksheets(nom).Cells(1, 2).Interior.ColorIndex = 50
+
         'Le nom de chaque colonne
-        nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("B1"), "Test signe")
-        nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("C1"), "P-valeur (%)")
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("B3"), "Test signe")
+        nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).Range("C3"), "P-valeur (%)")
 
         'Appel de la fonction qui calcule la statistique du test de signe
         Dim stat() As Double = TestsStatistiques.statTestSigne(tabEstAR, tabEvAR)
 
         'Affichage des dates et des statistiques du test de Patell et de la P-Valeur
         For i = 0 To tailleFenetreEv - 1
-            nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + 2, 1), tabDateEv(i))
-            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + 2, 2), stat(i))
+            nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + 4, 1), tabDateEv(i))
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + 4, 2), stat(i))
             Dim pValeur As Double
             'Calcul de la p-valeur
             pValeur = TestsStatistiques.calculPValeurTestSigne(stat(i))
-            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + 2, 3), pValeur * 100)
+            valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + 4, 3), pValeur * 100)
             'La signification du test
-            Globals.ThisAddIn.Application.Worksheets(nom).Cells(i + 2, 4).Value = signification(pValeur)
+            Globals.ThisAddIn.Application.Worksheets(nom).Cells(i + 4, 4).Value = signification(pValeur)
         Next i
 
     End Sub
