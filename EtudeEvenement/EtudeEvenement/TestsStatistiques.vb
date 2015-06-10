@@ -56,7 +56,7 @@ Module TestsStatistiques
         Dim tabCAAR() As Double = RentaAnormales.CalculCAAR(tabAAR)
         'Calcul des statistiques de test
         For t = 0 To tabCAAR.GetUpperBound(0)
-            stat(t) = tabCAAR(t) / (Math.Sqrt(sommeVar) * (t + 1) / tabEvAR.GetLength(1))
+            stat(t) = tabCAAR(t) / (Math.Sqrt(sommeVar) * Math.Sqrt(t + 1) / tabEvAR.GetLength(1))
         Next
         Return stat
     End Function
