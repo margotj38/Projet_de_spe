@@ -423,9 +423,9 @@ Module RentaAnormales
     ''' <remarks></remarks>
     Function CalculCAAR(ByRef tabAAR() As Double) As Double()
         Dim tabCAAR(tabAAR.GetUpperBound(0)) As Double
-        Dim somme As Double = 0
-        For i = 0 To tabAAR.GetUpperBound(0)
-            tabCAAR(i) = somme + tabAAR(i)
+        tabCAAR(0) = tabAAR(0)
+        For i = 1 To tabAAR.GetUpperBound(0)
+            tabCAAR(i) = tabCAAR(i - 1) + tabAAR(i)
         Next
         Return tabCAAR
     End Function
