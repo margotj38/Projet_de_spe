@@ -1,5 +1,5 @@
 ﻿''' <summary>
-''' Modules contenant toutes les fonctions relatives aux différents tests statistiques (test de Student, test de Patell et 
+''' Module contenant toutes les fonctions relatives aux différents tests statistiques (test de Student, test de Patell et 
 ''' test de signe.
 ''' </summary>
 ''' <remarks></remarks>
