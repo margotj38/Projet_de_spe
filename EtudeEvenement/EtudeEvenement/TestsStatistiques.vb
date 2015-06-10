@@ -8,7 +8,14 @@ Module TestsStatistiques
 
     '***************************** T-Test *****************************
 
-
+    ''' <summary>
+    ''' Fonction qui calcule la statistqiue de test de Student simple.
+    ''' </summary>
+    ''' <param name="tabMoy"> Tableau de moyennes. </param>
+    ''' <param name="tabEcart"> tableau d'écart-type. </param>
+    ''' <param name="tailleEch"> Taille de l'échantillon. </param>
+    ''' <returns> Tableau de statistiques de student correspondant aux tableaux en entrée. </returns>
+    ''' <remarks></remarks>
     Public Function calculStatStudent(ByRef tabMoy() As Double, ByRef tabEcart As Double(), tailleEch As Integer) As Double()
         Dim stat(tabMoy.GetUpperBound(0)) As Double
         For i = 0 To tabMoy.GetUpperBound(0)

@@ -302,38 +302,6 @@ Module RentaAnormales
     End Function
 
     ''' <summary>
-    ''' Calcule la moyenne empirique après avoir normalisé les AR.
-    ''' </summary>
-    ''' <param name="tabEstAR"> AR calculés sur la période d'estimation. </param>
-    ''' <param name="tabEvAR"> AR calculés sur la période d'événement. </param>
-    ''' <returns> Moyenne empirique des AR normalisés en chaque temps de la fenêtre d'événement. </returns>
-    ''' <remarks></remarks>
-    Public Function moyNormAR(ByRef tabEstAR(,) As Double, ByRef tabEvAR(,) As Double) As Double()
-        Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
-        'tableau à retourner
-        Dim tabMoyNormAR(tailleFenetreEv - 1) As Double
-        'tableau des variances
-        Dim tabVarAR() As Double = calcVarEstAR(tabEstAR)
-        'remplissage du tableau
-        For i = 0 To tabEvAR.GetUpperBound(0)
-            'tableau des ARi/si (i.e AR normalisés)
-            Dim tabNormAR(tabEvAR.GetLength(1) - 1) As Double
-            For e = 0 To tabEvAR.GetUpperBound(1)
-                'Gestion des NA dans le tableau des AR
-                If Double.IsNaN(tabEvAR(i, e)) Then
-                    tabNormAR(e) = Double.NaN
-                Else
-                    'normalisation
-                    tabNormAR(e) = tabEvAR(i, e) / Math.Sqrt(tabVarAR(e))
-                End If
-            Next
-            'moyenne sur les ARi/si
-            tabMoyNormAR(i) = Utilitaires.calcul_moyenne(tabNormAR)
-        Next
-        Return tabMoyNormAR
-    End Function
-
-    ''' <summary>
     ''' Fonction qui calcule les variances empiriques (sur le temps) des AR sur la fenêtre d'estimation.
     ''' </summary>
     ''' <param name="tabEstAR"> AR calculés sur la fenêtre d'estimation. </param>
@@ -367,27 +335,36 @@ Module RentaAnormales
     End Function
 
     ''' <summary>
-    ''' 
+    ''' Calcule la moyenne empirique après avoir normalisé les AR.
     ''' </summary>
-    ''' <param name="tabEvAR"></param>
-    ''' <returns></returns>
+    ''' <param name="tabEstAR"> AR calculés sur la période d'estimation. </param>
+    ''' <param name="tabEvAR"> AR calculés sur la période d'événement. </param>
+    ''' <returns> Moyenne empirique des AR normalisés en chaque temps de la fenêtre d'événement. </returns>
     ''' <remarks></remarks>
-    Public Function moyAR(ByRef tabEvAR(,) As Double) As Double()
+    Public Function moyNormAR(ByRef tabEstAR(,) As Double, ByRef tabEvAR(,) As Double) As Double()
         Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
         'tableau à retourner
-        Dim tabMoyAR(tailleFenetreEv - 1) As Double
+        Dim tabMoyNormAR(tailleFenetreEv - 1) As Double
+        'Récupération des variances sur la fenêtre d'estimation 
+        Dim tabMoyAR() As Double = moyEstAR(tabEstAR)
+        Dim tabVarAR() As Double = varEstAR(tabEstAR, tabMoyAR)
         'remplissage du tableau
-        For t = 0 To tabEvAR.GetUpperBound(0)
-            'tableau des ARi
-            Dim tabAR(tabEvAR.GetUpperBound(1)) As Double
-            For i = 0 To tabEvAR.GetUpperBound(1)
-                'extraction des ARi
-                tabAR(i) = tabEvAR(t, i)
+        For i = 0 To tabEvAR.GetUpperBound(0)
+            'tableau des ARi/si (i.e AR normalisés)
+            Dim tabNormAR(tabEvAR.GetLength(1) - 1) As Double
+            For e = 0 To tabEvAR.GetUpperBound(1)
+                'Gestion des NA dans le tableau des AR
+                If Double.IsNaN(tabEvAR(i, e)) Then
+                    tabNormAR(e) = Double.NaN
+                Else
+                    'normalisation
+                    tabNormAR(e) = tabEvAR(i, e) / Math.Sqrt(tabVarAR(e))
+                End If
             Next
             'moyenne sur les ARi/si
-            tabMoyAR(t) = Utilitaires.calcul_moyenne(tabAR)
+            tabMoyNormAR(i) = Utilitaires.calcul_moyenne(tabNormAR)
         Next
-        Return tabMoyAR
+        Return tabMoyNormAR
     End Function
 
     ''' <summary>
@@ -402,8 +379,9 @@ Module RentaAnormales
         Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
         'tableau à retourner
         Dim tabEcartNormAR(tailleFenetreEv - 1) As Double
-        'tableau des variances
-        Dim tabVarAR() As Double = calcVarEstAR(tabEstAR)
+        'Récupération des variances sur la fenêtre d'estimation 
+        Dim tabMoyAR() As Double = moyEstAR(tabEstAR)
+        Dim tabVarAR() As Double = varEstAR(tabEstAR, tabMoyAR)
         'remplissage du tableau
         For i = 0 To tabEvAR.GetUpperBound(0)
             'tableau des ARi/si (i.e AR normalisés)
@@ -423,29 +401,53 @@ Module RentaAnormales
         Return tabEcartNormAR
     End Function
 
-    ''' <summary>
-    ''' Calcule la variance des AR par entreprise sur la période d'estimation.
-    ''' </summary>
-    ''' <param name="tabEstAR"> AR calculés sur la période d'estimation. </param>
-    ''' <returns> Variance empirique des AR sur la passé pour chaque entreprise. </returns>
-    ''' <remarks></remarks>
-    Public Function calcVarEstAR(ByRef tabEstAR(,) As Double) As Double()
-        'tableau à retourner
-        Dim tabVarAR(tabEstAR.GetLength(1) - 1) As Double
+    ' ''' <summary>
+    ' ''' Calcule la variance des AR par entreprise sur la période d'estimation.
+    ' ''' </summary>
+    ' ''' <param name="tabEstAR"> AR calculés sur la période d'estimation. </param>
+    ' ''' <returns> Variance empirique des AR sur la passé pour chaque entreprise. </returns>
+    ' ''' <remarks></remarks>
+    'Public Function calcVarEstAR(ByRef tabEstAR(,) As Double) As Double()
+    '    'tableau à retourner
+    '    Dim tabVarAR(tabEstAR.GetLength(1) - 1) As Double
 
-        'pour chaque entreprise...
-        For e = 0 To tabEstAR.GetUpperBound(1)
-            Dim vectAR(tabEstAR.GetLength(0) - 1) As Double
-            For t = 0 To tabEstAR.GetUpperBound(0)
-                vectAR(t) = CDbl(tabEstAR(t, e))
+    '    'pour chaque entreprise...
+    '    For e = 0 To tabEstAR.GetUpperBound(1)
+    '        Dim vectAR(tabEstAR.GetLength(0) - 1) As Double
+    '        For t = 0 To tabEstAR.GetUpperBound(0)
+    '            vectAR(t) = tabEstAR(t, e)
+    '        Next
+    '        tabVarAR(e) = Utilitaires.calcul_variance(vectAR, Utilitaires.calcul_moyenne(vectAR))
+    '    Next
+    '    Return tabVarAR
+    'End Function
+
+    ''' <summary>
+    ''' Fonction qui calcule les moyennes de AR (AAR) en chaque temps de la fenêtre d'événement.
+    ''' </summary>
+    ''' <param name="tabEvAR"> AR sur la fenêtre d'événement. </param>
+    ''' <returns> Moyenne des AR sur les entreprises en chaque temps de la fenêtre d'événement. </returns>
+    ''' <remarks></remarks>
+    Public Function moyAR(ByRef tabEvAR(,) As Double) As Double()
+        Dim tailleFenetreEv As Integer = tabEvAR.GetLength(0)
+        'tableau à retourner
+        Dim tabMoyAR(tailleFenetreEv - 1) As Double
+        'remplissage du tableau
+        For t = 0 To tabEvAR.GetUpperBound(0)
+            'tableau des ARi
+            Dim tabAR(tabEvAR.GetUpperBound(1)) As Double
+            For i = 0 To tabEvAR.GetUpperBound(1)
+                'extraction des ARi
+                tabAR(i) = tabEvAR(t, i)
             Next
-            tabVarAR(e) = Utilitaires.calcul_variance(vectAR, Utilitaires.calcul_moyenne(vectAR))
+            'moyenne sur les ARi/si
+            tabMoyAR(t) = Utilitaires.calcul_moyenne(tabAR)
         Next
-        Return tabVarAR
+        Return tabMoyAR
     End Function
 
 
-    '**********************************************Opérations sur les CAR
+    '********************************************** Opérations sur les CAR et CAAR **********************************************
 
     ''' <summary>
     ''' Calcule les CAR sur la fenêtre d'événement.
@@ -515,8 +517,9 @@ Module RentaAnormales
         Dim tailleFenetreEv As Integer = tabCAR.GetLength(0)
         'tableau à retourner
         Dim tabMoyNormCAR(tailleFenetreEv - 1) As Double
-        'tableau des variances
-        Dim tabVarAR() As Double = calcVarEstAR(tabEstAR)
+        'récupération des  des variances
+        Dim tabMoyAR() As Double = moyEstAR(tabEstAR)
+        Dim tabVarAR() As Double = varEstAR(tabEstAR, tabMoyAR)
 
         For i = 0 To tabCAR.GetUpperBound(0)
             Dim tabNormCAR(tabCAR.GetUpperBound(1)) As Double
@@ -546,8 +549,9 @@ Module RentaAnormales
         Dim tailleFenetreEv As Integer = tabCAR.GetLength(0)
         Dim tabEcartNormCAR(tailleFenetreEv - 1) As Double
 
-        'tableau des variances
-        Dim tabVarAR() As Double = calcVarEstAR(tabEstAR)
+        'récupération des  des variances
+        Dim tabMoyAR() As Double = moyEstAR(tabEstAR)
+        Dim tabVarAR() As Double = varEstAR(tabEstAR, tabMoyAR)
 
         For i = 0 To tailleFenetreEv - 1
             Dim tabNormCAR(tabCAR.GetLength(1) - 1) As Double

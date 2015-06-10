@@ -45,11 +45,16 @@ Module ExcelDialogue
     End Sub
 
     ''' <summary>
-    ''' Affichage des résultats des tests statistiques sur les CAR sur la période autour de l'événement.
+    ''' Affichage des résultats des tests statistiques asymptotiques sur les AR et les CAR 
+    ''' sur la période autour de l'événement.
     ''' </summary>
-    ''' <param name="datesEvAR"> Dates de la période d'événement sur laquelle les tests sont réalisés. </param>
-    ''' <param name="statAAR"> Statistiques de test des AAR en chaque temps de la fenêtre d'événement. </param>
-    ''' <param name="statCAAR"> Statistiques de test des CAAR en chaque temps de la fenêtre d'événement. </param>
+    ''' <param name="datesEvAR">  Dates de la période d'événement sur laquelle les tests sont réalisés. </param>
+    ''' <param name="tabMoyAR"> Moyennes des AR en chaque temps de la fenêtre d'événement. </param>
+    ''' <param name="tabEcartAR"> Ecart-types des AR en chaque temps de la fenêtre d'événement. </param>
+    ''' <param name="statAR"> Statistiques de test des AR en chaque temps de la fenêtre d'événement. </param>
+    ''' <param name="tabMoyCAR"> Moyennes des CAR en chaque temps de la fenêtre d'événement. </param>
+    ''' <param name="tabEcartCAR"> Ecart-types des CAR en chaque temps de la fenêtre d'événement. </param>
+    ''' <param name="statCAR"> Statistiques de test des CAR en chaque temps de la fenêtre d'événement. </param>
     ''' <param name="tailleEch"> Taille de l'échantillon (i.e le nombre d'entreprises). </param>
     ''' <param name="nomFeuille"> Nom de la feuille où afficher les résultats. </param>
     ''' <param name="decal"> Décalage du nombre de colonnes pour l'affichage.  </param>
