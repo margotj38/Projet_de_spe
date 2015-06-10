@@ -41,12 +41,7 @@
     'Ne la modifiez pas à l'aide de l'éditeur de code.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Ruban))
         Me.EtudeEvenement = Me.Factory.CreateRibbonTab
-        Me.Group2 = Me.Factory.CreateRibbonGroup
-        Me.EtudeAR = Me.Factory.CreateRibbonMenu
-        Me.testSimplAR = Me.Factory.CreateRibbonButton
-        Me.testSignAR = Me.Factory.CreateRibbonButton
         Me.Group1 = Me.Factory.CreateRibbonGroup
         Me.preTraitPrix = Me.Factory.CreateRibbonButton
         Me.preTraitRenta = Me.Factory.CreateRibbonButton
@@ -63,9 +58,13 @@
         Me.testSimpleM = Me.Factory.CreateRibbonButton
         Me.testPatellM = Me.Factory.CreateRibbonButton
         Me.testSigneM = Me.Factory.CreateRibbonButton
+        Me.Group2 = Me.Factory.CreateRibbonGroup
+        Me.EtudeAR = Me.Factory.CreateRibbonMenu
+        Me.testSimplAR = Me.Factory.CreateRibbonButton
+        Me.testSignAR = Me.Factory.CreateRibbonButton
         Me.EtudeEvenement.SuspendLayout()
-        Me.Group2.SuspendLayout()
         Me.Group1.SuspendLayout()
+        Me.Group2.SuspendLayout()
         '
         'EtudeEvenement
         '
@@ -73,34 +72,6 @@
         Me.EtudeEvenement.Groups.Add(Me.Group2)
         Me.EtudeEvenement.Label = "Etude d'événements"
         Me.EtudeEvenement.Name = "EtudeEvenement"
-        '
-        'Group2
-        '
-        Me.Group2.Items.Add(Me.EtudeAR)
-        Me.Group2.Label = "Etude à partir des AR"
-        Me.Group2.Name = "Group2"
-        '
-        'EtudeAR
-        '
-        Me.EtudeAR.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
-        Me.EtudeAR.Image = CType(resources.GetObject("EtudeAR.Image"), System.Drawing.Image)
-        Me.EtudeAR.Items.Add(Me.testSimplAR)
-        Me.EtudeAR.Items.Add(Me.testSignAR)
-        Me.EtudeAR.Label = "Choix du test"
-        Me.EtudeAR.Name = "EtudeAR"
-        Me.EtudeAR.ShowImage = True
-        '
-        'testSimplAR
-        '
-        Me.testSimplAR.Label = "Test simple"
-        Me.testSimplAR.Name = "testSimplAR"
-        Me.testSimplAR.ShowImage = True
-        '
-        'testSignAR
-        '
-        Me.testSignAR.Label = "Test de signe"
-        Me.testSignAR.Name = "testSignAR"
-        Me.testSignAR.ShowImage = True
         '
         'Group1
         '
@@ -130,7 +101,7 @@
         'ModeleMoy
         '
         Me.ModeleMoy.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
-        Me.ModeleMoy.Image = CType(resources.GetObject("ModeleMoy.Image"), System.Drawing.Image)
+        Me.ModeleMoy.Image = Global.EtudeEvenement.My.Resources.Resources.Symbole_moyenne
         Me.ModeleMoy.Items.Add(Me.testSimpleR)
         Me.ModeleMoy.Items.Add(Me.TestPatellR)
         Me.ModeleMoy.Items.Add(Me.testSigneR)
@@ -140,7 +111,7 @@
         '
         'testSimpleR
         '
-        Me.testSimpleR.Label = "Test simple"
+        Me.testSimpleR.Label = "T-test"
         Me.testSimpleR.Name = "testSimpleR"
         Me.testSimpleR.ShowImage = True
         '
@@ -159,7 +130,7 @@
         'ModeleMS
         '
         Me.ModeleMS.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
-        Me.ModeleMS.Image = CType(resources.GetObject("ModeleMS.Image"), System.Drawing.Image)
+        Me.ModeleMS.Image = Global.EtudeEvenement.My.Resources.Resources.up_down_market
         Me.ModeleMS.Items.Add(Me.testSimpleMS)
         Me.ModeleMS.Items.Add(Me.testPatellMS)
         Me.ModeleMS.Items.Add(Me.testSigneMS)
@@ -169,7 +140,7 @@
         '
         'testSimpleMS
         '
-        Me.testSimpleMS.Label = "Test simple"
+        Me.testSimpleMS.Label = "T-test"
         Me.testSimpleMS.Name = "testSimpleMS"
         Me.testSimpleMS.ShowImage = True
         '
@@ -188,7 +159,7 @@
         'ModeleM
         '
         Me.ModeleM.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
-        Me.ModeleM.Image = CType(resources.GetObject("ModeleM.Image"), System.Drawing.Image)
+        Me.ModeleM.Image = Global.EtudeEvenement.My.Resources.Resources.resgress
         Me.ModeleM.Items.Add(Me.testSimpleM)
         Me.ModeleM.Items.Add(Me.testPatellM)
         Me.ModeleM.Items.Add(Me.testSigneM)
@@ -198,7 +169,7 @@
         '
         'testSimpleM
         '
-        Me.testSimpleM.Label = "Test simple"
+        Me.testSimpleM.Label = "T-test"
         Me.testSimpleM.Name = "testSimpleM"
         Me.testSimpleM.ShowImage = True
         '
@@ -214,6 +185,34 @@
         Me.testSigneM.Name = "testSigneM"
         Me.testSigneM.ShowImage = True
         '
+        'Group2
+        '
+        Me.Group2.Items.Add(Me.EtudeAR)
+        Me.Group2.Label = "Etude à partir des AR"
+        Me.Group2.Name = "Group2"
+        '
+        'EtudeAR
+        '
+        Me.EtudeAR.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
+        Me.EtudeAR.Image = Global.EtudeEvenement.My.Resources.Resources.choixTest
+        Me.EtudeAR.Items.Add(Me.testSimplAR)
+        Me.EtudeAR.Items.Add(Me.testSignAR)
+        Me.EtudeAR.Label = "Choix du test"
+        Me.EtudeAR.Name = "EtudeAR"
+        Me.EtudeAR.ShowImage = True
+        '
+        'testSimplAR
+        '
+        Me.testSimplAR.Label = "T-test"
+        Me.testSimplAR.Name = "testSimplAR"
+        Me.testSimplAR.ShowImage = True
+        '
+        'testSignAR
+        '
+        Me.testSignAR.Label = "Test de signe"
+        Me.testSignAR.Name = "testSignAR"
+        Me.testSignAR.ShowImage = True
+        '
         'Ruban
         '
         Me.Name = "Ruban"
@@ -221,10 +220,10 @@
         Me.Tabs.Add(Me.EtudeEvenement)
         Me.EtudeEvenement.ResumeLayout(False)
         Me.EtudeEvenement.PerformLayout()
-        Me.Group2.ResumeLayout(False)
-        Me.Group2.PerformLayout()
         Me.Group1.ResumeLayout(False)
         Me.Group1.PerformLayout()
+        Me.Group2.ResumeLayout(False)
+        Me.Group2.PerformLayout()
 
     End Sub
 
