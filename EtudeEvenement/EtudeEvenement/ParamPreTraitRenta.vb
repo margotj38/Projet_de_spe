@@ -84,17 +84,17 @@ Public Class ParamPreTraitRenta
         Dim tabRentaCentrees(,) As Double = Nothing
         Dim tabMarcheCentre(,) As Double = Nothing
 
-        UtilitaireRentabilites.donneesCentrees(plage, feuilleDates, feuilleDonnees, tabRentaCentrees, tabMarcheCentre, False)
+        OpPrixRenta.donneesCentrees(plage, feuilleDates, feuilleDonnees, tabRentaCentrees, tabMarcheCentre, False)
 
         'On stocke le tableaux des rentabilités de marché dont on va avoir besoin
         'PB : où ? Dans nouveau module rentabilité ?
-        UtilitaireRentabilites.tabRentaMarche = tabMarcheCentre
-        UtilitaireRentabilites.tabRenta = tabRentaCentrees
-        UtilitaireRentabilites.tabRentaClassiquesMarche = tabMarcheCentre
+        OpPrixRenta.tabRentaMarche = tabMarcheCentre
+        OpPrixRenta.tabRenta = tabRentaCentrees
+        OpPrixRenta.tabRentaClassiquesMarche = tabMarcheCentre
 
         'Calcul de maxPrixAbsent
-        Dim maxPrixAbsent As Integer = UtilitaireRentabilites.calculMaxRentAbs(tabRentaCentrees)
-        UtilitaireRentabilites.maxRentAbs = maxPrixAbsent
+        Dim maxPrixAbsent As Integer = OpPrixRenta.calculMaxRentAbs(tabRentaCentrees)
+        OpPrixRenta.maxRentAbs = maxPrixAbsent
 
         'On affiche les rentabilités centrées
         ExcelDialogue.affichageRentaCentrees(tabRentaCentrees)

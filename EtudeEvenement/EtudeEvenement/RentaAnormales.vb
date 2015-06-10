@@ -29,7 +29,7 @@ Module RentaAnormales
                 modeleMarcheSimple(tabRentaMarcheEst, tabRentaMarcheEv, tabRentaEst, tabRentaEv, tabAREst, tabAREv, tabDateEst, tabDateEv)
             Case 2
                 'Création des tableaux pour pouvoir faire les régressions en tenant compte des N/A
-                Dim tabRentaReg(,,)() = UtilitaireRentabilites.constructionTableauxReg(UtilitaireRentabilites.maxRentAbs, tabRentaEst, tabRentaMarcheEst)
+                Dim tabRentaReg(,,)() = OpPrixRenta.constructionTableauxReg(OpPrixRenta.maxRentAbs, tabRentaEst, tabRentaMarcheEst)
                 modeleMarche(tabRentaMarcheEst, tabRentaMarcheEv, tabRentaEst, tabRentaEv, tabRentaReg, tabAREst, tabAREv, tabDateEst, tabDateEv)
             Case Else
                 MsgBox("Erreur interne : numero de modèle incorrect dans ChoixSeuilFenetre", 16)

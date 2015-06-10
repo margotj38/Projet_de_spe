@@ -101,22 +101,22 @@ Public Class ParamPreTraitPrix
         'On centre les cours des entreprises et du marché
         Dim tabPrixCentres(,) As Double = Nothing
         Dim tabMarcheCentre(,) As Double = Nothing
-        UtilitaireRentabilites.donneesCentrees(plage, feuilleDates, feuilleDonnees, tabPrixCentres, tabMarcheCentre, cOuv)
+        OpPrixRenta.donneesCentrees(plage, feuilleDates, feuilleDonnees, tabPrixCentres, tabMarcheCentre, cOuv)
 
         'On calcule les rentabilités
         Dim tabRenta(tabPrixCentres.GetUpperBound(0) - 1, tabPrixCentres.GetUpperBound(1)) As Double
         Dim tabRentaMarche(tabMarcheCentre.GetUpperBound(0) - 1, tabMarcheCentre.GetUpperBound(1)) As Double
         Dim tabRentaClassiquesMarche(tabMarcheCentre.GetUpperBound(0) - 1, tabMarcheCentre.GetUpperBound(1)) As Double
         Dim maxPrixAbsent As Integer
-        UtilitaireRentabilites.calculTabRenta(tabPrixCentres, tabMarcheCentre, tabRenta, tabRentaMarche, tabRentaClassiquesMarche, _
+        OpPrixRenta.calculTabRenta(tabPrixCentres, tabMarcheCentre, tabRenta, tabRentaMarche, tabRentaClassiquesMarche, _
                                               maxPrixAbsent, rLog)
 
         'On stocke le tableaux des rentabilités de marché et des entreprises dont on va avoir besoin
-        UtilitaireRentabilites.tabRentaMarche = tabRentaMarche
-        UtilitaireRentabilites.tabRenta = tabRenta
-        UtilitaireRentabilites.tabRentaClassiquesMarche = tabRentaClassiquesMarche
+        OpPrixRenta.tabRentaMarche = tabRentaMarche
+        OpPrixRenta.tabRenta = tabRenta
+        OpPrixRenta.tabRentaClassiquesMarche = tabRentaClassiquesMarche
         'Idem pour maxPrixAbsent
-        UtilitaireRentabilites.maxRentAbs = maxPrixAbsent
+        OpPrixRenta.maxRentAbs = maxPrixAbsent
 
         'On affiche ces rentabilités centrées
         ExcelDialogue.affichageRentaCentrees(tabRenta)

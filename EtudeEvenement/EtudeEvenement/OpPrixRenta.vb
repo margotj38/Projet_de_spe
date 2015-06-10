@@ -3,7 +3,7 @@
 ''' Module de gestion des opérations sur les prix et les rentabilités.
 ''' </summary>
 ''' <remarks></remarks>
-Module UtilitaireRentabilites
+Module OpPrixRenta
 
     'Variables globales
 

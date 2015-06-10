@@ -143,9 +143,9 @@ Public Class SelectionFenetres
         Dim tabRentaMarcheEv(,) As Double = Nothing
         Dim tabRentaClassiquesMarcheEst(,) As Double = Nothing
         Dim tabRentaClassiquesMarcheEv(,) As Double = Nothing
-        UtilitaireRentabilites.constructionTabRenta(plageEst, plageEv, _
-                                                    UtilitaireRentabilites.tabRentaMarche, UtilitaireRentabilites.tabRenta, _
-                                                    UtilitaireRentabilites.tabRentaClassiquesMarche, _
+        OpPrixRenta.constructionTabRenta(plageEst, plageEv, _
+                                                    OpPrixRenta.tabRentaMarche, OpPrixRenta.tabRenta, _
+                                                    OpPrixRenta.tabRentaClassiquesMarche, _
                                                     tabRentaMarcheEst, tabRentaMarcheEv, tabRentaEst, tabRentaEv, _
                                                     tabRentaClassiquesMarcheEst, tabRentaClassiquesMarcheEv)
         'Calcul des AR
