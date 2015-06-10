@@ -348,6 +348,9 @@ Module OpPrixRenta
             Dim dateCour As Excel.Range
             Dim data As Excel.Range, marche As Excel.Range
             dateCour = currentSheet.Columns("A:A").Find(Format(tabDate(colonne - 1), "Short date").ToString)
+            If IsNothing(dateCour) Then
+                MsgBox("aa", 16)
+            End If
             If coursOuv Then
                 'si ce sont des cours d'ouverture, on centre par rapport au lendemain de la date d'événement
                 fenetreInf = dateCour.Row + 1 - minUp

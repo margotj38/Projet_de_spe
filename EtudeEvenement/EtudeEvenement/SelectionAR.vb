@@ -116,6 +116,9 @@ Public Class SelectionAR
         ExcelDialogue.convertPlageTab(plageEst, feuille, tabEstAR, tabDateEst)
         ExcelDialogue.convertPlageTab(plageEv, feuille, tabEvAR, tabDateEv)
 
+        'On ferme la fenêtre
+        Me.Close()
+
         Select Case test
             Case 0
                 'test simple

@@ -118,9 +118,11 @@ Public Class ParamPreTraitPrix
         'Idem pour maxPrixAbsent
         OpPrixRenta.maxRentAbs = maxPrixAbsent
 
+        'On ferme la fenêtre
+        Me.Close()
+
         'On affiche ces rentabilités centrées
         ExcelDialogue.affichageRentaCentrees(tabRenta)
-
     End Sub
 
     ''' <summary>
