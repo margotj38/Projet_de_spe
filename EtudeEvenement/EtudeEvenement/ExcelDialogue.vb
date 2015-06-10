@@ -83,7 +83,7 @@ Module ExcelDialogue
         For i = 0 To tailleFenetreEv - 1
             j = i + 4
 
-            nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(j, decal + 1), "AR(" & datesEvAR(i) & ")")
+            nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(j, decal + 1), "AAR(" & datesEvAR(i) & ")")
 
             'La colonne des moyennes
             valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(j, decal + 2), tabMoyAR(i))
@@ -110,7 +110,7 @@ Module ExcelDialogue
         For i = 0 To tailleFenetreEv - 1
             j = i + tailleFenetreEv + 7
 
-            nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(j, decal + 1), "CAR(" & datesEvAR(i) & ")")
+            nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(j, decal + 1), "CAAR(" & datesEvAR(i) & ")")
 
             'La colonne des moyennes
             valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(j, decal + 2), tabMoyCAR(i))
@@ -158,7 +158,7 @@ Module ExcelDialogue
         For i = 0 To tailleFenetreEv - 1
             j = i + 4
 
-            nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(j, decal + 1), "AR(" & datesEvAR(i) & ")")
+            nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(j, decal + 1), "AAR(" & datesEvAR(i) & ")")
 
             'La colonne des moyennes
             valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(j, decal + 2), statAAR(i))
@@ -177,7 +177,7 @@ Module ExcelDialogue
         For i = 0 To tailleFenetreEv - 1
             j = i + tailleFenetreEv + 7
 
-            nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(j, decal + 1), "CAR(" & datesEvAR(i) & ")")
+            nomCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(j, decal + 1), "CAAR(" & datesEvAR(i) & ")")
 
             'La colonne des moyennes
             valeurCellule(Globals.ThisAddIn.Application.Worksheets(nomFeuille).Cells(j, decal + 2), statCAAR(i))
@@ -402,7 +402,7 @@ Module ExcelDialogue
 
         'Affichage des dates et des statistiques du test de Patell et de la P-Valeur
         For i = 0 To tabDateEv.GetUpperBound(0)
-            nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + 4, 1), "AR(" & tabDateEv(i) & ")")
+            nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + 4, 1), "AAR(" & tabDateEv(i) & ")")
             valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + 4, 2), testHypAAR(i))
             Dim pValeur As Double
             pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHypAAR(i)), True))
@@ -421,7 +421,7 @@ Module ExcelDialogue
 
         'Affichage des dates et des statistiques du test de Patell et de la P-Valeur
         For i = 0 To tabDateEv.GetUpperBound(0)
-            nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + debutAffichage + 1, 1), "CAR(" & tabDateEv(i) & ")")
+            nomCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + debutAffichage + 1, 1), "CAAR(" & tabDateEv(i) & ")")
             valeurCellule(Globals.ThisAddIn.Application.Worksheets(nom).cells(i + debutAffichage + 1, 2), testHypCAAR(i))
             Dim pValeur As Double
             pValeur = 2 * (1 - Globals.ThisAddIn.Application.WorksheetFunction.Norm_S_Dist(Math.Abs(testHypCAAR(i)), True))
