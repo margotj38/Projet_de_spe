@@ -248,7 +248,12 @@ Module ExcelDialogue
         'Si l'utilisateur n'entre pas un nom
         If nom Is "" Then nom = "Rentabilités centrées"
         Globals.ThisAddIn.Application.Sheets.Add(After:=Globals.ThisAddIn.Application.Worksheets(Globals.ThisAddIn.Application.Worksheets.Count))
-        Globals.ThisAddIn.Application.ActiveSheet.Name = nom
+        Try
+            Globals.ThisAddIn.Application.ActiveSheet.Name = nom
+        Catch ex As System.Runtime.InteropServices.COMException
+            MsgBox(ex.Message, 16)
+            nom = Globals.ThisAddIn.Application.ActiveSheet.Name
+        End Try
 
         'Affichage des dates
         Globals.ThisAddIn.Application.Worksheets(nom).Range("A1").Value = "Dates"
@@ -290,7 +295,12 @@ Module ExcelDialogue
         'Si l'utilisateur n'entre pas un nom
         If nom Is "" Then nom = "Rentabilités anormales"
         Globals.ThisAddIn.Application.Sheets.Add(After:=Globals.ThisAddIn.Application.Worksheets(Globals.ThisAddIn.Application.Worksheets.Count))
-        Globals.ThisAddIn.Application.ActiveSheet.Name = nom
+        Try
+            Globals.ThisAddIn.Application.ActiveSheet.Name = nom
+        Catch ex As System.Runtime.InteropServices.COMException
+            MsgBox(ex.Message, 16)
+            nom = Globals.ThisAddIn.Application.ActiveSheet.Name
+        End Try
 
         Dim currentSheet As Excel.Worksheet = CType(Globals.ThisAddIn.Application.Worksheets(nom), Excel.Worksheet)
 
@@ -368,9 +378,14 @@ Module ExcelDialogue
         Dim nom As String
         nom = InputBox("Entrer le nom de la feuille des résultats : ")
         'Si l'utilisateur n'entre pas un nom
-        If nom Is "" Then nom = "Résulatats Patell"
+        If nom Is "" Then nom = "Résultats Patell"
         Globals.ThisAddIn.Application.Sheets.Add(After:=Globals.ThisAddIn.Application.Worksheets(Globals.ThisAddIn.Application.Worksheets.Count))
-        Globals.ThisAddIn.Application.ActiveSheet.Name = nom
+        Try
+            Globals.ThisAddIn.Application.ActiveSheet.Name = nom
+        Catch ex As System.Runtime.InteropServices.COMException
+            MsgBox(ex.Message, 16)
+            nom = Globals.ThisAddIn.Application.ActiveSheet.Name
+        End Try
 
         'Affichage en-tête
         Globals.ThisAddIn.Application.Worksheets(nom).Cells(1, 1).Value = "Résultats du test de Patell"
@@ -433,7 +448,12 @@ Module ExcelDialogue
         'Si l'utilisateur n'entre pas un nom
         If nom Is "" Then nom = "Résultats Signe"
         Globals.ThisAddIn.Application.Sheets.Add(After:=Globals.ThisAddIn.Application.Worksheets(Globals.ThisAddIn.Application.Worksheets.Count))
-        Globals.ThisAddIn.Application.ActiveSheet.Name = nom
+        Try
+            Globals.ThisAddIn.Application.ActiveSheet.Name = nom
+        Catch ex As System.Runtime.InteropServices.COMException
+            MsgBox(ex.Message, 16)
+            nom = Globals.ThisAddIn.Application.ActiveSheet.Name
+        End Try
 
 
         'Affichage en-tête
