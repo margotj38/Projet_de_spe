@@ -96,6 +96,9 @@ Public Class ParamPreTraitRenta
         Dim maxPrixAbsent As Integer = OpPrixRenta.calculMaxRentAbs(tabRentaCentrees)
         OpPrixRenta.maxRentAbs = maxPrixAbsent
 
+        'On ferme la fenêtre
+        Me.Close()
+
         'On affiche les rentabilités centrées
         ExcelDialogue.affichageRentaCentrees(tabRentaCentrees)
 

@@ -455,7 +455,6 @@ Module ExcelDialogue
             nom = Globals.ThisAddIn.Application.ActiveSheet.Name
         End Try
 
-
         'Affichage en-tête
         Globals.ThisAddIn.Application.Worksheets(nom).Cells(1, 1).Value = "Résultats du test de signe"
         Globals.ThisAddIn.Application.Worksheets(nom).Cells(1, 1).Font.Bold = True
