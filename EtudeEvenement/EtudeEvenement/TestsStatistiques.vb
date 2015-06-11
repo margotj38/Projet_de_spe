@@ -173,7 +173,7 @@ Module TestsStatistiques
     End Sub
 
     ''' <summary>
-    ''' Fonction calculant la variance sur la période d'estimation pour chaque titre (variance qui doit être ajustée 
+    ''' Fonction calculant la variance sur la période d'estimation pour chaque titre (variance qui doit être ajustée  
     ''' pour être incorporée dans la formule du test de Patell).
     ''' </summary>
     ''' <param name="tabAREst">Tableau des AR sur la période d'estimation.</param>
