@@ -369,11 +369,10 @@ Module OpPrixRenta
             For i = -minUp To minDown
                 If Globals.ThisAddIn.Application.WorksheetFunction.IsNA(data.Cells(i + minUp + 1, 1)) Then
                     tabEntreprisesCentre(i + minUp, tabInd(colonne - 1)) = Double.NaN
-                    tabMarcheCentre(i + minUp, tabInd(colonne - 1)) = Double.NaN
                 Else
                     tabEntreprisesCentre(i + minUp, tabInd(colonne - 1)) = data.Cells(i + minUp + 1, 1).Value
-                    tabMarcheCentre(i + minUp, tabInd(colonne - 1)) = marche.Cells(i + minUp + 1, 1).Value
                 End If
+                tabMarcheCentre(i + minUp, tabInd(colonne - 1)) = marche.Cells(i + minUp + 1, 1).Value
             Next i
         Next
     End Sub
