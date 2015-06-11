@@ -273,4 +273,15 @@ Public Class Ruban
         selAR.Visible = True
     End Sub
 
+    ''' <summary>
+    ''' Procédure permettant d'ouvrir le manuel utilisateur.
+    ''' </summary>
+    ''' <param name="sender">Non utilisé</param>
+    ''' <param name="e">Non utilisé</param>
+    ''' <remarks></remarks>
+    Private Sub BoutonAide_Click(sender As Object, e As RibbonControlEventArgs) Handles BoutonAide.Click
+        Dim pdf As String = Globals.ThisAddIn.Application.ActiveWorkbook.Path & "\EtudeEvenement\EtudeEvenement\Resources\manuel-utilisateur.pdf"
+        Globals.ThisAddIn.Application.ActiveWorkbook.FollowHyperlink(pdf)
+    End Sub
+
 End Class

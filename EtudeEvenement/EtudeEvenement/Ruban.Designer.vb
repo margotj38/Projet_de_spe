@@ -43,9 +43,12 @@
     Private Sub InitializeComponent()
         Me.EtudeEvenement = Me.Factory.CreateRibbonTab
         Me.Group1 = Me.Factory.CreateRibbonGroup
+        Me.Separator1 = Me.Factory.CreateRibbonSeparator
+        Me.Group2 = Me.Factory.CreateRibbonGroup
+        Me.Group3 = Me.Factory.CreateRibbonGroup
         Me.preTraitPrix = Me.Factory.CreateRibbonButton
         Me.preTraitRenta = Me.Factory.CreateRibbonButton
-        Me.Separator1 = Me.Factory.CreateRibbonSeparator
+        Me.BoutonAide = Me.Factory.CreateRibbonButton
         Me.ModeleMoy = Me.Factory.CreateRibbonMenu
         Me.testSimpleR = Me.Factory.CreateRibbonButton
         Me.TestPatellR = Me.Factory.CreateRibbonButton
@@ -58,16 +61,17 @@
         Me.testSimpleM = Me.Factory.CreateRibbonButton
         Me.testPatellM = Me.Factory.CreateRibbonButton
         Me.testSigneM = Me.Factory.CreateRibbonButton
-        Me.Group2 = Me.Factory.CreateRibbonGroup
         Me.EtudeAR = Me.Factory.CreateRibbonMenu
         Me.testSimplAR = Me.Factory.CreateRibbonButton
         Me.testSignAR = Me.Factory.CreateRibbonButton
         Me.EtudeEvenement.SuspendLayout()
         Me.Group1.SuspendLayout()
         Me.Group2.SuspendLayout()
+        Me.Group3.SuspendLayout()
         '
         'EtudeEvenement
         '
+        Me.EtudeEvenement.Groups.Add(Me.Group3)
         Me.EtudeEvenement.Groups.Add(Me.Group1)
         Me.EtudeEvenement.Groups.Add(Me.Group2)
         Me.EtudeEvenement.Label = "Etude d'événements"
@@ -84,6 +88,22 @@
         Me.Group1.Label = "Etude complète"
         Me.Group1.Name = "Group1"
         '
+        'Separator1
+        '
+        Me.Separator1.Name = "Separator1"
+        '
+        'Group2
+        '
+        Me.Group2.Items.Add(Me.EtudeAR)
+        Me.Group2.Label = "Etude à partir des AR"
+        Me.Group2.Name = "Group2"
+        '
+        'Group3
+        '
+        Me.Group3.Items.Add(Me.BoutonAide)
+        Me.Group3.Label = "Aide"
+        Me.Group3.Name = "Group3"
+        '
         'preTraitPrix
         '
         Me.preTraitPrix.Label = "Prétraitement prix"
@@ -94,9 +114,13 @@
         Me.preTraitRenta.Label = "Prétraitement rentabilités"
         Me.preTraitRenta.Name = "preTraitRenta"
         '
-        'Separator1
+        'BoutonAide
         '
-        Me.Separator1.Name = "Separator1"
+        Me.BoutonAide.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
+        Me.BoutonAide.Image = Global.EtudeEvenement.My.Resources.Resources.aide
+        Me.BoutonAide.Label = "Ouvrir l'aide"
+        Me.BoutonAide.Name = "BoutonAide"
+        Me.BoutonAide.ShowImage = True
         '
         'ModeleMoy
         '
@@ -185,12 +209,6 @@
         Me.testSigneM.Name = "testSigneM"
         Me.testSigneM.ShowImage = True
         '
-        'Group2
-        '
-        Me.Group2.Items.Add(Me.EtudeAR)
-        Me.Group2.Label = "Etude à partir des AR"
-        Me.Group2.Name = "Group2"
-        '
         'EtudeAR
         '
         Me.EtudeAR.ControlSize = Microsoft.Office.Core.RibbonControlSize.RibbonControlSizeLarge
@@ -224,6 +242,8 @@
         Me.Group1.PerformLayout()
         Me.Group2.ResumeLayout(False)
         Me.Group2.PerformLayout()
+        Me.Group3.ResumeLayout(False)
+        Me.Group3.PerformLayout()
 
     End Sub
 
@@ -248,6 +268,8 @@
     Friend WithEvents testSimplAR As Microsoft.Office.Tools.Ribbon.RibbonButton
     Friend WithEvents testSignAR As Microsoft.Office.Tools.Ribbon.RibbonButton
     Friend WithEvents Separator1 As Microsoft.Office.Tools.Ribbon.RibbonSeparator
+    Friend WithEvents Group3 As Microsoft.Office.Tools.Ribbon.RibbonGroup
+    Friend WithEvents BoutonAide As Microsoft.Office.Tools.Ribbon.RibbonButton
 End Class
 
 Partial Class ThisRibbonCollection
