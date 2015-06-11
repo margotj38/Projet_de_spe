@@ -582,7 +582,7 @@ Module RentaAnormales
         Dim nom As String
         nom = InputBox("Entrer le nom de la feuille des résultats de l'étude d'événements :")
         'Si l'utilisateur n'entre pas un nom
-        If nom Is "" Then nom = "Resultat"
+        If nom Is "" Then nom = "Resultats T-test"
         Globals.ThisAddIn.Application.Sheets.Add(After:=Globals.ThisAddIn.Application.Worksheets(Globals.ThisAddIn.Application.Worksheets.Count))
         Try
             Globals.ThisAddIn.Application.ActiveSheet.Name = nom
