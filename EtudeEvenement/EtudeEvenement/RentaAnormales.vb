@@ -580,11 +580,16 @@ Module RentaAnormales
 
         'La création d'une nouvelle feuille
         Dim nom As String
-        nom = InputBox("Entrer Le nom de la feuille des résultats de l'étude d'événements: ")
+        nom = InputBox("Entrer le nom de la feuille des résultats de l'étude d'événements :")
         'Si l'utilisateur n'entre pas un nom
         If nom Is "" Then nom = "Resultat"
         Globals.ThisAddIn.Application.Sheets.Add(After:=Globals.ThisAddIn.Application.Worksheets(Globals.ThisAddIn.Application.Worksheets.Count))
-        Globals.ThisAddIn.Application.ActiveSheet.Name = nom
+        Try
+            Globals.ThisAddIn.Application.ActiveSheet.Name = nom
+        Catch ex As System.Runtime.InteropServices.COMException
+            MsgBox(ex.Message, 16)
+            nom = Globals.ThisAddIn.Application.ActiveSheet.Name
+        End Try
 
         Dim N As Integer = tabEvAR.GetLength(1)
 

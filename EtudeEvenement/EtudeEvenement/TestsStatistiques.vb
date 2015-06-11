@@ -288,6 +288,7 @@ Module TestsStatistiques
         'Calcul (s_ASAR)²
         Dim sASARCarre As Double
         For colonne = 0 To SAR.GetUpperBound(1)
+            'Si trois dates => -1 => pb dans racine 7 lignes plus loin
             sASARCarre = sASARCarre + (Mj(colonne) - 2) / (Mj(colonne) - 4)
         Next colonne
 

@@ -170,6 +170,14 @@ Public Class SelectionFenetres
                 RentaAnormales.traitementTabAR(tabAREv, tabAREst, tabDateEv)
             Case 1
                 'test de Patell
+                'On calcule le nombre de dates de la période d'estimation pour s'assurer qu'il y en a au moins 5
+                '(sinon, problème dans les formules du test de Patell)
+                Dim premLigne As Integer, dernLigne As Integer
+                Utilitaires.parserPlageLignes(plageEst, premLigne, dernLigne)
+                If dernLigne - premLigne + 1 <= 4 Then
+                    MsgBox("Erreur : Pour le test de Patell, au moins 5 dates sont requises pour la période d'estimation", 16)
+                    Return
+                End If
                 'Calcul du nombre de AR non manquants pour chaque entreprise sur la période d'estimation
                 Dim nbNonMissingReturn() As Integer = TestsStatistiques.calculNbNonMissingReturn(tabAREst)
                 Dim testHypAAR() As Double = Nothing
